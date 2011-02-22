@@ -1,0 +1,17 @@
+The aim of this project is to produce a plugin for the nakamura kernel that can
+resolve Groups from Grouper via the GrouperWS REST API.
+
+Sakai3:
+http://sakaiproject.org/projects/sakai-3
+
+Nakamura (Sakai3 backend built on Apache Sling):
+https://confluence.sakaiproject.org/display/KERNDOC/Nakamura+Documentation
+
+Proposal for federating User and Group services in Nakamura:
+https://confluence.sakaiproject.org/display/KERNDOC/AuthorizableManager+Plugins
+
+Grouper:
+https://spaces.internet2.edu/display/Grouper/
+
+Grouper API:
+https://spaces.internet2.edu/display/Grouper/Grouper+Web+Services
