@@ -42,18 +42,32 @@
           <instructions>
             <Bundle-Category>sakai-nakamura</Bundle-Category>
             <Export-Package>org.sakaiproject.nakamura.grouper.authorizable.*,</Export-Package>
-            <Import-Package>org.sakaiproject.nakamura.api.lite.*,org.slf4j.*</Import-Package>
+            <Import-Package>
+            org.sakaiproject.nakamura.api.lite.*,
+            org.slf4j.*,
+            org.osgi.service.cm.*,
+            org.apache.sling.commons.osgi*
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
 <!-- nakamura -->
     <dependency>
       <groupId>org.sakaiproject.nakamura</groupId>
       <artifactId>org.sakaiproject.nakamura.configuration</artifactId>
       <version>0.10-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.sakaiproject.nakamura</groupId>
+        <artifactId>org.sakaiproject.nakamura.core</artifactId>
+        <version>0.10-SNAPSHOT</version>
+        <type>bundle</type>
+        <scope>compile</scope>
     </dependency>
 
 <!-- scr annotations -->
@@ -67,16 +81,10 @@
       <groupId>org.apache.felix</groupId>
       <artifactId>org.osgi.core</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.osgi.compendium</artifactId>
-    </dependency>
-
-<!-- ldap -->
-    <dependency>
-      <groupId>org.apache.ws.commons.util</groupId>
-      <artifactId>ws-commons-util</artifactId>
-      <version>1.0.2</version>
     </dependency>
 
 <!-- OSGi utils -->
@@ -92,11 +100,9 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
-<!-- pooling -->
     <dependency>
-      <groupId>commons-pool</groupId>
-      <artifactId>commons-pool</artifactId>
-      <version>1.5.2</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-nop</artifactId>
     </dependency>
 
 <!-- test artifacts -->
@@ -110,16 +116,5 @@
       <artifactId>easymockclassextension</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-nop</artifactId>
-    </dependency>
-    <dependency>
-    	<groupId>org.sakaiproject.nakamura</groupId>
-    	<artifactId>org.sakaiproject.nakamura.core</artifactId>
-    	<version>0.10-SNAPSHOT</version>
-    	<type>bundle</type>
-    	<scope>compile</scope>
-    </dependency>
   </dependencies>
 </project>
