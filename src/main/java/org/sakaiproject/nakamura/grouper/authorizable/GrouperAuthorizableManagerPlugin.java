@@ -7,6 +7,7 @@ import org.sakaiproject.nakamura.api.lite.StorageClientException;
 import org.sakaiproject.nakamura.api.lite.accesscontrol.AccessDeniedException;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 import org.sakaiproject.nakamura.api.lite.authorizable.AuthorizableManagerPlugin;
+import org.sakaiproject.nakamura.grouper.api.GrouperWSConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +16,12 @@ public class GrouperAuthorizableManagerPlugin implements
 	
 	private static final Logger log = LoggerFactory.getLogger(GrouperAuthorizableManagerPlugin.class);
 	private final GrouperAuthorizableManagerPluginFactory factory;
+	private GrouperWSConfiguration grouperConfig;
 	
-	public GrouperAuthorizableManagerPlugin(GrouperAuthorizableManagerPluginFactory factory) {
+	public GrouperAuthorizableManagerPlugin(GrouperAuthorizableManagerPluginFactory factory,
+											GrouperWSConfiguration grouperConfig) {
 		this.factory = factory;
+		this.grouperConfig = grouperConfig;
 	}
 
 	public Authorizable findAuthorizable(String authorizableId)
@@ -74,4 +78,7 @@ public class GrouperAuthorizableManagerPlugin implements
 		this.factory.removePlugin(this);
 	}
 
+	public void setGrouperConfig(GrouperWSConfiguration gc){
+		this.grouperConfig = gc;
+	}
 }
