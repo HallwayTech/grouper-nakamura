@@ -81,7 +81,8 @@ public class GrouperAuthorizableManagerPluginFactory
 	public void updated(Dictionary props) throws ConfigurationException {
 		GrouperWSConfiguration configuration = 
 				GrouperAuthorizableManagerPluginFactory.createConfig(props);
-		
+		setGrouperConfiguration(configuration);
+
 		if (configuration != null){
 			log.debug("Configured : {}", (String)props.get(PROP_URL));
 			for (GrouperAuthorizableManagerPlugin gamp : instances) {
