@@ -3,16 +3,16 @@ package org.sakaiproject.nakamura.grouper.xmpp;
 import java.util.Iterator;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import edu.internet2.middleware.grouperClient.util.GrouperClientUtils;
+import edu.internet2.middleware.grouperClientExt.org.apache.commons.logging.Log;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppHandler;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppJob;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppSubject;
 
 public class SimpleLoggingHandler implements GrouperClientXmppHandler {
 	
-	private static final Logger log = LoggerFactory.getLogger(SimpleLoggingHandler.class); 
+	private static final Log log = GrouperClientUtils.retrieveLog(SimpleLoggingHandler.class); 
 
 	public void handleIncremental(GrouperClientXmppJob grouperClientXmppJob,
 			String groupName, String groupExtension,
@@ -21,15 +21,13 @@ public class SimpleLoggingHandler implements GrouperClientXmppHandler {
 			GrouperClientXmppSubject changeSubject, String action) {
 		
 		if (log.isDebugEnabled()){
-			log.debug("jobName = {}\n groupName = {}\n groupExtension = {}\n previousSubjectList = {}\n, newSubjectList = {}\n changeSubject = {}\n, action = {}",
-					new Object[] { grouperClientXmppJob.getJobName(), 
-									groupName, 
-									groupExtension, 
-									SimpleLoggingHandler.joinSubjectIds(previousSubjectList), 
-									SimpleLoggingHandler.joinSubjectIds(newSubjectList),
-									changeSubject.getSubjectId(), 
-									action }
-					); 
+			log.debug("jobName = " + grouperClientXmppJob.getJobName() +
+						"\n groupName = " + groupName +
+						"\n groupExtension = " + groupExtension +
+						"\n previousSubjectList = " + SimpleLoggingHandler.joinSubjectIds(previousSubjectList) +
+						"\n, newSubjectList = {}" + SimpleLoggingHandler.joinSubjectIds(newSubjectList) +
+						"\n changeSubject = " + changeSubject.getSubjectId() +
+						"\n, action = " + action);
 		}
 	}
 
@@ -38,12 +36,10 @@ public class SimpleLoggingHandler implements GrouperClientXmppHandler {
 			List<GrouperClientXmppSubject> newSubjectList) {
 		
 		if (log.isDebugEnabled()){
-			log.debug("jobName = {}\n groupName = {}\n groupExtension = {}\n, newSubjectList = {}\n",
-					new Object[] { grouperClientXmppJob.getJobName(), 
-									groupName, 
-									groupExtension, 
-									SimpleLoggingHandler.joinSubjectIds(newSubjectList) }
-					); 
+			log.debug("jobName = " + grouperClientXmppJob.getJobName() +
+					"\n groupName = " + groupName +
+					"\n groupExtension = " + groupExtension +
+					"\n, newSubjectList = {}" + SimpleLoggingHandler.joinSubjectIds(newSubjectList));
 		}
 	}
 
