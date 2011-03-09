@@ -22,6 +22,7 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 	
 	public NakamuraGroupXmppHandler(){
 		this.groupAdapter = new HttpNakamuraGroupAdapter();
+		this.groupAdapter.configure();
 	}
 
 	/**
@@ -42,16 +43,16 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 		try {
 			
 			if (GrouperClientUtils.equals(action, "MEMBERSHIP_ADD")) {
-			    groupAdapter.addMembership(groupName, changeSubject);
+			    groupAdapter.addMembership(groupName, groupExtension, changeSubject);
 			} 
 			else if (GrouperClientUtils.equals(action, "MEMBERSHIP_DELETE")) {
-				groupAdapter.deleteMembership(groupName, changeSubject);
+				groupAdapter.deleteMembership(groupName, groupExtension, changeSubject);
 			} 
 			else if (GrouperClientUtils.equals(action, "GROUP_ADD")) {
-				groupAdapter.createGroup(groupExtension);
+				groupAdapter.createGroup(groupName, groupExtension);
 			}
 			else if (GrouperClientUtils.equals(action, "GROUP_DELETE")) {
-				groupAdapter.deleteGroup(groupExtension);
+				groupAdapter.deleteGroup(groupName, groupExtension);
 			}
 			else {
 				throw new RuntimeException("Not expecting action: '" + action + "'");
