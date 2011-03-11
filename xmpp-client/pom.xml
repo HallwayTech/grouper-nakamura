@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.nyu.grouper</groupId>
-  <artifactId>edu.nyu.grouper.grouper-xmpp-client</artifactId>
+  <artifactId>edu.nyu.grouper.xmpp-client</artifactId>
   <packaging>jar</packaging>
   <name>Sakai Nakamura :: Grouper XMPP Changelog Client</name>
   <version>0.1</version>
