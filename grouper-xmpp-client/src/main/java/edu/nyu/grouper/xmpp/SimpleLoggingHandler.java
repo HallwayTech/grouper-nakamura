@@ -25,9 +25,9 @@ public class SimpleLoggingHandler implements GrouperClientXmppHandler {
 						"\n groupName = " + groupName +
 						"\n groupExtension = " + groupExtension +
 						"\n previousSubjectList = " + SimpleLoggingHandler.joinSubjectIds(previousSubjectList) +
-						"\n, newSubjectList = {}" + SimpleLoggingHandler.joinSubjectIds(newSubjectList) +
+						"\n, newSubjectList = " + SimpleLoggingHandler.joinSubjectIds(newSubjectList) +
 						"\n changeSubject = " + changeSubject.getSubjectId() +
-						"\n, action = " + action);
+						"\n action = " + action);
 		}
 	}
 
@@ -39,7 +39,7 @@ public class SimpleLoggingHandler implements GrouperClientXmppHandler {
 			log.debug("jobName = " + grouperClientXmppJob.getJobName() +
 						"\n groupName = " + groupName +
 						"\n groupExtension = " + groupExtension +
-						"\n, newSubjectList = {}" + SimpleLoggingHandler.joinSubjectIds(newSubjectList));
+						"\n newSubjectList = " + SimpleLoggingHandler.joinSubjectIds(newSubjectList));
 		}
 	}
 
