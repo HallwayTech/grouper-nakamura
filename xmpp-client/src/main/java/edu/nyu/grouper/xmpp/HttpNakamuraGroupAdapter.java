@@ -15,6 +15,7 @@ import edu.internet2.middleware.grouperClientExt.org.apache.commons.logging.Log;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppSubject;
 import edu.nyu.grouper.xmpp.api.InitialGroupPropertiesProvider;
 import edu.nyu.grouper.xmpp.api.NakamuraGroupAdapter;
+import edu.nyu.grouper.xmpp.api.GroupIdAdapter;
 import edu.nyu.grouper.xmpp.exceptions.GroupModificationException;
 
 /**
@@ -36,9 +37,11 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	private String password;
 	
 	private InitialGroupPropertiesProvider initialPropertiesProvider;
+	private GroupIdAdapter groupNameAdapter;
 
 	public HttpNakamuraGroupAdapter() {
 		initialPropertiesProvider = new StaticInitialGroupPropertiesProvider();
+		groupNameAdapter = new BaseNakamuraGroupIdAdapter();
 	}
 	
 	/**
@@ -59,9 +62,9 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 */
 	public void configure(HashMap<String, String> properties){
 		try {
-			url = new URL(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_URL, true));
-			username = GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_USERNAME, true);
-			password = GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_PASSWORD, true);
+			setUrl(new URL(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_URL, true)));
+			setUsername(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_USERNAME, true));
+			setPassword(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_PASSWORD, true));
 		}
 		catch (MalformedURLException mfe){
 			log.error("Could not parse the value of " + PROP_KEY_NAKAMURA_URL + " : " 
@@ -76,9 +79,12 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 * @see org.sakaiproject.nakamura.user.servlet.CreateSakaiGroupServlet
 	 */
 	public void createGroup(String groupId, String groupExtension) throws GroupModificationException {
+		
+		String nakamuraGroupName = groupNameAdapter.getNakamuraName(groupExtension);
+
 		HttpClient client = getHttpClient();
 		PostMethod method = new PostMethod(url.toString() + GROUP_CREATE_PATH);
-	    method.addParameter(":name", groupId);
+	    method.addParameter(":name", nakamuraGroupName);
 	    initialPropertiesProvider.addProperties(groupId, groupExtension, method);
 
 	    try{
@@ -87,17 +93,17 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 
 	    	switch (returnCode){
 			case HttpStatus.SC_OK:
-				log.debug("SUCCESS: created a group for " + groupId);
+				log.debug("SUCCESS: created a group for " + nakamuraGroupName);
 				break;
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-				log.debug("FAILURE: Unable to create a group for " + groupId + ". Received an HTTP 500 response.");
+				log.debug("FAILURE: Unable to create a group for " + nakamuraGroupName + ". Received an HTTP 500 response.");
 				break;
 			case HttpStatus.SC_FORBIDDEN:
-				log.debug("FAILURE: Unable to create a group for " + groupId
+				log.debug("FAILURE: Unable to create a group for " + nakamuraGroupName
 						+ ". Received an HTTP 403 Forbidden. Check the username and password.");
 				break;
 			default:
-				log.error("FAILURE: Unable to create a group for " + groupId
+				log.error("FAILURE: Unable to create a group for " + nakamuraGroupName
 						+ "Unhandled reponse code : " + returnCode);
 				break;
 	    	}
@@ -113,8 +119,11 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 * curl -Fgo=1 http://localhost:8080/system/userManager/group/groupId.delete.html
 	 */
 	public void deleteGroup(String groupId, String groupExtension) throws GroupModificationException {
+		
+		String nakamuraGroupName = groupNameAdapter.getNakamuraName(groupExtension);
+
 		HttpClient client = getHttpClient();
-	    PostMethod method = new PostMethod(url.toString() + getDeletePath(groupId));
+	    PostMethod method = new PostMethod(url.toString() + getDeletePath(nakamuraGroupName));
 	    method.addParameter("go", "1");
 
 	    try{
@@ -123,17 +132,17 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 
 	    	switch (returnCode){
 			case HttpStatus.SC_OK:
-	    			log.debug("SUCCESS: deleted group " + groupId);
+	    			log.debug("SUCCESS: deleted group " + nakamuraGroupName);
 	    			break;	
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-				log.debug("FAILURE: Unable to delete group " + groupId + ". Received an HTTP 500 response.");
+				log.debug("FAILURE: Unable to delete group " + nakamuraGroupName + ". Received an HTTP 500 response.");
 				break;
 			case HttpStatus.SC_FORBIDDEN:
-				log.debug("FAILURE: Unable to create a group for " + groupId
+				log.debug("FAILURE: Unable to create a group for " + nakamuraGroupName
 						+ ". Received an HTTP 403 Forbidden. Check the username and password.");
 				break;
 			default:
-				log.error("FAILURE: Unable to delete group " + groupId
+				log.error("FAILURE: Unable to delete group " + nakamuraGroupName
 		    				+ "Unhandled reponse code : " + returnCode);
 				break;
 	    	}
@@ -164,10 +173,11 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 */
 	public void deleteMembership(String groupId, String groupExtension, GrouperClientXmppSubject subject)
 			throws GroupModificationException {
-		PostMethod method = new PostMethod(url.toString() + getUpdatePath(groupId));
+		String nakamuraGroupName = groupNameAdapter.getNakamuraName(groupExtension);
+		PostMethod method = new PostMethod(url.toString() + getUpdatePath(nakamuraGroupName));
 	    method.addParameter(":member@Delete", subject.getSourceId());
-	    if (updateGroupMembership(groupId, subject.getSubjectId(), method)){
-	    	log.info("SUCCESS: deleted subjectId=" + subject.getSourceId() + " from group=" + groupId );
+	    if (updateGroupMembership(nakamuraGroupName, subject.getSubjectId(), method)){
+	    	log.info("SUCCESS: deleted subjectId=" + subject.getSourceId() + " from group=" + nakamuraGroupName );
 	    }
 	}
 
@@ -227,8 +237,8 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 		HttpClient client = new HttpClient();
 		HttpState state = client.getState();
 		state.setCredentials(
-				new AuthScope(url.getHost(), getPort(), null, null),
-				new UsernamePasswordCredentials(username, password));
+			new AuthScope(url.getHost(), getPort(url), null, null),
+			new UsernamePasswordCredentials(getUsername(), getPassword()));
 		client.getParams().setParameter("http.useragent", "HttpNakamuraGroupAdapter");
 		return client;
 	}
@@ -238,7 +248,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 * This function uses the default HTTP/s ports  
 	 * @return the port for this.url. 80 or 433 if not specified.
 	 */
-	private int getPort(){
+	private int getPort(URL url){
 		int port = url.getPort();
 		if (port == -1){
 			if (url.getProtocol().equals("http")){
@@ -248,6 +258,31 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 				port = 443;
 			}
 		}
+		log.debug("port = " + port);
 		return port;
+	}
+	
+	public URL getUrl() {
+		return url;
+	}
+
+	public void setUrl(URL url) {
+		this.url = url;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }
