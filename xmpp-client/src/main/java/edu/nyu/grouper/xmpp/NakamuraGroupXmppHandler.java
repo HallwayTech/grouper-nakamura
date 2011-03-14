@@ -32,7 +32,7 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 	 * @param groupExtension the stem:groupName from grouper.
 	 * @param newSubjectList the list of subjects in the group.
 	 * @param previousSubjectList 
-	 * @param changeSubject the subjectId that is the target of this actionm
+	 * @param changeSubject the subjectId that is the target of this action
 	 * @param action The type of action we're responding to
 	 */
 	public void handleIncremental(GrouperClientXmppJob grouperClientXmppJob,
@@ -42,6 +42,7 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 			GrouperClientXmppSubject changeSubject, String action) {
 		
 		try {
+			log.debug("action=" + action + " groupName=" + groupName + " groupExtension=" + groupExtension + "changeSubject=" + changeSubject.getName());
 			
 			if (GrouperClientUtils.equals(action, "MEMBERSHIP_ADD")) {
 			    groupAdapter.addMembership(groupName, groupExtension, changeSubject);
@@ -75,7 +76,6 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 			String groupName, String groupExtension,
 			List<GrouperClientXmppSubject> newSubjectList) {
 		// TODO Auto-generated method stub
-
 	}
 
 }
