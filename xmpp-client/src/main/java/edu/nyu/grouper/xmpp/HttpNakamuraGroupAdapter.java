@@ -237,9 +237,10 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 		HttpClient client = new HttpClient();
 		HttpState state = client.getState();
 		state.setCredentials(
-			new AuthScope(url.getHost(), getPort(url), null, null),
+			new AuthScope(getUrl().getHost(), getPort(getUrl())),
 			new UsernamePasswordCredentials(getUsername(), getPassword()));
-		client.getParams().setParameter("http.useragent", "HttpNakamuraGroupAdapter");
+		client.getParams().setAuthenticationPreemptive(true);
+		client.getParams().setParameter("http.useragent", this.getClass().getName());
 		return client;
 	}
 
