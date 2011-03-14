@@ -25,7 +25,7 @@ public class SimpleLoggingHandler implements GrouperClientXmppHandler {
 						"\n groupName = " + groupName +
 						"\n groupExtension = " + groupExtension +
 						"\n previousSubjectList = " + SimpleLoggingHandler.joinSubjectIds(previousSubjectList) +
-						"\n, newSubjectList = " + SimpleLoggingHandler.joinSubjectIds(newSubjectList) +
+						"\n newSubjectList = " + SimpleLoggingHandler.joinSubjectIds(newSubjectList) +
 						"\n changeSubject = " + changeSubject.getSubjectId() +
 						"\n action = " + action);
 		}

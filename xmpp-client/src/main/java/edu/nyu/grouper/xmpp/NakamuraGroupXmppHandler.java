@@ -42,7 +42,7 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 			GrouperClientXmppSubject changeSubject, String action) {
 		
 		try {
-			log.debug("action=" + action + " groupName=" + groupName + " groupExtension=" + groupExtension + "changeSubject=" + changeSubject.getName());
+			log.debug("action=" + action + " groupName=" + groupName + " groupExtension=" + groupExtension + " changeSubject=" + changeSubject.getName());
 			
 			if (GrouperClientUtils.equals(action, "MEMBERSHIP_ADD")) {
 			    groupAdapter.addMembership(groupName, groupExtension, changeSubject);
