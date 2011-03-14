@@ -11,6 +11,13 @@ public class StaticInitialGroupPropertiesProvider implements InitialGroupPropert
 
 	public void addProperties(String groupId, String groupExtension,
 			PostMethod method) {
+		
+		method.addParameter("sakai:group-id", groupExtension);
+		method.addParameter("sakai:group-title", groupExtension);
+		method.addParameter("sakai:group-description", "Created by Grouper");
+		method.addParameter("sakai:pages-template", "/var/templates/site/defaultgroup");
+		
+		// Authorizations
 		method.addParameter("group-joinable", "no");
 		method.addParameter("group-visible", "members-only");
 		method.addParameter("sakai:pages-visible", "members-only");
