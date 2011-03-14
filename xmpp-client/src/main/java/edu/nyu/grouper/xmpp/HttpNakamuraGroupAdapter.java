@@ -80,7 +80,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 */
 	public void createGroup(String groupId, String groupExtension) throws GroupModificationException {
 		
-		String nakamuraGroupName = groupNameAdapter.getNakamuraName(groupExtension);
+		String nakamuraGroupName = groupNameAdapter.getNakamuraName(groupId);
 
 		HttpClient client = getHttpClient();
 		PostMethod method = new PostMethod(url.toString() + GROUP_CREATE_PATH);
@@ -120,7 +120,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 */
 	public void deleteGroup(String groupId, String groupExtension) throws GroupModificationException {
 		
-		String nakamuraGroupName = groupNameAdapter.getNakamuraName(groupExtension);
+		String nakamuraGroupName = groupNameAdapter.getNakamuraName(groupId);
 
 		HttpClient client = getHttpClient();
 	    PostMethod method = new PostMethod(url.toString() + getDeletePath(nakamuraGroupName));
