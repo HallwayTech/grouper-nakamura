@@ -89,7 +89,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 
 	    try{
 	    	int returnCode = client.executeMethod(method);
-	    	method.getResponseBodyAsString();
+	    	method.getResponseBodyAsStream();
 
 	    	switch (returnCode){
 			case HttpStatus.SC_OK:
@@ -128,7 +128,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 
 	    try{
 	    	int returnCode = client.executeMethod(method);
-	    	method.getResponseBodyAsString();
+	    	method.getResponseBodyAsStream();
 
 	    	switch (returnCode){
 			case HttpStatus.SC_OK:
@@ -193,7 +193,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	    boolean success = false;
 	    try{
 	    	int returnCode = client.executeMethod(method);
-	    	method.getResponseBodyAsString();
+	    	method.getResponseBodyAsStream();
 
 	    	switch (returnCode){
 			case HttpStatus.SC_OK:
