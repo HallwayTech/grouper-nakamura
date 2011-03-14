@@ -90,8 +90,11 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 				log.debug("SUCCESS: created a group for " + groupId);
 				break;
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+				log.debug("FAILURE: Unable to create a group for " + groupId + ". Received an HTTP 500 response.");
+				break;
+			case HttpStatus.SC_FORBIDDEN:
 				log.debug("FAILURE: Unable to create a group for " + groupId
-						+ ". HTTP response code : " + returnCode);
+						+ ". Received an HTTP 403 Forbidden. Check the username and password.");
 				break;
 			default:
 				log.error("FAILURE: Unable to create a group for " + groupId
@@ -123,8 +126,11 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	    			log.debug("SUCCESS: deleted group " + groupId);
 	    			break;	
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-				log.debug("FAILURE: Unable to delete group " + groupId
-		    				+ ". We received the HTTP response code : " + returnCode );
+				log.debug("FAILURE: Unable to delete group " + groupId + ". Received an HTTP 500 response.");
+				break;
+			case HttpStatus.SC_FORBIDDEN:
+				log.debug("FAILURE: Unable to create a group for " + groupId
+						+ ". Received an HTTP 403 Forbidden. Check the username and password.");
 				break;
 			default:
 				log.error("FAILURE: Unable to delete group " + groupId
@@ -190,6 +196,10 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 			case HttpStatus.SC_NOT_FOUND:
 				log.error("FAILURE: Nakamura reported that the group "
 						+ groupId + " does not exist");
+				break;
+			case HttpStatus.SC_FORBIDDEN:
+				log.debug("FAILURE: Unable to modify group  " + groupId
+						+ ". Received an HTTP 403 Forbidden. Check the username and password.");
 				break;
 			default:
 				log.error("FAILURE: Unable to modify subject membership: subject=" + subjectId 
