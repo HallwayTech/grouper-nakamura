@@ -13,6 +13,8 @@ import edu.internet2.middleware.grouperClientExt.org.apache.commons.httpclient.a
 import edu.internet2.middleware.grouperClientExt.org.apache.commons.httpclient.methods.PostMethod;
 import edu.internet2.middleware.grouperClientExt.org.apache.commons.logging.Log;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppSubject;
+import edu.nyu.grouper.xmpp.api.InitialGroupPropertiesProvider;
+import edu.nyu.grouper.xmpp.api.NakamuraGroupAdapter;
 import edu.nyu.grouper.xmpp.exceptions.GroupModificationException;
 
 /**
@@ -32,8 +34,11 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	private URL url;
 	private String username;
 	private String password;
+	
+	private InitialGroupPropertiesProvider initialPropertiesProvider;
 
 	public HttpNakamuraGroupAdapter() {
+		initialPropertiesProvider = new StaticInitialGroupPropertiesProvider();
 	}
 	
 	/**
@@ -74,6 +79,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 		HttpClient client = getHttpClient();
 		PostMethod method = new PostMethod(url.toString() + GROUP_CREATE_PATH);
 	    method.addParameter(":name", groupId);
+	    initialPropertiesProvider.addProperties(groupId, groupExtension, method);
 
 	    try{
 	    	int returnCode = client.executeMethod(method);
