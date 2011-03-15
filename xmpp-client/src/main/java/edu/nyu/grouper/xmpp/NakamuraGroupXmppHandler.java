@@ -1,6 +1,5 @@
 package edu.nyu.grouper.xmpp;
 
-import java.util.HashMap;
 import java.util.List;
 
 import edu.internet2.middleware.grouperClient.util.GrouperClientUtils;
@@ -8,7 +7,6 @@ import edu.internet2.middleware.grouperClientExt.org.apache.commons.logging.Log;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppHandler;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppJob;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppSubject;
-import edu.nyu.grouper.xmpp.api.NakamuraGroupAdapter;
 import edu.nyu.grouper.xmpp.exceptions.GroupModificationException;
 
 /**
@@ -31,6 +29,8 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 		groupAdapter.setUrl(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_URL, true));
 		groupAdapter.setUsername(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_USERNAME, true));
 		groupAdapter.setPassword(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_PASSWORD, true));
+		groupAdapter.setInitialPropertiesProvider(new StaticInitialGroupPropertiesProvider());
+		groupAdapter.setGroupIdAdapter(new BaseNakamuraGroupIdAdapter());
 	}
 
 	/**

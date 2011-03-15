@@ -1,7 +1,3 @@
-/*
- * @author mchyzer
- * $Id: PrintTest.java,v 1.1 2009-06-10 05:31:35 mchyzer Exp $
- */
 package edu.nyu.grouper.esb;
 
 import java.util.List;
@@ -15,11 +11,12 @@ import edu.internet2.middleware.grouper.changeLog.ChangeLogProcessorMetadata;
 import edu.internet2.middleware.grouper.changeLog.ChangeLogLabels;
 import edu.internet2.middleware.grouper.changeLog.ChangeLogTypeBuiltin;
 import edu.internet2.middleware.grouper.util.GrouperUtil;
+import edu.nyu.grouper.xmpp.BaseNakamuraGroupIdAdapter;
 import edu.nyu.grouper.xmpp.HttpNakamuraGroupAdapter;
-import edu.nyu.grouper.xmpp.api.NakamuraGroupAdapter;
+import edu.nyu.grouper.xmpp.StaticInitialGroupPropertiesProvider;
 
 /**
- * Process changelog entries and update group information in sakai3-nakamura 
+ * Process changelog entries and update group information in sakai3-nakamura
  */
 public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 
@@ -33,6 +30,8 @@ public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 		nakamuraGroupAdapter.setUrl(GrouperLoaderConfig.getPropertyString("nakamura.url", true));
 		nakamuraGroupAdapter.setUsername(GrouperLoaderConfig.getPropertyString("nakamura.username", true));
 		nakamuraGroupAdapter.setPassword(GrouperLoaderConfig.getPropertyString("nakamura.password", true));
+		nakamuraGroupAdapter.setInitialPropertiesProvider(new StaticInitialGroupPropertiesProvider());
+		nakamuraGroupAdapter.setGroupIdAdapter(new BaseNakamuraGroupIdAdapter());
 	}
 
 	/**
