@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 
+import edu.internet2.middleware.grouper.app.loader.GrouperLoaderConfig;
 import edu.internet2.middleware.grouper.changeLog.ChangeLogConsumerBase;
 import edu.internet2.middleware.grouper.changeLog.ChangeLogEntry;
 import edu.internet2.middleware.grouper.changeLog.ChangeLogProcessorMetadata;
@@ -24,11 +25,14 @@ public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 
 	private static Log log = GrouperUtil.getLog(ChangeLogConsumerBase.class);
 	
-	private NakamuraGroupAdapter nakamuraGroupAdapter;
+	private HttpNakamuraGroupAdapter nakamuraGroupAdapter;
 	
 	public NakamuraEsbConsumer(){
 		super();
 		nakamuraGroupAdapter = new HttpNakamuraGroupAdapter();
+		nakamuraGroupAdapter.setUrl(GrouperLoaderConfig.getPropertyString("nakamura.url", true));
+		nakamuraGroupAdapter.setUsername(GrouperLoaderConfig.getPropertyString("nakamura.username", true));
+		nakamuraGroupAdapter.setPassword(GrouperLoaderConfig.getPropertyString("nakamura.password", true));
 	}
 
 	/**
@@ -100,11 +104,11 @@ public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 		return currentId;
 	}
 
-	public NakamuraGroupAdapter getNakamuraGroupAdapter() {
+	public HttpNakamuraGroupAdapter getNakamuraGroupAdapter() {
 		return nakamuraGroupAdapter;
 	}
 
-	public void setNakamuraGroupAdapter(NakamuraGroupAdapter nakamuraGroupAdapter) {
+	public void setNakamuraGroupAdapter(HttpNakamuraGroupAdapter nakamuraGroupAdapter) {
 		this.nakamuraGroupAdapter = nakamuraGroupAdapter;
 	}
 }
