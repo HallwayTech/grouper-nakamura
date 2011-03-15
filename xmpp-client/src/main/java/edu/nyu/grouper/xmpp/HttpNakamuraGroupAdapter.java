@@ -36,8 +36,6 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	private GroupIdAdapter groupIdAdapter;
 
 	public HttpNakamuraGroupAdapter() {
-		initialPropertiesProvider = new StaticInitialGroupPropertiesProvider();
-		groupIdAdapter = new BaseNakamuraGroupIdAdapter();
 	}
 
 	/**
@@ -59,13 +57,13 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 
 	    	switch (returnCode){
 			case HttpStatus.SC_OK:
-				log.debug("SUCCESS: created a group for " + nakamuraGroupName);
+				log.info("SUCCESS: created a group for " + nakamuraGroupName);
 				break;
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-				log.debug("FAILURE: Unable to create a group for " + nakamuraGroupName + ". Received an HTTP 500 response.");
+				log.error("FAILURE: Unable to create a group for " + nakamuraGroupName + ". Received an HTTP 500 response.");
 				break;
 			case HttpStatus.SC_FORBIDDEN:
-				log.debug("FAILURE: Unable to create a group for " + nakamuraGroupName
+				log.error("FAILURE: Unable to create a group for " + nakamuraGroupName
 						+ ". Received an HTTP 403 Forbidden. Check the username and password.");
 				break;
 			default:
@@ -99,13 +97,13 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	    	switch (returnCode){
 			case HttpStatus.SC_OK:
 			case HttpStatus.SC_CREATED:
-	    			log.debug("SUCCESS: deleted group " + nakamuraGroupName);
+	    			log.info("SUCCESS: deleted group " + nakamuraGroupName);
 	    			break;	
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-				log.debug("FAILURE: Unable to delete group " + nakamuraGroupName + ". Received an HTTP 500 response.");
+				log.error("FAILURE: Unable to delete group " + nakamuraGroupName + ". Received an HTTP 500 response.");
 				break;
 			case HttpStatus.SC_FORBIDDEN:
-				log.debug("FAILURE: Unable to create a group for " + nakamuraGroupName
+				log.error("FAILURE: Unable to create a group for " + nakamuraGroupName
 						+ ". Received an HTTP 403 Forbidden. Check the username and password.");
 				break;
 			default:
@@ -201,6 +199,10 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 		return GROUP_UPDATE_PATH_PREFIX + groupId + ".delete.html";
 	}
 
+	/**
+	 * Construct an {@link HttpClient} which is configured to authenticate to Nakamura.
+	 * @return the configured client.
+	 */
 	private HttpClient getHttpClient(){
 		HttpClient client = new HttpClient();
 		HttpState state = client.getState();
@@ -209,7 +211,6 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 			new UsernamePasswordCredentials(getUsername(), getPassword()));
 		client.getParams().setAuthenticationPreemptive(true);
 		client.getParams().setParameter("http.useragent", this.getClass().getName());
-	
 		return client;
 	}
 
@@ -237,7 +238,15 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 		}
 	}
 	
-	
+	public void setInitialPropertiesProvider(
+			InitialGroupPropertiesProvider initialPropertiesProvider) {
+		this.initialPropertiesProvider = initialPropertiesProvider;
+	}
+
+	public void setGroupIdAdapter(GroupIdAdapter groupIdAdapter) {
+		this.groupIdAdapter = groupIdAdapter;
+	}
+
 	public URL getUrl() {
 		return url;
 	}
