@@ -2,17 +2,16 @@ package edu.nyu.grouper.xmpp;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 
-import edu.internet2.middleware.grouperClient.util.GrouperClientUtils;
-import edu.internet2.middleware.grouperClientExt.org.apache.commons.httpclient.HttpClient;
-import edu.internet2.middleware.grouperClientExt.org.apache.commons.httpclient.HttpState;
-import edu.internet2.middleware.grouperClientExt.org.apache.commons.httpclient.HttpStatus;
-import edu.internet2.middleware.grouperClientExt.org.apache.commons.httpclient.UsernamePasswordCredentials;
-import edu.internet2.middleware.grouperClientExt.org.apache.commons.httpclient.auth.AuthScope;
-import edu.internet2.middleware.grouperClientExt.org.apache.commons.httpclient.methods.PostMethod;
-import edu.internet2.middleware.grouperClientExt.org.apache.commons.logging.Log;
-import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppSubject;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpState;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import edu.nyu.grouper.xmpp.api.InitialGroupPropertiesProvider;
 import edu.nyu.grouper.xmpp.api.NakamuraGroupAdapter;
 import edu.nyu.grouper.xmpp.api.GroupIdAdapter;
@@ -23,11 +22,7 @@ import edu.nyu.grouper.xmpp.exceptions.GroupModificationException;
  */
 public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	
-	private Log log = GrouperClientUtils.retrieveLog(HttpNakamuraGroupAdapter.class);
-	
-	private static String PROP_KEY_NAKAMURA_URL = "grouperClient.xmpp.nakamura.url";
-	private static String PROP_KEY_NAKAMURA_USERNAME = "grouperClient.xmpp.nakamura.username";
-	private static String PROP_KEY_NAKAMURA_PASSWORD = "grouperClient.xmpp.nakamura.password";
+	private Log log = LogFactory.getLog(HttpNakamuraGroupAdapter.class);
 	
 	private static String GROUP_CREATE_PATH = "/system/userManager/group.create.html";
 	private static String GROUP_UPDATE_PATH_PREFIX = "/system/userManager/group/";
@@ -37,41 +32,11 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	private String password;
 	
 	private InitialGroupPropertiesProvider initialPropertiesProvider;
-	private GroupIdAdapter groupNameAdapter;
+	private GroupIdAdapter groupIdAdapter;
 
 	public HttpNakamuraGroupAdapter() {
 		initialPropertiesProvider = new StaticInitialGroupPropertiesProvider();
-		groupNameAdapter = new BaseNakamuraGroupIdAdapter();
-	}
-	
-	/**
-	 * Read in config values from $GROUPER_CLIENT_HOME/conf/grouper.client.properties
-	 * @throws MalformedURLException 
-	 */
-	public void configure() {
-		HashMap<String, String> properties = new HashMap<String, String>();
-		properties.put("url", GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_URL, true));
-		properties.put("username", GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_USERNAME, true));
-		properties.put("password", GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_PASSWORD, true));
-		configure(properties);
-	}
-
-	/**
-	 * Configure using a HashMap
-	 * @param properties
-	 */
-	public void configure(HashMap<String, String> properties){
-		try {
-			setUrl(new URL(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_URL, true)));
-			setUsername(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_USERNAME, true));
-			setPassword(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_PASSWORD, true));
-		}
-		catch (MalformedURLException mfe){
-			log.error("Could not parse the value of " + PROP_KEY_NAKAMURA_URL + " : " 
-					+ GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_URL, false) );
-			throw new RuntimeException(mfe.toString());
-		}
-		
+		groupIdAdapter = new BaseNakamuraGroupIdAdapter();
 	}
 
 	/**
@@ -80,7 +45,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 */
 	public void createGroup(String groupId, String groupExtension) throws GroupModificationException {
 		
-		String nakamuraGroupName = groupNameAdapter.getNakamuraName(groupId);
+		String nakamuraGroupName = groupIdAdapter.getNakamuraName(groupId);
 
 		HttpClient client = getHttpClient();
 		PostMethod method = new PostMethod(url.toString() + GROUP_CREATE_PATH);
@@ -120,7 +85,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 */
 	public void deleteGroup(String groupId, String groupExtension) throws GroupModificationException {
 		
-		String nakamuraGroupName = groupNameAdapter.getNakamuraName(groupId);
+		String nakamuraGroupName = groupIdAdapter.getNakamuraName(groupId);
 
 		HttpClient client = getHttpClient();
 	    PostMethod method = new PostMethod(url.toString() + getDeletePath(nakamuraGroupName));
@@ -173,7 +138,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 */
 	public void deleteMembership(String groupId, String groupExtension, String subjectId)
 			throws GroupModificationException {
-		String nakamuraGroupName = groupNameAdapter.getNakamuraName(groupExtension);
+		String nakamuraGroupName = groupIdAdapter.getNakamuraName(groupExtension);
 		PostMethod method = new PostMethod(url.toString() + getUpdatePath(nakamuraGroupName));
 	    method.addParameter(":member@Delete", subjectId);
 	    if (updateGroupMembership(nakamuraGroupName, subjectId, method)){
@@ -267,6 +232,16 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 		return url;
 	}
 
+	public void setUrl(String urlString){
+		try {
+			setUrl(new URL(urlString));
+		}
+		catch (MalformedURLException mfe){
+			log.error("Could not parse " + urlString + "into a String");
+			throw new RuntimeException(mfe.toString());
+		}
+	}
+	
 	public void setUrl(URL url) {
 		this.url = url;
 	}
