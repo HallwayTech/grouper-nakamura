@@ -1,6 +1,6 @@
 package edu.nyu.grouper.xmpp.api;
 
-import edu.internet2.middleware.grouperClientExt.org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 
 /**
  * Provide a NakamuraGroupAdapter with a list of initial properties for a Group.

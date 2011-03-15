@@ -1,6 +1,6 @@
 package edu.nyu.grouper.xmpp;
 
-import edu.internet2.middleware.grouperClientExt.org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import edu.nyu.grouper.xmpp.api.InitialGroupPropertiesProvider;
 
 /**

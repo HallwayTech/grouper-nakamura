@@ -3,11 +3,13 @@ package edu.nyu.grouper.xmpp;
 import java.util.HashMap;
 
 import edu.internet2.middleware.grouperClient.util.GrouperClientUtils;
-import edu.internet2.middleware.grouperClientExt.org.apache.commons.httpclient.methods.PostMethod;
 import edu.nyu.grouper.xmpp.api.InitialGroupPropertiesProvider;
+
+import org.apache.commons.httpclient.methods.PostMethod;
 
 /**
  * Read the list of initial group properties from the grouperClient.properties file.
+ * Add the properties to the PostMethod
  * This is a temporary approach until we can pull the desired group properties from sakai3.
  * @author Erik Froese
  */
