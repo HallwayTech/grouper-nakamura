@@ -98,6 +98,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 
 	    	switch (returnCode){
 			case HttpStatus.SC_OK:
+			case HttpStatus.SC_CREATED:
 	    			log.debug("SUCCESS: deleted group " + nakamuraGroupName);
 	    			break;	
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
@@ -232,8 +233,8 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	}
 	
 	public void logUnhandledResponse(int responseCode, InputStream response){
-		if (log.isDebugEnabled()){
-			log.debug("Unhandled response. code=" + responseCode + "\nResponse: " + response.toString());
+		if (log.isErrorEnabled()){
+			log.error("Unhandled response. code=" + responseCode + "\nResponse: " + response.toString());
 		}
 	}
 	
