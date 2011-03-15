@@ -1,5 +1,6 @@
 package edu.nyu.grouper.xmpp;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -10,6 +11,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -234,7 +236,12 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	
 	public void logUnhandledResponse(int responseCode, InputStream response){
 		if (log.isErrorEnabled()){
-			log.error("Unhandled response. code=" + responseCode + "\nResponse: " + response.toString());
+			try {
+				log.error("Unhandled response. code=" + responseCode + "\nResponse: " + IOUtils.toString(response));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				log.error("Error reading the response", e);
+			}
 		}
 	}
 	
