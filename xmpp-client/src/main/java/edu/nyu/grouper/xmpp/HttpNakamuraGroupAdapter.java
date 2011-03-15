@@ -228,7 +228,6 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 				port = 443;
 			}
 		}
-		log.debug("port = " + port);
 		return port;
 	}
 	
