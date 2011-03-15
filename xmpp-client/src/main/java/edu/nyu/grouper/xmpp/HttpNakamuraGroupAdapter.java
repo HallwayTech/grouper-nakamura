@@ -1,5 +1,6 @@
 package edu.nyu.grouper.xmpp;
 
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -45,7 +46,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 */
 	public void createGroup(String groupId, String groupExtension) throws GroupModificationException {
 		
-		String nakamuraGroupName = groupIdAdapter.getNakamuraName(groupId);
+		String nakamuraGroupName = groupIdAdapter.getNakamuraName(groupExtension);
 
 		HttpClient client = getHttpClient();
 		PostMethod method = new PostMethod(url.toString() + GROUP_CREATE_PATH);
@@ -54,7 +55,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 
 	    try{
 	    	int returnCode = client.executeMethod(method);
-	    	method.getResponseBodyAsStream();
+	    	InputStream reponse = method.getResponseBodyAsStream();
 
 	    	switch (returnCode){
 			case HttpStatus.SC_OK:
@@ -68,8 +69,8 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 						+ ". Received an HTTP 403 Forbidden. Check the username and password.");
 				break;
 			default:
-				log.error("FAILURE: Unable to create a group for " + nakamuraGroupName
-						+ "Unhandled reponse code : " + returnCode);
+				log.error("FAILURE: Unable to create a group for " + nakamuraGroupName);
+				logUnhandledResponse(returnCode, reponse);
 				break;
 	    	}
 	    } catch (Exception e) {
@@ -85,7 +86,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 */
 	public void deleteGroup(String groupId, String groupExtension) throws GroupModificationException {
 		
-		String nakamuraGroupName = groupIdAdapter.getNakamuraName(groupId);
+		String nakamuraGroupName = groupIdAdapter.getNakamuraName(groupExtension);
 
 		HttpClient client = getHttpClient();
 	    PostMethod method = new PostMethod(url.toString() + getDeletePath(nakamuraGroupName));
@@ -93,7 +94,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 
 	    try{
 	    	int returnCode = client.executeMethod(method);
-	    	method.getResponseBodyAsStream();
+	    	InputStream response = method.getResponseBodyAsStream();
 
 	    	switch (returnCode){
 			case HttpStatus.SC_OK:
@@ -107,8 +108,8 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 						+ ". Received an HTTP 403 Forbidden. Check the username and password.");
 				break;
 			default:
-				log.error("FAILURE: Unable to delete group " + nakamuraGroupName
-		    				+ "Unhandled reponse code : " + returnCode);
+				log.error("FAILURE: Unable to delete group " + nakamuraGroupName);
+				logUnhandledResponse(returnCode, response);
 				break;
 	    	}
 	    } catch (Exception e) {
@@ -158,7 +159,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	    boolean success = false;
 	    try{
 	    	int returnCode = client.executeMethod(method);
-	    	method.getResponseBodyAsStream();
+	    	InputStream reponse = method.getResponseBodyAsStream();
 
 	    	switch (returnCode){
 			case HttpStatus.SC_OK:
@@ -178,7 +179,8 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 				break;
 			default:
 				log.error("FAILURE: Unable to modify subject membership: subject=" + subjectId 
-						+ " group=" + groupId + ". Unhandled reponse code : " + returnCode);
+						+ " group=" + groupId);
+				logUnhandledResponse(returnCode, reponse);
 				break;
 	    	}
 	    } catch (Exception e) {
@@ -206,6 +208,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 			new UsernamePasswordCredentials(getUsername(), getPassword()));
 		client.getParams().setAuthenticationPreemptive(true);
 		client.getParams().setParameter("http.useragent", this.getClass().getName());
+	
 		return client;
 	}
 
@@ -227,6 +230,13 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 		log.debug("port = " + port);
 		return port;
 	}
+	
+	public void logUnhandledResponse(int responseCode, InputStream response){
+		if (log.isDebugEnabled()){
+			log.debug("Unhandled response. code=" + responseCode + "\nResponse: " + response.toString());
+		}
+	}
+	
 	
 	public URL getUrl() {
 		return url;
