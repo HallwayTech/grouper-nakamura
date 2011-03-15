@@ -158,12 +158,12 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 * Add a subjectId to a group by POSTing to:
 	 * http://localhost:8080/system/userManager/group/groupId.update.html :member=subjectId
 	 */
-	public void addMembership(String groupId, String groupExtension, GrouperClientXmppSubject subject)
+	public void addMembership(String groupId, String groupExtension, String subjectId)
 			throws GroupModificationException {
 		PostMethod method = new PostMethod(url.toString() + getUpdatePath(groupId));
-	    method.addParameter(":member", subject.getSourceId());
-	    if (updateGroupMembership(groupId, subject.getSubjectId(), method)){
-	    	log.info("SUCCESS: add subjectId=" + subject.getSourceId() + " to group=" + groupId );
+	    method.addParameter(":member", subjectId);
+	    if (updateGroupMembership(groupId, subjectId, method)){
+	    	log.info("SUCCESS: add subjectId=" + subjectId + " to group=" + groupId );
 	    }
 	}
 
@@ -171,13 +171,13 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 * Delete a subjectId from a group by POSTing to:
 	 * http://localhost:8080/system/userManager/group/groupId.update.html :member=subjectId
 	 */
-	public void deleteMembership(String groupId, String groupExtension, GrouperClientXmppSubject subject)
+	public void deleteMembership(String groupId, String groupExtension, String subjectId)
 			throws GroupModificationException {
 		String nakamuraGroupName = groupNameAdapter.getNakamuraName(groupExtension);
 		PostMethod method = new PostMethod(url.toString() + getUpdatePath(nakamuraGroupName));
-	    method.addParameter(":member@Delete", subject.getSourceId());
-	    if (updateGroupMembership(nakamuraGroupName, subject.getSubjectId(), method)){
-	    	log.info("SUCCESS: deleted subjectId=" + subject.getSourceId() + " from group=" + nakamuraGroupName );
+	    method.addParameter(":member@Delete", subjectId);
+	    if (updateGroupMembership(nakamuraGroupName, subjectId, method)){
+	    	log.info("SUCCESS: deleted subjectId=" + subjectId + " from group=" + nakamuraGroupName );
 	    }
 	}
 

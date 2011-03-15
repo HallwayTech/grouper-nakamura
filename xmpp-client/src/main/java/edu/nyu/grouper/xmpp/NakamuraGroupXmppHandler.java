@@ -45,10 +45,10 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 			log.debug("action=" + action + " groupName=" + groupName + " groupExtension=" + groupExtension + " changeSubject=" + changeSubject.getName());
 			
 			if (GrouperClientUtils.equals(action, "MEMBERSHIP_ADD")) {
-			    groupAdapter.addMembership(groupName, groupExtension, changeSubject);
+			    groupAdapter.addMembership(groupName, groupExtension, changeSubject.getSubjectId());
 			} 
 			else if (GrouperClientUtils.equals(action, "MEMBERSHIP_DELETE")) {
-				groupAdapter.deleteMembership(groupName, groupExtension, changeSubject);
+				groupAdapter.deleteMembership(groupName, groupExtension, changeSubject.getSubjectId());
 			} 
 			else if (GrouperClientUtils.equals(action, "GROUP_ADD")) {
 				groupAdapter.createGroup(groupName, groupExtension);

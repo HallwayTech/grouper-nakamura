@@ -25,7 +25,7 @@ public interface NakamuraGroupAdapter {
 	 * @param subject
 	 * @throws GroupModificationException
 	 */
-	public void addMembership(String groupId, String groupExtension, GrouperClientXmppSubject subject) throws GroupModificationException;
+	public void addMembership(String groupId, String groupExtension, String subjectId) throws GroupModificationException;
 	
 	/**
 	 * Remove a subject from a group.
@@ -33,7 +33,7 @@ public interface NakamuraGroupAdapter {
 	 * @param subject
 	 * @throws GroupModificationException
 	 */
-	public void deleteMembership(String groupId, String groupExtension, GrouperClientXmppSubject subject) throws GroupModificationException;
+	public void deleteMembership(String groupId, String groupExtension, String subjectId) throws GroupModificationException;
 
 	/** 
 	 * Load configuration from grouper.client.properties. 

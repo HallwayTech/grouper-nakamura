@@ -29,5 +29,12 @@
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
+    <dependency>
+    	<groupId>edu.internet2.middleware.grouper</groupId>
+    	<artifactId>grouper</artifactId>
+    	<version>1.6.3</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>
