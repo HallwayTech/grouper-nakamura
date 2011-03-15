@@ -45,6 +45,7 @@
             <Bundle-Category>sakai-nakamura</Bundle-Category>
             <Export-Package></Export-Package>
             <Import-Package>
+		org.osgi.service.event, org.sakaiproject.nakamura.api.lite.util, org.slf4j
             </Import-Package>
           </instructions>
         </configuration>
