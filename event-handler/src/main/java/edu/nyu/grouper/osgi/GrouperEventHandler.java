@@ -4,12 +4,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Dictionary;
 
+import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Modified;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Service;
 import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedService;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
@@ -18,14 +19,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service(value = EventHandler.class)
-@Component(immediate = true)
+@Component(immediate = true, metatype=true)
 @Properties(value = { 
 	@Property(name = EventConstants.EVENT_TOPIC, 
 			value = {
 			"org/sakaiproject/nakamura/lite/authorizables/ADDED",
 			"org/sakaiproject/nakamura/lite/authorizables/DELETE"})
 })
-public class GrouperEventHandler implements EventHandler, ManagedService {
+public class GrouperEventHandler implements EventHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(GrouperEventHandler.class);
 
@@ -69,55 +70,21 @@ public class GrouperEventHandler implements EventHandler, ManagedService {
 	// -------------------------- Configuration Admin --------------------------
 
 	/**
-	 * Called by the Configuration Admin service when a new configuration is 
-	 * detected by Fileinstall
+	 * Called by the Configuration Admin service when a new configuration is detected.
+	 * @see org.osgi.service.cm.ManagedService#updated
 	 */
+	@Activate
+	@Modified
 	@SuppressWarnings("rawtypes")
 	public void updated(Dictionary props) throws ConfigurationException {
 		try {
-			setUrl((String)props.get(PROP_URL));
-			setUsername((String)props.get(PROP_USERNAME));
-			setPassword((String)props.get(PROP_PASSWORD));
-			setBaseStem((String)props.get(PROP_BASESTEM));
+			url = new URL((String)props.get(PROP_URL));
+			username = (String)props.get(PROP_USERNAME);
+			password = (String)props.get(PROP_PASSWORD);
+			baseStem = (String)props.get(PROP_BASESTEM);
 		}
 		catch (MalformedURLException mfe) {
 			throw new ConfigurationException(PROP_URL, mfe.getMessage(), mfe);
 		}
-	}
-
-	public URL getUrl() {
-		return url;
-	}
-
-	public void setUrl(URL url) {
-		this.url = url;
-	}
-
-	public void setUrl(String urlString) throws MalformedURLException {
-		setUrl(new URL(urlString));
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getBaseStem() {
-		return baseStem;
-	}
-
-	public void setBaseStem(String baseStem) {
-		this.baseStem = baseStem;
 	}
 }
