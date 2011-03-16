@@ -44,9 +44,17 @@
           <instructions>
             <Bundle-Category>sakai-nakamura</Bundle-Category>
             <Export-Package></Export-Package>
-            <Import-Package>
-		org.osgi.service.event, org.sakaiproject.nakamura.api.lite.util, org.slf4j
-            </Import-Package>
+            <Embed-Dependency>grouperClient</Embed-Dependency>
+	    <Import-Package>*</Import-Package>
+            <!--Import-Package>
+		org.osgi.service.cm,
+		org.osgi.service.event, 
+		org.sakaiproject.nakamura.api.lite.util, 
+		org.slf4j,
+		org.apache.commons.httpclient,
+		org.apache.commons.httpclient.auth, 
+		org.apache.commons.httpclient.params,
+            </Import-Package-->
           </instructions>
         </configuration>
       </plugin>
@@ -99,7 +107,21 @@
     </dependency>
 
 <!-- test artifacts -->
+    <dependency>
+    	<groupId>commons-httpclient</groupId>
+    	<artifactId>commons-httpclient</artifactId>
+    	<version>3.1</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
 
+    <dependency>
+    	<groupId>edu.internet2.middleware.grouper</groupId>
+    	<artifactId>grouperClient</artifactId>
+    	<version>1.6.3</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
 
   </dependencies>
 </project>
