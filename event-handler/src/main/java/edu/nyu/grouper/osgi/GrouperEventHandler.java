@@ -10,6 +10,7 @@ import org.apache.felix.scr.annotations.Modified;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.commons.osgi.OsgiUtil;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
@@ -78,10 +79,10 @@ public class GrouperEventHandler implements EventHandler {
 	@SuppressWarnings("rawtypes")
 	public void updated(Dictionary props) throws ConfigurationException {
 		try {
-			url = new URL((String)props.get(PROP_URL));
-			username = (String)props.get(PROP_USERNAME);
-			password = (String)props.get(PROP_PASSWORD);
-			baseStem = (String)props.get(PROP_BASESTEM);
+			url = new URL(OsgiUtil.toString(props.get(PROP_URL), DEFAULT_URL));
+			username = OsgiUtil.toString(props.get(PROP_USERNAME), DEFAULT_USERNAME);
+			password = OsgiUtil.toString(props.get(PROP_PASSWORD), DEFAULT_PASSWORD);
+			baseStem = OsgiUtil.toString(props.get(PROP_BASESTEM), DEFAULT_BASESTEM);
 		}
 		catch (MalformedURLException mfe) {
 			throw new ConfigurationException(PROP_URL, mfe.getMessage(), mfe);
