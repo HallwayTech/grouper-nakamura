@@ -1,0 +1,288 @@
+  <!--
+    * Licensed to the Sakai Foundation (SF) under one
+    * or more contributor license agreements. See the NOTICE file
+    * distributed with this work for additional information
+    * regarding copyright ownership. The SF licenses this file
+    * to you under the Apache License, Version 2.0 (the
+    * "License"); you may not use this file except in compliance
+    * with the License. You may obtain a copy of the License at
+    *
+    * http://www.apache.org/licenses/LICENSE-2.0
+    *
+    * Unless required by applicable law or agreed to in writing,
+    * software distributed under the License is distributed on an
+    * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    * KIND, either express or implied. See the License for the
+    * specific language governing permissions and limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<parent>
+		<artifactId>base</artifactId>
+		<groupId>org.sakaiproject.nakamura</groupId>
+		<version>0.10-SNAPSHOT</version>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>edu.internet2.middleware.grouper</groupId>
+	<artifactId>edu.internet2.middleware.grouper.grouper</artifactId>
+	<packaging>bundle</packaging>
+	<name>Grouper :: Grouper API</name>
+	<version>1.6.3</version>
+
+	<repositories>
+		<repository>
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java.net Repository for Maven</name>
+			<url>http://download.java.net/maven/2/</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-scr-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-Category>grouper</Bundle-Category>
+						<Export-Package></Export-Package>
+						<Embed-Dependency>
+						grouper,
+						commons-beanutils,commons-dbcp,commons-digester,
+						dom4j,icu4j,jaxp-ri,jettison,jdom,jaxen,joda-time,
+						junit,mail,mockito-all,quartz,smack,
+						xercesImpl,xml-resolver,xom,xsdlib,xstream
+						</Embed-Dependency>
+						<Import-Package>
+						    	javax.crypto,javax.mail,
+							!bsh,
+							!edu.emory.mathcs.backport.java.util,
+							!COM.jrockit.reflect,
+							!jrockit.vm,
+							!com.sun.java_cup.internal,
+							!com.sun.net.ssl,
+							!sun.io,
+							!sun.misc,
+							!sun.reflect,
+							!sun.security.util,
+							!net.sf.cglib.asm.util,
+							!net.sf.ehcache,
+							!oracle.xml.parser,
+							!oracle.xml.parser.v2,
+							!org.apache.commons.cli,
+							!org.apache.commons.jexl2,
+							!org.apache.commons.math.stat.descriptive,
+							!org.apache.commons.logging.impl,
+							!org.apache.ddlutils,
+							!org.apache.ddlutils.io,
+							!org.apache.ddlutils.model,
+							!org.apache.ddlutils.platform,
+							!org.apache.tools.ant,
+							!org.apache.tools.ant.types,
+							!org.apache.tools.ant.taskdefs,
+							!org.codehaus.aspectwerkz.hook,
+							!org.hibernate,
+							!org.hibernate.cfg,
+							!org.hibernate.classic,
+							!org.hibernate.criterion,
+							!org.hibernate.engine,
+							!org.hibernate.mapping,
+							!org.hibernate.tool.hbm2ddl,
+							!org.hibernate.type,
+							!org.gjt.xpp,
+							!org.mortbay.jetty,
+							!org.mortbay.jetty.handler,
+							!org.mortbay.jetty.nio,
+							!org.mortbay.jetty.security,
+							!edu.internet2.middleware.morphString,
+							!edu.internet2.middleware.subject,
+							*</Import-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<!-- nakamura -->
+		<dependency>
+			<groupId>org.sakaiproject.nakamura</groupId>
+			<artifactId>org.sakaiproject.nakamura.core</artifactId>
+			<version>0.10-SNAPSHOT</version>
+			<type>bundle</type>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- scr annotations -->
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.scr.annotations</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>edu.internet2.middleware.grouper</groupId>
+			<artifactId>grouper</artifactId>
+			<version>1.6.3</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Dependencies from grouper -->
+		
+		<dependency>
+	    	<groupId>cglib</groupId>
+	    	<artifactId>cglib-nodep</artifactId>
+	    	<version>2.2</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>commons-beanutils</groupId>
+		    <artifactId>commons-beanutils</artifactId>
+		    <version>1.8.3</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>commons-dbcp</groupId>
+		    <artifactId>commons-dbcp</artifactId>
+		    <version>1.4</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>commons-digester</groupId>
+		    <artifactId>commons-digester</artifactId>
+		    <version>2.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>3.4.4</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.4</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.sun.xml.parsers</groupId>
+			<artifactId>jaxp-ri</artifactId>
+			<version>1.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.jettison</groupId>
+			<artifactId>jettison</artifactId>
+			<version>1.0-RC2</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.5.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>jivesoftware</groupId>
+			<artifactId>smack</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.mockito</groupId>
+		    <artifactId>mockito-all</artifactId>
+		    <version>1.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>quartz</groupId>
+			<artifactId>quartz</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.msv.datatype.xsd</groupId>
+			<artifactId>xsdlib</artifactId>
+			<version>2009.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.9.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>xml-resolver</groupId>
+			<artifactId>xml-resolver</artifactId>
+			<version>1.2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>xom</groupId>
+			<artifactId>xom</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+		    <groupId>xstream</groupId>
+		    <artifactId>xstream</artifactId>
+		    <version>1.2.2</version>
+		</dependency>
+				
+	</dependencies>
+</project>
+
