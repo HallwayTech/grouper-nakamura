@@ -31,6 +31,10 @@
 	<packaging>bundle</packaging>
 	<name>Grouper :: Grouper API</name>
 	<version>1.6.3</version>
+	<description>
+	This bundle exports just enough classes to get the grouper-client and grouper-ws bundles working.
+	It's not meant to run Grouper inside of an OSGI container but to reduce the dependencies in the other Grouper bundles.
+	</description>
 
 	<repositories>
 		<repository>
