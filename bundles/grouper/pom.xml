@@ -44,6 +44,26 @@
 			<layout>default</layout>
 		</repository>
 	</repositories>
+	
+	<profiles>
+        <profile>
+            <id>deploy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <executions>
+                        <execution>
+                            <id>install-bundle</id>
+                            <goals><goal>install</goal></goals>
+                        </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 	<build>
 		<plugins>
@@ -57,69 +77,70 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-						<Bundle-Category>grouper</Bundle-Category>
-					    <Embed-Dependency>grouper,subject,commons-beanutils,commons-dbcp,commons-digester,commons-jexl,dom4j,icu4j,jaxp-ri,jettison,jdom,jaxen,joda-time,junit,mail,mockito-all,quartz,smack,xercesImpl,xml-resolver,xom,xsdlib,xstream</Embed-Dependency>
+                                        <Bundle-Category>grouper</Bundle-Category>
+					    <Embed-Dependency>grouper,subject,commons-beanutils,commons-dbcp,commons-digester,dom4j,icu4j,jaxp-ri,jettison,jdom,jaxen,joda-time,junit,mail,mockito-all,quartz,smack,xercesImpl,xml-resolver,xom,xsdlib,xstream</Embed-Dependency>
 						<Export-Package>
-					    !javax.*,
-					    !net.sf.ehcache,
+					        !javax.*,
+					        !net.sf.ehcache,
 						!nu.*,
 						!org.*,
 						!net.*,
 						!bsh,
 						!edu.umd.cs.findbugs.annotations,
-						!edu.emory.mathcs.backport.*,
 						!edu.internet2.middleware.morphString,
 						!edu.internet2.middleware.subject,
+						edu.emory.mathcs.backport.java.util.*,
+						com.thoughtworks.xstream.*;version=1.2.2
 						edu.*;version=1.6.3</Export-Package>
 						    
 						<Import-Package>
-						    javax.crypto,
-						    javax.mail,
-							!bsh,
-							!COM.jrockit.reflect,
-							!jrockit.vm,
-							!com.mchange.v2.c3p0,
-							!com.sun.java_cup.internal,
-							!com.sun.net.ssl,
-							!edu.emory.mathcs.backport.java.util,
-							!oracle.xml.parser,
-							!oracle.xml.parser.v2,
-							!org.apache.commons.cli,
-							!org.apache.commons.jexl,
-							!org.apache.commons.jexl2,
-							!org.apache.commons.math.stat.descriptive,
-							!org.apache.commons.logging.impl,
-							!org.apache.ddlutils,
-							!org.apache.ddlutils.io,
-							!org.apache.ddlutils.model,
-							!org.apache.ddlutils.platform,
-							!org.apache.tools.ant,
-							!org.apache.tools.ant.types,
-							!org.apache.tools.ant.taskdefs,
-							!org.codehaus.aspectwerkz.hook,
-							!org.hibernate,
-							!org.hibernate.cfg,
-							!org.hibernate.classic,
-							!org.hibernate.criterion,
-							!org.hibernate.engine,
-							!org.hibernate.mapping,
-							!org.hibernate.tool.hbm2ddl,
-							!org.hibernate.type,
-							!org.hsqldb,
-							!org.gjt.xpp,
-							!org.mortbay.jetty,
-							!org.mortbay.jetty.handler,
-							!org.mortbay.jetty.nio,
-							!org.mortbay.jetty.security,
-							!net.sf.cglib.asm.util,
-							!net.sf.ehcache,
-							!sun.io,
-							!sun.misc,
-							!sun.reflect,
-							!sun.security.util,
-							!edu.internet2.middleware.morphString,
-							!edu.internet2.middleware.subject,
-							*</Import-Package>
+						javax.crypto,
+						javax.mail,
+						!bsh,
+						!COM.jrockit.reflect,
+						!jrockit.vm,
+						!com.mchange.v2.c3p0,
+						!com.sun.java_cup.internal,
+						!com.sun.net.ssl,
+						!edu.emory.mathcs.backport.java.util,
+						!oracle.xml.parser,
+						!oracle.xml.parser.v2,
+						!org.apache.commons.cli,
+						!org.apache.commons.jexl,
+						!org.apache.commons.jexl2,
+						!org.apache.commons.math.stat.descriptive,
+						!org.apache.commons.logging.impl,
+						!org.apache.ddlutils,
+						!org.apache.ddlutils.io,
+						!org.apache.ddlutils.model,
+						!org.apache.ddlutils.platform,
+						!org.apache.tools.ant,
+						!org.apache.tools.ant.types,
+						!org.apache.tools.ant.taskdefs,
+						!org.codehaus.aspectwerkz.hook,
+						!org.hibernate,
+						!org.hibernate.cfg,
+						!org.hibernate.classic,
+						!org.hibernate.criterion,
+						!org.hibernate.engine,
+						!org.hibernate.mapping,
+						!org.hibernate.tool.hbm2ddl,
+						!org.hibernate.type,
+						!org.hsqldb,
+						!org.gjt.xpp,
+						!org.mortbay.jetty,
+						!org.mortbay.jetty.handler,
+						!org.mortbay.jetty.nio,
+						!org.mortbay.jetty.security,
+						!net.sf.cglib.asm.util,
+						!net.sf.ehcache,
+						!sun.io,
+						!sun.misc,
+						!sun.reflect,
+						!sun.security.util,
+						!edu.internet2.middleware.morphString,
+						!edu.internet2.middleware.subject,
+						*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
