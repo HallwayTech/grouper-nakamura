@@ -78,7 +78,7 @@
 				<configuration>
 					<instructions>
                                         <Bundle-Category>grouper</Bundle-Category>
-					    <Embed-Dependency>grouper,dom4j,icu4j,jaxp-ri,jettison,jdom,jaxen,joda-time,junit,mail,mockito-all,quartz,smack,xercesImpl,xml-resolver,xom,xsdlib,xstream</Embed-Dependency>
+					    <Embed-Dependency>grouper,dom4j,icu4j,jaxp-ri,jettison,jdom,jaxen,joda-time,junit,mail,mockito-all,xercesImpl,xml-resolver,xom,xsdlib,xstream</Embed-Dependency>
 						<Export-Package>
 					        !javax.*,
 					        !net.sf.ehcache,
@@ -101,6 +101,7 @@
 						!com.mchange.v2.c3p0,
 						!com.sun.java_cup.internal,
 						!com.sun.net.ssl,
+						!edu.internet2.middleware.morphString,
 						!edu.emory.mathcs.backport.java.util,
 						!oracle.xml.parser,
 						!oracle.xml.parser.v2,
@@ -110,34 +111,22 @@
 						!org.apache.commons.math.stat.descriptive,
 						!org.apache.commons.logging.impl,
 						!org.apache.ddlutils,
-						!org.apache.ddlutils.io,
-						!org.apache.ddlutils.model,
-						!org.apache.ddlutils.platform,
+						!org.apache.ddlutils.*,
 						!org.apache.tools.ant,
-						!org.apache.tools.ant.types,
-						!org.apache.tools.ant.taskdefs,
+						!org.apache.tools.ant.*,
 						!org.codehaus.aspectwerkz.hook,
 						!org.hibernate,
-						!org.hibernate.cfg,
-						!org.hibernate.classic,
-						!org.hibernate.criterion,
-						!org.hibernate.engine,
-						!org.hibernate.mapping,
-						!org.hibernate.tool.hbm2ddl,
-						!org.hibernate.type,
+						!org.hibernate.*,
 						!org.hsqldb,
 						!org.gjt.xpp,
 						!org.mortbay.jetty,
-						!org.mortbay.jetty.handler,
-						!org.mortbay.jetty.nio,
-						!org.mortbay.jetty.security,
+						!org.mortbay.jetty.*,
 						!net.sf.cglib.asm.util,
 						!net.sf.ehcache,
 						!sun.io,
 						!sun.misc,
 						!sun.reflect,
 						!sun.security.util,
-						!edu.internet2.middleware.morphString,
 						*</Import-Package>
 					</instructions>
 				</configuration>
@@ -146,15 +135,6 @@
 	</build>
 
 	<dependencies>
-		<!-- nakamura -->
-		<dependency>
-			<groupId>org.sakaiproject.nakamura</groupId>
-			<artifactId>org.sakaiproject.nakamura.core</artifactId>
-			<version>0.10-SNAPSHOT</version>
-			<type>bundle</type>
-			<scope>compile</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
@@ -172,13 +152,6 @@
 		</dependency>
 		
 		<!-- Dependencies from grouper -->
-		
-		<dependency>
-	    	<groupId>cglib</groupId>
-	    	<artifactId>cglib-nodep</artifactId>
-	    	<version>2.2</version>
-		</dependency>
-
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
