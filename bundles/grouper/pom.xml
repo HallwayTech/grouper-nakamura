@@ -78,7 +78,7 @@
 				<configuration>
 					<instructions>
                                         <Bundle-Category>grouper</Bundle-Category>
-					    <Embed-Dependency>grouper,subject,commons-beanutils,commons-dbcp,commons-digester,dom4j,icu4j,jaxp-ri,jettison,jdom,jaxen,joda-time,junit,mail,mockito-all,quartz,smack,xercesImpl,xml-resolver,xom,xsdlib,xstream</Embed-Dependency>
+					    <Embed-Dependency>grouper,dom4j,icu4j,jaxp-ri,jettison,jdom,jaxen,joda-time,junit,mail,mockito-all,quartz,smack,xercesImpl,xml-resolver,xom,xsdlib,xstream</Embed-Dependency>
 						<Export-Package>
 					        !javax.*,
 					        !net.sf.ehcache,
@@ -88,7 +88,6 @@
 						!bsh,
 						!edu.umd.cs.findbugs.annotations,
 						!edu.internet2.middleware.morphString,
-						!edu.internet2.middleware.subject,
 						edu.emory.mathcs.backport.java.util.*,
 						com.thoughtworks.xstream.*;version=1.2.2
 						edu.*;version=1.6.3</Export-Package>
@@ -139,7 +138,6 @@
 						!sun.reflect,
 						!sun.security.util,
 						!edu.internet2.middleware.morphString,
-						!edu.internet2.middleware.subject,
 						*</Import-Package>
 					</instructions>
 				</configuration>
@@ -173,14 +171,6 @@
 			<scope>compile</scope>
 		</dependency>
 		
-		<dependency>
-		    <groupId>edu.internet2.middleware.subject</groupId>
-            <artifactId>subject</artifactId>
-            <version>1.6.3</version>
-            <type>jar</type>
-			<scope>compile</scope>
-        </dependency>
-
 		<!-- Dependencies from grouper -->
 		
 		<dependency>
@@ -189,24 +179,6 @@
 	    	<version>2.2</version>
 		</dependency>
 
-		<dependency>
-		    <groupId>commons-beanutils</groupId>
-		    <artifactId>commons-beanutils</artifactId>
-		    <version>1.8.3</version>
-		</dependency>
-		
-		<dependency>
-		    <groupId>commons-dbcp</groupId>
-		    <artifactId>commons-dbcp</artifactId>
-		    <version>1.4</version>
-		</dependency>
-		
-		<dependency>
-		    <groupId>commons-digester</groupId>
-		    <artifactId>commons-digester</artifactId>
-		    <version>2.1</version>
-		</dependency>
-		
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
