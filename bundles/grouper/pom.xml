@@ -72,7 +72,7 @@
 				<configuration>
 					<instructions>
                                         <Bundle-Category>grouper</Bundle-Category>
-					    <Embed-Dependency>grouper,dom4j,icu4j,jaxp-ri,jettison,jdom,jaxen,joda-time,junit,mail,mockito-all,xercesImpl,xml-resolver,xom,xsdlib,xstream</Embed-Dependency>
+					    <Embed-Dependency>grouper,dom4j,icu4j,jaxp-ri,jettison,jdom,jaxen,joda-time,mail,mockito-all,xercesImpl,xml-resolver,xom,xsdlib,xstream</Embed-Dependency>
 						<_exportcontents>
 					        !javax.*,
 					        !net.sf.ehcache,
@@ -90,6 +90,7 @@
 						<Import-Package>
 						javax.crypto,
 						javax.mail,
+						org.junit.*;resolution:=optional,
 						!bsh,
 						!COM.jrockit.reflect,
 						!jrockit.vm,
