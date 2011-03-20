@@ -83,8 +83,8 @@
 						!edu.umd.cs.findbugs.annotations,
 						!edu.internet2.middleware.morphString,
 						edu.emory.mathcs.backport.java.util.*,
-						com.thoughtworks.xstream.*;version=1.2.2
-						edu.*;version=1.6.3</Export-Package>
+						com.thoughtworks.xstream.*;version=1.2.2,
+						edu.internet2.middleware.grouper.*;version=1.6.3</Export-Package>
 						    
 						<Import-Package>
 						javax.crypto,
