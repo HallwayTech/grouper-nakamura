@@ -64,7 +64,7 @@
 				<instructions>
 				<Bundle-Category>grouper</Bundle-Category>
 				<Bundle-Description>Grouper :: Grouper Web Services Bundle</Bundle-Description>
-				<Embed-Dependency>grouper-ws,dom4j</Embed-Dependency>
+				<Embed-Dependency>grouper-ws</Embed-Dependency>
 				<!-- Only export grouper classes -->
 				<Export-Package>
 				    edu.internet2.middleware.grouper.ws.*;version=1.6.3
@@ -133,12 +133,6 @@
 		<version>1.6.3</version>
 		<type>jar</type>
 		<scope>compile</scope>
-	</dependency>
-	
-	<dependency>
-		<groupId>dom4j</groupId>
-		<artifactId>dom4j</artifactId>
-		<version>1.6.1</version>
 	</dependency>
 	</dependencies>
 </project>
