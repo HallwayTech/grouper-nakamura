@@ -21,7 +21,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.internet2.middleware.subject</groupId>
-	<artifactId>edu.internet2.middleware.subject</artifactId>
+	<artifactId>subject.osgi</artifactId>
 	<packaging>bundle</packaging>
 	<name>Internet2 Middleware :: Subject</name>
 	<version>1.6.3</version>
