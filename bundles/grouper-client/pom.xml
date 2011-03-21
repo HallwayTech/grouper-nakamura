@@ -55,6 +55,7 @@
 			com.sun.net.ssl;resolution:=optional,*
 			net.sf.cglib.proxy;resolution:=optional,*
 			sun.*;resolution:=optional,
+			junit.*;resolution:=optional,
 			*
 			</Import-Package>
 
