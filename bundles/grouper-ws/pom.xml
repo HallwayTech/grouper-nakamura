@@ -19,18 +19,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<parent>
-		<artifactId>base</artifactId>
-		<groupId>org.sakaiproject.nakamura</groupId>
-		<version>0.10-SNAPSHOT</version>
-	</parent>
-
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.internet2.middleware.grouper</groupId>
-	<artifactId>edu.internet2.middleware.grouper.grouper-ws</artifactId>
+	<artifactId>grouper-ws.osgi</artifactId>
 	<packaging>bundle</packaging>
 	<name>Grouper :: Web Services</name>
 	<version>1.6.3</version>
+	<description>
+	    This bundle was created to export the necessary classes to make REST WS calls to a running grouper-ws service.
+	    It is not meant to run Grouper or Grouper WS services in an OSGi container.
+	</description>
 	
 	<profiles>
         <profile>
@@ -69,9 +67,8 @@
 				<Embed-Dependency>grouper-ws,dom4j</Embed-Dependency>
 				<!-- Only export grouper classes -->
 				<Export-Package>
-				    edu.internet2.*,
-				    !*,
-				    *;version=1.6.3</Export-Package>
+				    edu.internet2.middleware.grouper.ws.*;version=1.6.3
+				</Export-Package>
 				<Import-Package>
 				    !bsh,
 				    !com.mchange.*,
