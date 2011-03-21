@@ -55,11 +55,6 @@
 					<instructions>
 						<Bundle-Category>sakai-nakamura</Bundle-Category>
 						<Export-Package>edu.nyu.grouper.osgi</Export-Package>
-						<Embed-Dependency>
-						dom4j,icu4j,jaxp-ri,jettison,jdom,jaxen,joda-time,
-						junit,mail,mockito-all,
-						xercesImpl,xml-resolver,xom,xsdlib
-						</Embed-Dependency>
 						<Import-Package>
 						    javax.crypto,javax.mail,
 							!org.apache.tools.ant,
@@ -176,119 +171,6 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-
-		<!-- Dependencies from grouperClient -->
-		
-		<dependency>
-	    	<groupId>cglib</groupId>
-	    	<artifactId>cglib-nodep</artifactId>
-	    	<version>2.2</version>
-		</dependency>
-
-		<dependency>
-		    <groupId>commons-beanutils</groupId>
-		    <artifactId>commons-beanutils</artifactId>
-		    <version>1.8.3</version>
-		</dependency>
-		
-		<dependency>
-		    <groupId>commons-dbcp</groupId>
-		    <artifactId>commons-dbcp</artifactId>
-		    <version>1.4</version>
-		</dependency>
-		
-		<dependency>
-		    <groupId>commons-digester</groupId>
-		    <artifactId>commons-digester</artifactId>
-		    <version>2.1</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>1.6.1</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.ibm.icu</groupId>
-			<artifactId>icu4j</artifactId>
-			<version>3.4.4</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4.4</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>jaxen</groupId>
-			<artifactId>jaxen</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.sun.xml.parsers</groupId>
-			<artifactId>jaxp-ri</artifactId>
-			<version>1.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.codehaus.jettison</groupId>
-			<artifactId>jettison</artifactId>
-			<version>1.0-RC2</version>
-			<optional>true</optional>
-		</dependency>
-
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>1.5.1</version>
-			<optional>true</optional>
-		</dependency>
-
-		<dependency>
-			<groupId>org.jdom</groupId>
-			<artifactId>jdom</artifactId>
-			<version>1.1</version>
-			<optional>true</optional>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-		</dependency>
-
-		<dependency>
-		    <groupId>org.mockito</groupId>
-		    <artifactId>mockito-all</artifactId>
-		    <version>1.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.sun.msv.datatype.xsd</groupId>
-			<artifactId>xsdlib</artifactId>
-			<version>2009.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>2.9.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>xml-resolver</groupId>
-			<artifactId>xml-resolver</artifactId>
-			<version>1.2</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>xom</groupId>
-			<artifactId>xom</artifactId>
-			<version>1.0</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
