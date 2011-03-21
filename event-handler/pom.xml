@@ -55,27 +55,7 @@
 					<instructions>
 						<Bundle-Category>sakai-nakamura</Bundle-Category>
 						<Export-Package>edu.nyu.grouper.osgi</Export-Package>
-						<Import-Package>
-						    javax.crypto,javax.mail,
-							!org.apache.tools.ant,
-							!org.apache.tools.ant.types,
-							!org.apache.axis2.*,
-							!org.apache.commons.net.*,
-							!org.apache.commons.logging.impl,
-							!org.codehaus.aspectwerkz.hook,
-							!org.gjt.xpp,
-							!oracle.xml.parser,
-							!oracle.xml.parser.v2,
-							!jrockit.vm,
-							!COM.jrockit.reflect,
-							!com.sun.java_cup.internal,
-							!com.sun.net.ssl,
-							!sun.io,
-							!sun.misc,
-							!sun.reflect,
-							!sun.security.util,
-							!net.sf.cglib.asm.util,
-							*</Import-Package>
+						<Import-Package>javax.crypto,javax.mail,*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
