@@ -56,16 +56,16 @@
 						<Bundle-Category>sakai-nakamura</Bundle-Category>
 						<Export-Package>edu.nyu.grouper.osgi</Export-Package>
 						<Embed-Dependency>
-						grouperClient,cglib,
-						commons-beanutils,commons-dbcp,commons-digester,
 						dom4j,icu4j,jaxp-ri,jettison,jdom,jaxen,joda-time,
-						junit,mail,mockito-all,quartz,smack,
+						junit,mail,mockito-all,
 						xercesImpl,xml-resolver,xom,xsdlib
 						</Embed-Dependency>
 						<Import-Package>
 						    javax.crypto,javax.mail,
 							!org.apache.tools.ant,
 							!org.apache.tools.ant.types,
+							!org.apache.axis2.*,
+							!org.apache.commons.net.*,
 							!org.apache.commons.logging.impl,
 							!org.codehaus.aspectwerkz.hook,
 							!org.gjt.xpp,
@@ -81,16 +81,32 @@
 							!sun.security.util,
 							!net.sf.cglib.asm.util,
 							*</Import-Package>
-						<!--Import-Package> javax.naming, javax.mail, org.osgi.service.cm, 
-							org.osgi.service.event, org.sakaiproject.nakamura.api.lite.util, org.slf4j, 
-							org.dom4j, org.quartz, org.jivesoftware.smack, org.apache.commons.httpclient, 
-							org.apache.commons.httpclient.auth, org.apache.commons.httpclient.params, 
-							!com.ibm.icu.text, !com.sun.net.ssl, </Import-Package -->
 					</instructions>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
+        <profiles>
+        <profile>
+            <id>deploy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <executions>
+                        <execution>
+                            <id>install-bundle</id>
+                            <goals><goal>install</goal></goals>
+                        </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 
 	<dependencies>
 		<!-- nakamura -->
@@ -152,6 +168,14 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+
+        <dependency>
+            <groupId>edu.internet2.middleware.grouper</groupId>
+            <artifactId>grouper-ws</artifactId>
+            <version>1.6.3</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
 
 		<!-- Dependencies from grouperClient -->
 		
@@ -231,12 +255,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>jivesoftware</groupId>
-			<artifactId>smack</artifactId>
-			<version>3.1.0</version>
-		</dependency>
-
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>
@@ -246,12 +264,6 @@
 		    <groupId>org.mockito</groupId>
 		    <artifactId>mockito-all</artifactId>
 		    <version>1.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>quartz</groupId>
-			<artifactId>quartz</artifactId>
-			<version>1.5.2</version>
 		</dependency>
 
 		<dependency>
@@ -276,6 +288,14 @@
 			<groupId>xom</groupId>
 			<artifactId>xom</artifactId>
 			<version>1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 
 	</dependencies>
