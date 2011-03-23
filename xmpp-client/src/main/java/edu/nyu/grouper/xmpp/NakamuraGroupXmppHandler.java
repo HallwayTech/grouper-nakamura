@@ -2,11 +2,18 @@ package edu.nyu.grouper.xmpp;
 
 import java.util.List;
 
+import edu.internet2.middleware.grouper.Group;
+import edu.internet2.middleware.grouper.GroupFinder;
+import edu.internet2.middleware.grouper.GrouperSession;
+import edu.internet2.middleware.grouper.SubjectFinder;
+import edu.internet2.middleware.grouper.exception.GrouperException;
+import edu.internet2.middleware.grouper.exception.SessionException;
 import edu.internet2.middleware.grouperClient.util.GrouperClientUtils;
 import edu.internet2.middleware.grouperClientExt.org.apache.commons.logging.Log;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppHandler;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppJob;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppSubject;
+import edu.internet2.middleware.subject.Subject;
 import edu.nyu.grouper.xmpp.exceptions.GroupModificationException;
 
 /**
@@ -22,6 +29,9 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 	private static String PROP_KEY_NAKAMURA_USERNAME = "grouperClient.xmpp.nakamura.username";
 	private static String PROP_KEY_NAKAMURA_PASSWORD = "grouperClient.xmpp.nakamura.password";
 	
+	private GrouperSession grouperSession;
+	private Subject grouperSystemSubject;
+	
 	private HttpNakamuraGroupAdapter groupAdapter;
 	
 	public NakamuraGroupXmppHandler(){
@@ -31,6 +41,8 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 		groupAdapter.setPassword(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_PASSWORD, true));
 		groupAdapter.setInitialPropertiesProvider(new StaticInitialGroupPropertiesProvider());
 		groupAdapter.setGroupIdAdapter(new BaseNakamuraGroupIdAdapter());
+		
+		grouperSystemSubject = SubjectFinder.findRootSubject();
 	}
 
 	/**
@@ -58,10 +70,16 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 				groupAdapter.deleteMembership(groupName, groupExtension, changeSubject.getSubjectId());
 			} 
 			else if (GrouperClientUtils.equals(action, "GROUP_ADD")) {
-				groupAdapter.createGroup(groupName, groupExtension);
+				Group group = GroupFinder.findByName(getGrouperSession(), groupExtension, false);
+				if (group != null){
+					groupAdapter.createGroup(group);
+				}
 			}
 			else if (GrouperClientUtils.equals(action, "GROUP_DELETE")) {
-				groupAdapter.deleteGroup(groupName, groupExtension);
+				Group group = GroupFinder.findByName(getGrouperSession(), groupExtension, false);
+				if (group != null){
+					groupAdapter.deleteGroup(group);
+				}
 			}
 			else {
 				throw new RuntimeException("Not expecting action: '" + action + "'");
@@ -83,6 +101,19 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 			String groupName, String groupExtension,
 			List<GrouperClientXmppSubject> newSubjectList) {
 		// TODO Auto-generated method stub
+	}
+	
+	private GrouperSession getGrouperSession(){
+		if ( grouperSession == null ) {
+			try {
+				grouperSession = GrouperSession.start(grouperSystemSubject, false);
+				log.debug("started session: " + grouperSession);
+			}
+			catch (SessionException se) {
+				throw new GrouperException( "error starting session: " + se.getMessage(), se );
+			}
+		}
+		return grouperSession;
 	}
 
 }

@@ -1,5 +1,6 @@
 package edu.nyu.grouper.xmpp.api;
 
+import edu.internet2.middleware.grouper.Group;
 import edu.nyu.grouper.xmpp.exceptions.GroupModificationException;
 
 public interface NakamuraGroupAdapter {
@@ -9,14 +10,14 @@ public interface NakamuraGroupAdapter {
 	 * @param groupId
 	 * @throws GroupModificationException
 	 */
-	public void createGroup(String groupId, String groupExtension) throws GroupModificationException;
+	public void createGroup(Group group) throws GroupModificationException;
 	
 	/**
 	 * Delete a group.
 	 * @param groupId
 	 * @throws GroupModificationException
 	 */
-	public void deleteGroup(String groupId, String groupExtension) throws GroupModificationException;
+	public void deleteGroup(Group group) throws GroupModificationException;
 	
 	/**
 	 * Add a subject to a group.

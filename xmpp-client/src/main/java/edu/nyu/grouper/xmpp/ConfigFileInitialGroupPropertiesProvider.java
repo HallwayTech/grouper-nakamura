@@ -2,6 +2,7 @@ package edu.nyu.grouper.xmpp;
 
 import java.util.HashMap;
 
+import edu.internet2.middleware.grouper.Group;
 import edu.internet2.middleware.grouperClient.util.GrouperClientUtils;
 import edu.nyu.grouper.xmpp.api.InitialGroupPropertiesProvider;
 
@@ -24,11 +25,12 @@ public class ConfigFileInitialGroupPropertiesProvider implements InitialGroupPro
 		loadPropertiesFromFile();
 	}
 
-	public void addProperties(String groupId, String groupExtension,
-			PostMethod method) {
+	public void addProperties(Group group, PostMethod method) {
 		for(String key: initialProperties.keySet()){
 			method.addParameter(key, initialProperties.get(key));
 		}
+		// Grouper
+		method.addParameter("grouper:full-name", group.getExtension());
 	}
 	
 	private void loadPropertiesFromFile(){

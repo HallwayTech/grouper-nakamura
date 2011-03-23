@@ -67,7 +67,7 @@ public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 					log.debug("Group add, name: " + groupExtension);
 					Group group = GroupFinder.findByName(getGrouperSession(), groupExtension, false);
 					if (group != null){
-						getNakamuraGroupAdapter().createGroup(groupId, groupExtension);
+						getNakamuraGroupAdapter().createGroup(group);
 					}
 				}
 
@@ -77,7 +77,7 @@ public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 					log.debug("Group delete, name: " + groupExtension );
 					Group group = GroupFinder.findByName(getGrouperSession(), groupExtension, false);
 					if (group != null){
-						getNakamuraGroupAdapter().deleteGroup(groupId, groupExtension);
+						getNakamuraGroupAdapter().deleteGroup(group);
 					}
 				}
 

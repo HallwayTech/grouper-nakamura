@@ -1,6 +1,8 @@
 package edu.nyu.grouper.xmpp;
 
 import org.apache.commons.httpclient.methods.PostMethod;
+
+import edu.internet2.middleware.grouper.Group;
 import edu.nyu.grouper.xmpp.api.InitialGroupPropertiesProvider;
 
 /**
@@ -9,17 +11,21 @@ import edu.nyu.grouper.xmpp.api.InitialGroupPropertiesProvider;
  */
 public class StaticInitialGroupPropertiesProvider implements InitialGroupPropertiesProvider {
 
-	public void addProperties(String groupId, String groupExtension,
-			PostMethod method) {
+	public void addProperties(Group group, PostMethod method) {
 		
-		method.addParameter("sakai:group-id", groupExtension);
-		method.addParameter("sakai:group-title", groupExtension);
-		method.addParameter("sakai:group-description", "Created by Grouper");
+		// Basic info
+		method.addParameter("sakai:group-id", group.getId());
+		method.addParameter("sakai:group-title", group.getDisplayName());
+		method.addParameter("sakai:group-description", group.getDescription());
 		method.addParameter("sakai:pages-template", "/var/templates/site/defaultgroup");
 		
 		// Authorizations
 		method.addParameter("group-joinable", "no");
 		method.addParameter("group-visible", "members-only");
 		method.addParameter("sakai:pages-visible", "members-only");
+		
+		// Grouper
+		method.addParameter("grouper:extension", group.getExtension());
+		method.addParameter("grouper:uuid", group.getUuid());
 	}
 }

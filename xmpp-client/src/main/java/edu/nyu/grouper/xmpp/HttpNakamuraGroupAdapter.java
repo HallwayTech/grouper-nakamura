@@ -15,6 +15,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.internet2.middleware.grouper.Group;
+
 import edu.nyu.grouper.xmpp.api.InitialGroupPropertiesProvider;
 import edu.nyu.grouper.xmpp.api.NakamuraGroupAdapter;
 import edu.nyu.grouper.xmpp.api.GroupIdAdapter;
@@ -44,14 +46,14 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 * POST to http://localhost:8080/system/userManager/group.create.html
 	 * @see org.sakaiproject.nakamura.user.servlet.CreateSakaiGroupServlet
 	 */
-	public void createGroup(String groupId, String groupExtension) throws GroupModificationException {
+	public void createGroup(Group group) throws GroupModificationException {
 		
-		String nakamuraGroupName = groupIdAdapter.getNakamuraName(groupExtension);
+		String nakamuraGroupName = groupIdAdapter.getNakamuraName(group.getExtension());
 
 		HttpClient client = getHttpClient();
 		PostMethod method = new PostMethod(url.toString() + GROUP_CREATE_PATH);
 	    method.addParameter(":name", nakamuraGroupName);
-	    initialPropertiesProvider.addProperties(groupId, nakamuraGroupName, method);
+	    initialPropertiesProvider.addProperties(group, method);
 
 	    try{
 	    	int returnCode = client.executeMethod(method);
@@ -84,9 +86,9 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 * Delete a group from sakai3
 	 * curl -Fgo=1 http://localhost:8080/system/userManager/group/groupId.delete.html
 	 */
-	public void deleteGroup(String groupId, String groupExtension) throws GroupModificationException {
+	public void deleteGroup(Group group) throws GroupModificationException {
 		
-		String nakamuraGroupName = groupIdAdapter.getNakamuraName(groupExtension);
+		String nakamuraGroupName = groupIdAdapter.getNakamuraName(group.getExtension());
 
 		HttpClient client = getHttpClient();
 	    PostMethod method = new PostMethod(url.toString() + getDeletePath(nakamuraGroupName));
@@ -114,7 +116,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 				break;
 	    	}
 	    } catch (Exception e) {
-	      log.error("An exception occurred while deleting the group. " + groupId 
+	      log.error("An exception occurred while deleting the group. " + group.getId()
 	    		  + " Error: " + e.toString());
 	    } finally {
 	      method.releaseConnection();
