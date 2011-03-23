@@ -1,4 +1,4 @@
-package edu.nyu.grouper.xmpp;
+package edu.nyu.grouper.util;
 
 import java.util.HashMap;
 

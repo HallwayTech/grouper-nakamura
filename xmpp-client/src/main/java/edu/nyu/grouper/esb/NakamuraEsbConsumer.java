@@ -18,9 +18,9 @@ import edu.internet2.middleware.grouper.exception.GrouperException;
 import edu.internet2.middleware.grouper.exception.SessionException;
 import edu.internet2.middleware.grouper.util.GrouperUtil;
 import edu.internet2.middleware.subject.Subject;
-import edu.nyu.grouper.xmpp.BaseNakamuraGroupIdAdapter;
+import edu.nyu.grouper.util.BaseNakamuraGroupIdAdapter;
+import edu.nyu.grouper.util.StaticInitialGroupPropertiesProvider;
 import edu.nyu.grouper.xmpp.HttpNakamuraGroupAdapter;
-import edu.nyu.grouper.xmpp.StaticInitialGroupPropertiesProvider;
 
 /**
  * Process changelog entries and update group information in sakai3-nakamura
