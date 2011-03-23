@@ -5,7 +5,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-import net.sf.json.JSONSerializer;
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+import net.sf.json.util.PropertyFilter;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.Header;
@@ -41,16 +43,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.internet2.middleware.grouper.ws.rest.WsRestResultProblem;
-import edu.internet2.middleware.grouper.ws.rest.contentType.WsRestRequestContentType;
 import edu.internet2.middleware.grouper.ws.rest.contentType.WsRestResponseContentType;
 import edu.internet2.middleware.grouper.ws.soap.WsGroupSaveResults;
-
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroup;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupLookup;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupToSave;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupDeleteRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupSaveRequest;
-
 import edu.nyu.grouper.BaseGrouperIdHelper;
 import edu.nyu.grouper.api.GrouperIdHelper;
 
@@ -102,10 +101,9 @@ public class GrouperEventHandler implements EventHandler {
 	private AuthorizableManager authorizableManager;
 	
 	private GrouperIdHelper groupIdAdapter;
-	
-	@SuppressWarnings("rawtypes")
+
 	@Activate
-	public void activate(Map props) 
+	public void activate(Map<?, ?> props) 
 		throws ConfigurationException, ClientPoolException, StorageClientException, AccessDeniedException{
 
 		// Initial configuration
@@ -130,10 +128,11 @@ public class GrouperEventHandler implements EventHandler {
 	 * Called by the Configuration Admin service when a new configuration is detected.
 	 * @see org.osgi.service.cm.ManagedService#updated
 	 */
-	@SuppressWarnings("rawtypes")
+
 	@Modified
-	public void updated(Map props) throws ConfigurationException {
+	public void updated(Map<?,?> props) throws ConfigurationException {
 		try {
+			
 			url = new URL(OsgiUtil.toString(props.get(PROP_URL), DEFAULT_URL));
 			wsVersion = OsgiUtil.toString(props.get(PROP_WS_VERSION), DEFAULT_WS_VERSION);
 			username = OsgiUtil.toString(props.get(PROP_USERNAME), DEFAULT_USERNAME);
@@ -185,7 +184,7 @@ public class GrouperEventHandler implements EventHandler {
 				    log.debug("Group beans created.");
 
 				    // Encode the request and send it off
-				    String requestDocument = JSONSerializer.toJSON(groupSave).toString();
+				    String requestDocument = jsonConvertTo(groupSave);
 				    method.setRequestEntity(new StringRequestEntity(requestDocument, "text/x-json", "UTF-8"));
 				    
 				    log.debug("POST Method prepared for {} \n{}.", grouperWsRestUrl, requestDocument);
@@ -202,22 +201,24 @@ public class GrouperEventHandler implements EventHandler {
 				    }
 				    boolean success = "T".equals(successString);
 				    String resultCode = method.getResponseHeader("X-Grouper-resultCode").getValue();
-				    Object result = WsRestResponseContentType.json.parseString(
-				    		IOUtils.toString(method.getResponseBodyAsStream()));
+				    
+				    String jsonResponse = IOUtils.toString(method.getResponseBodyAsStream());
+				    JSONObject jsonObject = JSONObject.fromObject(jsonResponse);  
+//				    Object result = JSONObject.toBean( jsonObject, WsGroupSaveResults.class );  
 
 				    //see if problem
-				    if (result instanceof WsRestResultProblem) {
-				    	throw new RuntimeException(((WsRestResultProblem)result).getResultMetadata().getResultMessage());
-				    }
-
-				    //convert to object (from xhtml, xml, json, etc)
-				    WsGroupSaveResults wsGroupSaveResults = (WsGroupSaveResults)result;
-				    String resultMessage = wsGroupSaveResults.getResultMetadata().getResultMessage();
+//				    if (result instanceof WsRestResultProblem) {
+//				    	throw new RuntimeException(((WsRestResultProblem)result).getResultMetadata().getResultMessage());
+//				    }
+//
+//				    //convert to object (from xhtml, xml, json, etc)
+//				    WsGroupSaveResults wsGroupSaveResults = (WsGroupSaveResults)result;
+//				    String resultMessage = wsGroupSaveResults.getResultMetadata().getResultMessage();
 
 				    // see if request worked or not
 				    if (!success) {
 				    	throw new Exception("Bad response from web service: successString: " + successString 
-				    			+ ", resultCode: " + resultCode + ", " + resultMessage);
+				    			+ ", resultCode: " + resultCode + ", " + jsonResponse);
 				    }
 				    
 				    log.debug("Success! Created a new Grouper Group = {} for sakai authorizableId = {}", 
@@ -235,7 +236,11 @@ public class GrouperEventHandler implements EventHandler {
 			}
 			catch (IOException ioe){
 				log.error("IOException while communicating with grouper web services.", ioe);
-			} catch (Exception e) {
+			} 
+			catch (RuntimeException e) {
+				log.error(e.getMessage(), e);
+			}
+			catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
 		}
@@ -261,7 +266,7 @@ public class GrouperEventHandler implements EventHandler {
 				log.debug("Group beans created.");
 
 				// Encode the request and send it off
-				String requestDocument = JSONSerializer.toJSON(groupDelete).toString();
+			    String requestDocument = jsonConvertTo(groupDelete);
  				method.setRequestEntity(new StringRequestEntity(requestDocument, "text/x-json", "UTF-8"));
 
 				log.debug("POST Method prepared for {} \n{}.", grouperWsRestUrl, requestDocument);
@@ -278,22 +283,23 @@ public class GrouperEventHandler implements EventHandler {
 				}
 				boolean success = "T".equals(successString);
 				String resultCode = method.getResponseHeader("X-Grouper-resultCode").getValue();
-				Object result = WsRestResponseContentType.json.parseString(
-						IOUtils.toString(method.getResponseBodyAsStream()));
+				JSONObject responseObject = JSONObject.fromObject(IOUtils.toString(method.getResponseBodyAsStream())); 
+			    
+				// Object result = JSONObject.toBean( jsonObject, WsGroupSaveResults.class );  
 
 				//see if problem
-				if (result instanceof WsRestResultProblem) {
-					throw new RuntimeException(((WsRestResultProblem)result).getResultMetadata().getResultMessage());
-				}
-
-				//convert to object (from xhtml, xml, json, etc)
-				WsGroupSaveResults wsGroupSaveResults = (WsGroupSaveResults)result;
-				String resultMessage = wsGroupSaveResults.getResultMetadata().getResultMessage();
+//				if (result instanceof WsRestResultProblem) {
+//					throw new RuntimeException(((WsRestResultProblem)result).getResultMetadata().getResultMessage());
+//				}
+//
+//				//convert to object (from xhtml, xml, json, etc)
+//				WsGroupSaveResults wsGroupSaveResults = (WsGroupSaveResults)result;
+//				String resultMessage = wsGroupSaveResults.getResultMetadata().getResultMessage();
 
 				// see if request worked or not
 				if (!success) {
 					throw new Exception("Bad response from web service: successString: " + successString 
-							+ ", resultCode: " + resultCode + ", " + resultMessage);
+							+ ", resultCode: " + resultCode + ", " + responseObject.toString());
 				}
 
 				log.debug("Success! Delete Grouper Group = {} for sakai authorizableId = {}", 
@@ -307,11 +313,37 @@ public class GrouperEventHandler implements EventHandler {
 			}
 			catch (IOException ioe){
 				log.error("IOException while communicating with grouper web services.", ioe);
-			} catch (Exception e) {
+			}
+			catch (RuntimeException e) {
+				log.error(e.getMessage(), e);
+			}
+			catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
 		}
 	}
+	
+	/**
+	   * convert an object to json.
+	   * @param object
+	   * @return the string of json
+	   */
+	  public static String jsonConvertTo(Object object) {
+	    if (object == null) {
+	      throw new NullPointerException();
+	    }
+
+	    JsonConfig jsonConfig = new JsonConfig();  
+	    jsonConfig.setJsonPropertyFilter( new PropertyFilter(){  
+	       public boolean apply( Object source, String name, Object value ) {  
+	          return value == null; 
+	       }  
+	    });  
+	    JSONObject jsonObject = JSONObject.fromObject( object, jsonConfig );  
+	    String json = jsonObject.toString();
+	    
+	    return "{\"" + object.getClass().getSimpleName() + "\":" + json + "}";
+	  }
 
 	/**
 	 * Print the event to the log.
