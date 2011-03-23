@@ -66,7 +66,7 @@ public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 					String groupExtension = changeLogEntry.retrieveValueForLabel(ChangeLogLabels.GROUP_ADD.name);
 					log.debug("Group add, name: " + groupExtension);
 					Group group = GroupFinder.findByName(getGrouperSession(), groupExtension, false);
-					if (group == null){
+					if (group != null){
 						getNakamuraGroupAdapter().createGroup(groupId, groupExtension);
 					}
 				}
