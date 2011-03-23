@@ -1,4 +1,4 @@
-package edu.nyu.grouper.xmpp;
+package edu.nyu.grouper.esb;
 
 import java.io.IOException;
 import java.io.InputStream;

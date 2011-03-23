@@ -14,6 +14,8 @@ import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppHandler;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppJob;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppSubject;
 import edu.internet2.middleware.subject.Subject;
+
+import edu.nyu.grouper.esb.HttpNakamuraGroupAdapter;
 import edu.nyu.grouper.util.BaseNakamuraGroupIdAdapter;
 import edu.nyu.grouper.util.StaticInitialGroupPropertiesProvider;
 import edu.nyu.grouper.xmpp.exceptions.GroupModificationException;
