@@ -157,6 +157,14 @@ public class GrouperEventHandler implements EventHandler {
 			try {
 				Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
 				if (authorizable.isGroup()){
+					
+					if (authorizable.getProperty("grouper:uuid") != null){
+						if (log.isDebugEnabled()){
+							log.debug("This group was created by grouper. No need to send it back.");
+						}
+						return;
+					}
+
 					String fullGrouperName = groupIdAdapter.getFullGrouperName(baseStem, groupId);
 					String grouperName = groupIdAdapter.getName(groupId);
 					
@@ -324,7 +332,7 @@ public class GrouperEventHandler implements EventHandler {
 	}
 	
 	/**
-	   * convert an object to json.
+	   * Convert an object to json. Stolen from GrouperUtil
 	   * @param object
 	   * @return the string of json
 	   */
