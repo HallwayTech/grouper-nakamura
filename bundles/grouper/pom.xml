@@ -72,8 +72,16 @@
 				<configuration>
 					<instructions>
                                         <Bundle-Category>grouper</Bundle-Category>
-					    <Embed-Dependency>grouper,dom4j,icu4j,jaxp-ri,jdom,jaxen,mockito-all,xercesImpl,xsdlib,xstream</Embed-Dependency>
+					    <Embed-Dependency>grouper,commons-jexl,dom4j,icu4j,jaxp-ri,jettison,jdom,jaxen,joda-time,mail,mockito-all,xercesImpl,xml-resolver,xom,xsdlib,xstream</Embed-Dependency>
 						<_exportcontents>
+					        !javax.*,
+					        !net.sf.ehcache,
+						!nu.*,
+						!org.*,
+						!net.*,
+						!bsh,
+						!edu.umd.cs.findbugs.annotations,
+						!edu.internet2.middleware.morphString,
 						com.thoughtworks.xstream.*;version=1.2.2,
 						edu.internet2.middleware.grouper.*;version=1.6.3
 						</_exportcontents>
@@ -155,6 +163,18 @@
 			<artifactId>icu4j</artifactId>
 			<version>3.4.4</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-jexl</artifactId>
+			<version>2.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.4</version>
+		</dependency>
 		
 		<dependency>
 			<groupId>jaxen</groupId>
@@ -166,6 +186,20 @@
 			<groupId>com.sun.xml.parsers</groupId>
 			<artifactId>jaxp-ri</artifactId>
 			<version>1.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.jettison</groupId>
+			<artifactId>jettison</artifactId>
+			<version>1.0-RC2</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.5.1</version>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -188,6 +222,18 @@
 		</dependency>
 
 		<dependency>
+			<groupId>xml-resolver</groupId>
+			<artifactId>xml-resolver</artifactId>
+			<version>1.2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>xom</groupId>
+			<artifactId>xom</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>com.sun.msv.datatype.xsd</groupId>
 			<artifactId>xsdlib</artifactId>
 			<version>2009.1</version>
@@ -201,4 +247,3 @@
 				
 	</dependencies>
 </project>
-
