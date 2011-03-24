@@ -182,7 +182,7 @@ public class GrouperEventHandler implements EventHandler {
 				    WsGroupToSave wsGroupToSave = new WsGroupToSave();
 				    wsGroupToSave.setWsGroupLookup(new WsGroupLookup(fullGrouperName, null));
 				    WsGroup wsGroup = new WsGroup();
-				    wsGroup.setDescription("Created by Sakai3");
+				    wsGroup.setDescription((String)authorizable.getProperty("sakai:group-description"));
 				    wsGroup.setDisplayExtension(grouperName);
 				    wsGroup.setExtension(grouperName);
 				    wsGroup.setName(fullGrouperName);
