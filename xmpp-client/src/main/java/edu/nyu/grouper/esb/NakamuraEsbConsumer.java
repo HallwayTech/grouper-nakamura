@@ -27,7 +27,7 @@ import edu.nyu.grouper.esb.HttpNakamuraGroupAdapter;
  */
 public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 
-	private static Log log = GrouperUtil.getLog(ChangeLogConsumerBase.class);
+	private static Log log = GrouperUtil.getLog(NakamuraEsbConsumer.class);
 	
 	private HttpNakamuraGroupAdapter nakamuraGroupAdapter;
 
@@ -42,9 +42,7 @@ public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 		nakamuraGroupAdapter.setUsername(GrouperLoaderConfig.getPropertyString("nakamura.username", true));
 		nakamuraGroupAdapter.setPassword(GrouperLoaderConfig.getPropertyString("nakamura.password", true));
 		nakamuraGroupAdapter.setInitialPropertiesProvider(new StaticInitialGroupPropertiesProvider());
-		nakamuraGroupAdapter.setGroupIdAdapter(new BaseNakamuraGroupIdAdapter());
-
-		grouperSystemSubject = SubjectFinder.findRootSubject();
+		nakamuraGroupAdapter.setGroupIdAdapter(new BaseNakamuraGroupIdAdapter(GrouperLoaderConfig.getPropertyString("nakamura.basestem", true)));
 	}
 
 	/**
@@ -61,11 +59,16 @@ public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 			for (ChangeLogEntry changeLogEntry : changeLogEntryList) {
 				currentId = changeLogEntry.getSequenceNumber();
 
+				if (log.isDebugEnabled()){
+					log.info("Processing changelog entry=" + currentId);
+				}
+
 				if (changeLogEntry.equalsCategoryAndAction(ChangeLogTypeBuiltin.GROUP_ADD)) {
-					String groupId = changeLogEntry.retrieveValueForLabel(ChangeLogLabels.GROUP_ADD.id);
-					String groupExtension = changeLogEntry.retrieveValueForLabel(ChangeLogLabels.GROUP_ADD.name);
-					log.debug("Group add, name: " + groupExtension);
-					Group group = GroupFinder.findByName(getGrouperSession(), groupExtension, false);
+					String groupName = changeLogEntry.retrieveValueForLabel(ChangeLogLabels.GROUP_ADD.name);
+					if (log.isDebugEnabled()){
+						log.debug(ChangeLogTypeBuiltin.GROUP_ADD + ": name=" + groupName);
+					}
+					Group group = GroupFinder.findByName(getGrouperSession(), groupName, false);
 					if (group != null){
 						getNakamuraGroupAdapter().createGroup(group);
 					}
@@ -73,11 +76,17 @@ public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 
 				if (changeLogEntry.equalsCategoryAndAction(ChangeLogTypeBuiltin.GROUP_DELETE)) {
 					String groupId = changeLogEntry.retrieveValueForLabel(ChangeLogLabels.GROUP_DELETE.id);
-					String groupExtension = changeLogEntry.retrieveValueForLabel(ChangeLogLabels.GROUP_ADD.name);
-					log.debug("Group delete, name: " + groupExtension );
-					Group group = GroupFinder.findByName(getGrouperSession(), groupExtension, false);
-					if (group != null){
-						getNakamuraGroupAdapter().deleteGroup(group);
+					String groupName = changeLogEntry.retrieveValueForLabel(ChangeLogLabels.GROUP_DELETE.name);
+
+					if (log.isDebugEnabled()){
+						log.debug(ChangeLogTypeBuiltin.GROUP_DELETE+ ": name=" + groupName);
+					}
+					Group group = GroupFinder.findByName(getGrouperSession(), groupName, false);
+					if (group == null){
+						getNakamuraGroupAdapter().deleteGroup(groupId, groupName);
+					}
+					else {
+						log.error("Received a delete event for a group that still exists!");
 					}
 				}
 
@@ -122,14 +131,19 @@ public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 		return currentId;
 	}
 
+	/**
+	 * Lazy-load the grouperSession 
+	 * @return
+	 */
 	private GrouperSession getGrouperSession(){
-		if ( grouperSession == null ) {
+		if ( grouperSession == null || grouperSystemSubject == null ) {
 			try {
-				grouperSession = GrouperSession.start(this.grouperSystemSubject, false);
+				grouperSystemSubject = SubjectFinder.findRootSubject();
+				grouperSession = GrouperSession.start(grouperSystemSubject, false);
 				log.debug("started session: " + this.grouperSession);
 			}
-			catch (SessionException eS) {
-				throw new GrouperException( "error starting session: " + eS.getMessage(), eS );
+			catch (SessionException se) {
+				throw new GrouperException("Error starting session: " + se.getMessage(), se);
 			}
 		}
 		return grouperSession;
