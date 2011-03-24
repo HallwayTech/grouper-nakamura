@@ -32,6 +32,7 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 	private static String PROP_KEY_NAKAMURA_URL = "grouperClient.xmpp.nakamura.url";
 	private static String PROP_KEY_NAKAMURA_USERNAME = "grouperClient.xmpp.nakamura.username";
 	private static String PROP_KEY_NAKAMURA_PASSWORD = "grouperClient.xmpp.nakamura.password";
+	private static String PROP_KEY_NAKAMURA_BASESTEM = "grouperClient.xmpp.nakamura.basestem";
 	
 	private GrouperSession grouperSession;
 	private Subject grouperSystemSubject;
@@ -44,7 +45,8 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 		groupAdapter.setUsername(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_USERNAME, true));
 		groupAdapter.setPassword(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_PASSWORD, true));
 		groupAdapter.setInitialPropertiesProvider(new StaticInitialGroupPropertiesProvider());
-		groupAdapter.setGroupIdAdapter(new BaseNakamuraGroupIdAdapter());
+		groupAdapter.setGroupIdAdapter(
+				new BaseNakamuraGroupIdAdapter(GrouperClientUtils.propertiesValue(PROP_KEY_NAKAMURA_BASESTEM, true)));
 		
 		grouperSystemSubject = SubjectFinder.findRootSubject();
 	}
@@ -82,7 +84,7 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 			else if (GrouperClientUtils.equals(action, "GROUP_DELETE")) {
 				Group group = GroupFinder.findByName(getGrouperSession(), groupExtension, false);
 				if (group != null){
-					groupAdapter.deleteGroup(group);
+					groupAdapter.deleteGroup(groupName, groupExtension);
 				}
 			}
 			else {
