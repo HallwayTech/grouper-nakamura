@@ -14,8 +14,7 @@ public class StaticInitialGroupPropertiesProvider implements InitialGroupPropert
 	public void addProperties(Group group, PostMethod method) {
 		
 		// Basic info
-		method.addParameter("sakai:group-id", group.getId());
-		method.addParameter("sakai:group-title", group.getDisplayName());
+		method.addParameter("sakai:group-title", group.getExtension());
 		method.addParameter("sakai:group-description", group.getDescription());
 		method.addParameter("sakai:pages-template", "/var/templates/site/defaultgroup");
 		
@@ -25,7 +24,7 @@ public class StaticInitialGroupPropertiesProvider implements InitialGroupPropert
 		method.addParameter("sakai:pages-visible", "members-only");
 		
 		// Grouper
-		method.addParameter("grouper:extension", group.getExtension());
+		method.addParameter("grouper:name", group.getName());
 		method.addParameter("grouper:uuid", group.getUuid());
 	}
 }
