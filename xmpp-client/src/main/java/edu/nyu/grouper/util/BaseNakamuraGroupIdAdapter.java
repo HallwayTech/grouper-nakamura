@@ -8,13 +8,30 @@ import edu.nyu.grouper.xmpp.api.GroupIdAdapter;
  *
  */
 public class BaseNakamuraGroupIdAdapter implements GroupIdAdapter {
+	
+	private String basestem;
+	
+	public BaseNakamuraGroupIdAdapter(String basestem){
+		this.basestem = basestem;
+	}
 
-	public String getNakamuraName(String fullGrouperGroupName) {
-		return fullGrouperGroupName.replaceAll(":", "_");
+	public String getNakamuraName(String grouperName) {
+		return stripBaseStem(grouperName).replaceAll(":", "_");
 	}
 
 	public String getGrouperFullName(String nakamuraGroupName) {
-		return nakamuraGroupName.replaceAll("_", ":");		
+		String grouperFullName = nakamuraGroupName.replaceAll("_", ":");
+		if(basestem != null && ! "".equals(basestem)){
+			grouperFullName = basestem + ":" + grouperFullName;
+		}
+		return grouperFullName;
+	}
+	
+	private String stripBaseStem(String grouperName){
+		if (grouperName.startsWith(basestem + ":")){
+			grouperName = grouperName.substring(basestem.length() + 1);
+		}
+		return grouperName;
 	}
 
 }
