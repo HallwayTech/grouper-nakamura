@@ -64,7 +64,8 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 				log.info("SUCCESS: created a group for " + nakamuraGroupName);
 				break;
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-				log.error("FAILURE: Unable to create a group for " + nakamuraGroupName + ". Received an HTTP 500 response.");
+				log.error("FAILURE: Unable to create a group for " + nakamuraGroupName + 
+						". Received an HTTP 500 response.");
 				break;
 			case HttpStatus.SC_FORBIDDEN:
 				log.error("FAILURE: Unable to create a group for " + nakamuraGroupName
@@ -86,9 +87,9 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 * Delete a group from sakai3
 	 * curl -Fgo=1 http://localhost:8080/system/userManager/group/groupId.delete.html
 	 */
-	public void deleteGroup(Group group) throws GroupModificationException {
+	public void deleteGroup(String groupId, String groupName) throws GroupModificationException {
 		
-		String nakamuraGroupName = groupIdAdapter.getNakamuraName(group.getExtension());
+		String nakamuraGroupName = groupIdAdapter.getNakamuraName(groupName);
 
 		HttpClient client = getHttpClient();
 	    PostMethod method = new PostMethod(url.toString() + getDeletePath(nakamuraGroupName));
@@ -96,6 +97,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 
 	    try{
 	    	int returnCode = client.executeMethod(method);
+	    	log.info("POST to " + method.getURI());
 	    	InputStream response = method.getResponseBodyAsStream();
 
 	    	switch (returnCode){
@@ -104,7 +106,8 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	    			log.info("SUCCESS: deleted group " + nakamuraGroupName);
 	    			break;	
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-				log.error("FAILURE: Unable to delete group " + nakamuraGroupName + ". Received an HTTP 500 response.");
+				log.error("FAILURE: Unable to delete group " + nakamuraGroupName + 
+						". Received an HTTP 500 response.");
 				break;
 			case HttpStatus.SC_FORBIDDEN:
 				log.error("FAILURE: Unable to create a group for " + nakamuraGroupName
@@ -116,7 +119,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 				break;
 	    	}
 	    } catch (Exception e) {
-	      log.error("An exception occurred while deleting the group. " + group.getId()
+	      log.error("An exception occurred while deleting the group. " + groupId
 	    		  + " Error: " + e.toString());
 	    } finally {
 	      method.releaseConnection();
@@ -127,7 +130,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 * Add a subjectId to a group by POSTing to:
 	 * http://localhost:8080/system/userManager/group/groupId.update.html :member=subjectId
 	 */
-	public void addMembership(String groupId, String groupExtension, String subjectId)
+	public void addMembership(String groupId, String groupName, String subjectId)
 			throws GroupModificationException {
 		PostMethod method = new PostMethod(url.toString() + getUpdatePath(groupId));
 	    method.addParameter(":member", subjectId);
@@ -140,9 +143,9 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 * Delete a subjectId from a group by POSTing to:
 	 * http://localhost:8080/system/userManager/group/groupId.update.html :member=subjectId
 	 */
-	public void deleteMembership(String groupId, String groupExtension, String subjectId)
+	public void deleteMembership(String groupId, String groupName, String subjectId)
 			throws GroupModificationException {
-		String nakamuraGroupName = groupIdAdapter.getNakamuraName(groupExtension);
+		String nakamuraGroupName = groupIdAdapter.getNakamuraName(groupName);
 		PostMethod method = new PostMethod(url.toString() + getUpdatePath(nakamuraGroupName));
 	    method.addParameter(":member@Delete", subjectId);
 	    if (updateGroupMembership(nakamuraGroupName, subjectId, method)){
@@ -152,12 +155,12 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 
 	/**
 	 * Add or delete a subject group membership.
-	 * @param groupId the id of the group being modified.
+	 * @param groupName the id of the group being modified.
 	 * @param subjectId the id of the subject being added or remove.
 	 * @param method the POST method to send to nakamura
 	 * @return
 	 */
-	private boolean updateGroupMembership(String groupId, String subjectId, PostMethod method){
+	private boolean updateGroupMembership(String groupName, String subjectId, PostMethod method){
 		HttpClient client = getHttpClient();
 	    boolean success = false;
 	    try{
@@ -170,25 +173,25 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 				break;
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
 				log.error("FAILURE: Encountered a 500 error while modifing group="
-						+ groupId);
+						+ groupName);
 				break;
 			case HttpStatus.SC_NOT_FOUND:
 				log.error("FAILURE: Nakamura reported that the group "
-						+ groupId + " does not exist");
+						+ groupName + " does not exist");
 				break;
 			case HttpStatus.SC_FORBIDDEN:
-				log.debug("FAILURE: Unable to modify group  " + groupId
+				log.debug("FAILURE: Unable to modify group  " + groupName
 						+ ". Received an HTTP 403 Forbidden. Check the username and password.");
 				break;
 			default:
 				log.error("FAILURE: Unable to modify subject membership: subject=" + subjectId 
-						+ " group=" + groupId);
+						+ " group=" + groupName);
 				logUnhandledResponse(returnCode, reponse);
 				break;
 	    	}
 	    } catch (Exception e) {
 	    	log.error("An exception occurred while modifying group membership. subjectId=" + subjectId + 
-	    		  	" group=" + groupId + " Error: " + e.toString());
+	    		  	" group=" + groupName + " Error: " + e.toString());
 	    } finally {
 	      method.releaseConnection();
 	    }
