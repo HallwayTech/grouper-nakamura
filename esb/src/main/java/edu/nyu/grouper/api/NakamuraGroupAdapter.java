@@ -1,4 +1,4 @@
-package edu.nyu.grouper.xmpp.api;
+package edu.nyu.grouper.api;
 
 import edu.internet2.middleware.grouper.Group;
 import edu.nyu.grouper.xmpp.exceptions.GroupModificationException;
