@@ -35,11 +35,11 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	private String username;
 	private String password;
 	
+	// Sets HTTP POST params that are stored in nakamura as properties on the group. 
 	private InitialGroupPropertiesProvider initialPropertiesProvider;
+	
+	// Maps group names from grouper <-> nakamura
 	private GroupIdAdapter groupIdAdapter;
-
-	public HttpNakamuraGroupAdapter() {
-	}
 
 	/**
 	 * POST to http://localhost:8080/system/userManager/group.create.html
@@ -60,7 +60,9 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 
 	    	switch (returnCode){
 			case HttpStatus.SC_OK:
-				log.info("SUCCESS: created a group for " + nakamuraGroupName);
+				if (log.isInfoEnabled()){
+					log.info("SUCCESS: created a group for " + nakamuraGroupName);
+				}
 				break;
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
 				log.error("FAILURE: Unable to create a group for " + nakamuraGroupName + 
@@ -87,7 +89,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	 * curl -Fgo=1 http://localhost:8080/system/userManager/group/groupId.delete.html
 	 */
 	public void deleteGroup(String groupId, String groupName) throws GroupModificationException {
-		
+
 		String nakamuraGroupName = groupIdAdapter.getNakamuraName(groupName);
 
 		HttpClient client = getHttpClient();
@@ -96,14 +98,15 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 
 	    try{
 	    	int returnCode = client.executeMethod(method);
-	    	log.info("POST to " + method.getURI());
 	    	InputStream response = method.getResponseBodyAsStream();
 
 	    	switch (returnCode){
 			case HttpStatus.SC_OK:
 			case HttpStatus.SC_CREATED:
+				if (log.isInfoEnabled()){
 	    			log.info("SUCCESS: deleted group " + nakamuraGroupName);
-	    			break;	
+				}
+	    		break;	
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
 				log.error("FAILURE: Unable to delete group " + nakamuraGroupName + 
 						". Received an HTTP 500 response.");
@@ -134,7 +137,9 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 		PostMethod method = new PostMethod(url.toString() + getUpdatePath(groupId));
 	    method.addParameter(":member", subjectId);
 	    if (updateGroupMembership(groupId, subjectId, method)){
-	    	log.info("SUCCESS: add subjectId=" + subjectId + " to group=" + groupId );
+	    	if (log.isInfoEnabled()){
+	    		log.info("SUCCESS: add subjectId=" + subjectId + " to group=" + groupId );
+	    	}
 	    }
 	}
 
@@ -148,7 +153,10 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 		PostMethod method = new PostMethod(url.toString() + getUpdatePath(nakamuraGroupName));
 	    method.addParameter(":member@Delete", subjectId);
 	    if (updateGroupMembership(nakamuraGroupName, subjectId, method)){
-	    	log.info("SUCCESS: deleted subjectId=" + subjectId + " from group=" + nakamuraGroupName );
+	    	if (log.isInfoEnabled()){
+	    		log.info("SUCCESS: deleted subjectId=" + subjectId + 
+	    					" from group=" + nakamuraGroupName );
+	    	}
 	    }
 	}
 
@@ -243,7 +251,6 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 			try {
 				log.error("Unhandled response. code=" + responseCode + "\nResponse: " + IOUtils.toString(response));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				log.error("Error reading the response", e);
 			}
 		}
