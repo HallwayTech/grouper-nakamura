@@ -15,6 +15,7 @@ import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppJob;
 import edu.internet2.middleware.grouperClientExt.xmpp.GrouperClientXmppSubject;
 import edu.internet2.middleware.subject.Subject;
 
+import edu.nyu.grouper.api.NakamuraGroupAdapter;
 import edu.nyu.grouper.esb.HttpNakamuraGroupAdapter;
 import edu.nyu.grouper.util.BaseNakamuraGroupIdAdapter;
 import edu.nyu.grouper.util.StaticInitialGroupPropertiesProvider;
@@ -22,8 +23,8 @@ import edu.nyu.grouper.xmpp.exceptions.GroupModificationException;
 
 /**
  * 
- * Respond to Grouper Changelog events by creating, updating, 
- * or deleting group information in nakamura.
+ * Respond to Grouper change log events by creating, updating, 
+ * or deleting group information in nakamura via a {@link NakamuraGroupAdapter}.
  */
 public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 	
@@ -67,8 +68,11 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 			GrouperClientXmppSubject changeSubject, String action) {
 		
 		try {
-			log.debug("action=" + action + " groupName=" + groupName + " groupExtension=" + groupExtension + " changeSubject=" + changeSubject.getName());
-			
+
+			if (log.isDebugEnabled()){
+				log.debug("action=" + action + " groupName=" + groupName + " groupExtension=" + groupExtension + " changeSubject=" + changeSubject.getName());
+			}
+
 			if (GrouperClientUtils.equals(action, "MEMBERSHIP_ADD")) {
 			    groupAdapter.addMembership(groupName, groupExtension, changeSubject.getSubjectId());
 			} 
@@ -113,7 +117,9 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 		if ( grouperSession == null ) {
 			try {
 				grouperSession = GrouperSession.start(grouperSystemSubject, false);
-				log.debug("started session: " + grouperSession);
+				if (log.isDebugEnabled()){
+					log.debug("started session: " + grouperSession);
+				}
 			}
 			catch (SessionException se) {
 				throw new GrouperException( "error starting session: " + se.getMessage(), se );
@@ -121,5 +127,4 @@ public class NakamuraGroupXmppHandler implements GrouperClientXmppHandler {
 		}
 		return grouperSession;
 	}
-
 }
