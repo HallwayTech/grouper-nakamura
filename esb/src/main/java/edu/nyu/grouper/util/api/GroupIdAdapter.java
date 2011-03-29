@@ -1,4 +1,4 @@
-package edu.nyu.grouper.xmpp.api;
+package edu.nyu.grouper.util.api;
 
 /**
  * A strategy to map names from grouper to Nakamura.

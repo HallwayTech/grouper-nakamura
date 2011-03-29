@@ -1,6 +1,6 @@
 package edu.nyu.grouper.util;
 
-import edu.nyu.grouper.xmpp.api.GroupIdAdapter;
+import edu.nyu.grouper.util.api.GroupIdAdapter;
 
 /**
  * 

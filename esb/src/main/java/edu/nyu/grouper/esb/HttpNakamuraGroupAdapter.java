@@ -17,8 +17,8 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.internet2.middleware.grouper.Group;
 import edu.nyu.grouper.api.NakamuraGroupAdapter;
-import edu.nyu.grouper.xmpp.api.GroupIdAdapter;
-import edu.nyu.grouper.xmpp.api.InitialGroupPropertiesProvider;
+import edu.nyu.grouper.util.api.GroupIdAdapter;
+import edu.nyu.grouper.util.api.InitialGroupPropertiesProvider;
 import edu.nyu.grouper.xmpp.exceptions.GroupModificationException;
 
 /**

@@ -3,7 +3,7 @@ package edu.nyu.grouper.util;
 import org.apache.commons.httpclient.methods.PostMethod;
 
 import edu.internet2.middleware.grouper.Group;
-import edu.nyu.grouper.xmpp.api.InitialGroupPropertiesProvider;
+import edu.nyu.grouper.util.api.InitialGroupPropertiesProvider;
 
 /**
  * Provide a set of static properties for new sakai groups.

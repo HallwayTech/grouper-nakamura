@@ -1,4 +1,4 @@
-package edu.nyu.grouper.xmpp.api;
+package edu.nyu.grouper.util.api;
 
 import org.apache.commons.httpclient.methods.PostMethod;
 

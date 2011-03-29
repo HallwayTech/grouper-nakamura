@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import edu.internet2.middleware.grouper.Group;
 import edu.internet2.middleware.grouperClient.util.GrouperClientUtils;
-import edu.nyu.grouper.xmpp.api.InitialGroupPropertiesProvider;
+import edu.nyu.grouper.util.api.InitialGroupPropertiesProvider;
 
 import org.apache.commons.httpclient.methods.PostMethod;
 
