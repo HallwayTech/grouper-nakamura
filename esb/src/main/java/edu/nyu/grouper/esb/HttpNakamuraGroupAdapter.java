@@ -19,7 +19,7 @@ import edu.internet2.middleware.grouper.Group;
 import edu.nyu.grouper.api.NakamuraGroupAdapter;
 import edu.nyu.grouper.util.api.GroupIdAdapter;
 import edu.nyu.grouper.util.api.InitialGroupPropertiesProvider;
-import edu.nyu.grouper.xmpp.exceptions.GroupModificationException;
+import edu.nyu.grouper.exceptions.GroupModificationException;
 
 /**
  * Responds to Grouper changelog events by HTTP POSTing to the nakamura group servlets.

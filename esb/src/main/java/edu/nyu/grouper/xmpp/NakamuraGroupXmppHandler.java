@@ -19,7 +19,7 @@ import edu.nyu.grouper.api.NakamuraGroupAdapter;
 import edu.nyu.grouper.esb.HttpNakamuraGroupAdapter;
 import edu.nyu.grouper.util.BaseNakamuraGroupIdAdapter;
 import edu.nyu.grouper.util.StaticInitialGroupPropertiesProvider;
-import edu.nyu.grouper.xmpp.exceptions.GroupModificationException;
+import edu.nyu.grouper.exceptions.GroupModificationException;
 
 /**
  * 
