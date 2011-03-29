@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import net.sf.json.JSONObject;
+import net.sf.json.util.JSONStringer;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.HttpStatus;
@@ -28,7 +31,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	
 	private Log log = LogFactory.getLog(HttpNakamuraGroupAdapter.class);
 	
-	private static String GROUP_CREATE_PATH = "/system/userManager/group.create.html";
+	private static String GROUP_CREATE_PATH = "/system/userManager/group.create.json";
 	private static String GROUP_UPDATE_PATH_PREFIX = "/system/userManager/group/";
 
 	private URL url;
@@ -42,7 +45,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	private GroupIdAdapter groupIdAdapter;
 
 	/**
-	 * POST to http://localhost:8080/system/userManager/group.create.html
+	 * POST to http://localhost:8080/system/userManager/group.create.json
 	 * @see org.sakaiproject.nakamura.user.servlet.CreateSakaiGroupServlet
 	 */
 	public void createGroup(Group group) throws GroupModificationException {
@@ -53,45 +56,63 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 		PostMethod method = new PostMethod(url.toString() + GROUP_CREATE_PATH);
 	    method.addParameter(":name", nakamuraGroupName);
 	    initialPropertiesProvider.addProperties(group, nakamuraGroupName,  method);
-	    
 	    String errorMessage = null;
 
 	    try{
 	    	int returnCode = client.executeMethod(method);
-	    	InputStream reponse = method.getResponseBodyAsStream();
+	    	InputStream response = method.getResponseBodyAsStream();
 
 	    	switch (returnCode){
+	    	// 200
 			case HttpStatus.SC_OK:
 				if (log.isInfoEnabled()){
-					log.info("SUCCESS: created a group for " + nakamuraGroupName);
+					log.info("SUCCESS: created a group for " + group.getName());
 				}
 				break;
+			// 400
+			case HttpStatus.SC_BAD_REQUEST:
+				// Parse the response and check the status.message
+				JSONObject jsonObject = JSONObject.fromObject(IOUtils.toString(response));
+				String statusMessage = jsonObject.getString("status.message"); 
+
+				if (statusMessage.startsWith("A principal already exists")){
+					if (log.isInfoEnabled()){
+						log.info("Create event for a group that already exists: " + group.getName());
+					}
+				}
+				else {
+					errorMessage = "FAILURE: 400 : Unable to create a group for " + group.getName() + ". " + statusMessage;
+				}
+				break;
+			// 403
+			case HttpStatus.SC_FORBIDDEN: 
+				errorMessage = "FAILURE: 403: Unable to create a group for " + group.getName()
+						+ ". Check the username and password.";
+				break;
+			// 500
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-				errorMessage = "FAILURE: Unable to create a group for " + nakamuraGroupName + 
-					". Received an HTTP 500 response.";
+				errorMessage = "FAILURE: 500: Unable to create a group for " + group.getName();
 				break;
-			case HttpStatus.SC_FORBIDDEN:
-				errorMessage = "FAILURE: Unable to create a group for " + nakamuraGroupName
-						+ ". Received an HTTP 403 Forbidden. Check the username and password.";
-				break;
+			// ?
 			default:
-				errorMessage = "FAILURE: Unable to create a group for " + nakamuraGroupName;
-				logUnhandledResponse(returnCode, reponse);
+				errorMessage = "FAILURE: " + returnCode + ": Unable to create a group for " + group.getName();
+				logUnhandledResponse(returnCode, response);
 				break;
 	    	}
-	    } catch (Exception e) {
-	      errorMessage = "An exception occurred while creating the group. " + e.toString();
-	    } finally {
-	      method.releaseConnection();
 	    }
-	    
+	    catch (Exception e) {
+	    	errorMessage = "An exception occurred while creating the group. " + e.toString();
+	    } 
+	    finally {
+	    	method.releaseConnection();
+	    }
+
 	    if (errorMessage != null){
 	    	if (log.isErrorEnabled()){ 
 	    		log.error(errorMessage);
 	    	}
 	    	throw new GroupModificationException(errorMessage);
 	    }
-	    
 	}
 
 	/**
