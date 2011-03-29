@@ -52,7 +52,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 		HttpClient client = getHttpClient();
 		PostMethod method = new PostMethod(url.toString() + GROUP_CREATE_PATH);
 	    method.addParameter(":name", nakamuraGroupName);
-	    initialPropertiesProvider.addProperties(group, method);
+	    initialPropertiesProvider.addProperties(group, nakamuraGroupName,  method);
 	    
 	    String errorMessage = null;
 

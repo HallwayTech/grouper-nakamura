@@ -25,12 +25,15 @@ public class ConfigFileInitialGroupPropertiesProvider implements InitialGroupPro
 		loadPropertiesFromFile();
 	}
 
-	public void addProperties(Group group, PostMethod method) {
+	public void addProperties(Group group, String nakamuraGroupId, PostMethod method) {
 		for(String key: initialProperties.keySet()){
 			method.addParameter(key, initialProperties.get(key));
 		}
+		method.addParameter("sakai:group-id", nakamuraGroupId);
+
 		// Grouper
-		method.addParameter("grouper:full-name", group.getExtension());
+		method.addParameter("grouper:name", group.getName());
+		method.addParameter("grouper:uuid", group.getUuid());
 	}
 	
 	private void loadPropertiesFromFile(){

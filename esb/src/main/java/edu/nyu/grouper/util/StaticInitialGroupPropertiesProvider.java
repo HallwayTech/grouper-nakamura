@@ -11,10 +11,10 @@ import edu.nyu.grouper.util.api.InitialGroupPropertiesProvider;
  */
 public class StaticInitialGroupPropertiesProvider implements InitialGroupPropertiesProvider {
 
-	public void addProperties(Group group, PostMethod method) {
+	public void addProperties(Group group, String nakamuraGroupId, PostMethod method) {
 		
 		// Basic info
-		method.addParameter("sakai:group-id", group.getExtension());
+		method.addParameter("sakai:group-id", nakamuraGroupId);
 		method.addParameter("sakai:group-title", group.getExtension());
 		method.addParameter("sakai:group-description", group.getDescription());
 		method.addParameter(":sakai:pages-template", "/var/templates/site/defaultgroup");
