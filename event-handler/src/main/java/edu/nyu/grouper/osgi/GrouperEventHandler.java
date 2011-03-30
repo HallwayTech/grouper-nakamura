@@ -67,7 +67,7 @@ public class GrouperEventHandler implements EventHandler {
 	private static final Logger log = LoggerFactory.getLogger(GrouperEventHandler.class);
 
 	// Configurable via the ConfigAdmin services.
-	private static final String DEFAULT_URL = "http://localhost:8080/grouper-ws/servicesRest";
+	private static final String DEFAULT_URL = "http://localhost:9090/grouper-ws/servicesRest";
 	@Property(value=DEFAULT_URL)
 	private static final String PROP_URL = "sakai.grouper.url";
 	
@@ -192,7 +192,7 @@ public class GrouperEventHandler implements EventHandler {
 				    log.debug("Group beans created.");
 
 				    // Encode the request and send it off
-				    String requestDocument = jsonConvertTo(groupSave);
+				    String requestDocument = toJSONString(groupSave);
 				    method.setRequestEntity(new StringRequestEntity(requestDocument, "text/x-json", "UTF-8"));
 				    
 				    log.debug("POST Method prepared for {} \n{}.", grouperWsRestUrl, requestDocument);
@@ -210,20 +210,9 @@ public class GrouperEventHandler implements EventHandler {
 				    boolean success = "T".equals(successString);
 				    String resultCode = method.getResponseHeader("X-Grouper-resultCode").getValue();
 				    
-				    String jsonResponse = IOUtils.toString(method.getResponseBodyAsStream());
-				    JSONObject jsonObject = JSONObject.fromObject(jsonResponse);  
-//				    Object result = JSONObject.toBean( jsonObject, WsGroupSaveResults.class );  
+				    // String jsonResponse = IOUtils.toString(method.getResponseBodyAsStream());
+				    // JSONObject jsonObject = JSONObject.fromObject(jsonResponse);
 
-				    //see if problem
-//				    if (result instanceof WsRestResultProblem) {
-//				    	throw new RuntimeException(((WsRestResultProblem)result).getResultMetadata().getResultMessage());
-//				    }
-//
-//				    //convert to object (from xhtml, xml, json, etc)
-//				    WsGroupSaveResults wsGroupSaveResults = (WsGroupSaveResults)result;
-//				    String resultMessage = wsGroupSaveResults.getResultMetadata().getResultMessage();
-
-				    // see if request worked or not
 				    if (!success) {
 				    	throw new Exception("Bad response from web service: successString: " + successString 
 				    			+ ", resultCode: " + resultCode + ", " + jsonResponse);
@@ -274,7 +263,7 @@ public class GrouperEventHandler implements EventHandler {
 				log.debug("Group beans created.");
 
 				// Encode the request and send it off
-			    String requestDocument = jsonConvertTo(groupDelete);
+			    String requestDocument = toJSONString(groupDelete);
  				method.setRequestEntity(new StringRequestEntity(requestDocument, "text/x-json", "UTF-8"));
 
 				log.debug("POST Method prepared for {} \n{}.", grouperWsRestUrl, requestDocument);
@@ -291,18 +280,7 @@ public class GrouperEventHandler implements EventHandler {
 				}
 				boolean success = "T".equals(successString);
 				String resultCode = method.getResponseHeader("X-Grouper-resultCode").getValue();
-				JSONObject responseObject = JSONObject.fromObject(IOUtils.toString(method.getResponseBodyAsStream())); 
-			    
-				// Object result = JSONObject.toBean( jsonObject, WsGroupSaveResults.class );  
-
-				//see if problem
-//				if (result instanceof WsRestResultProblem) {
-//					throw new RuntimeException(((WsRestResultProblem)result).getResultMetadata().getResultMessage());
-//				}
-//
-//				//convert to object (from xhtml, xml, json, etc)
-//				WsGroupSaveResults wsGroupSaveResults = (WsGroupSaveResults)result;
-//				String resultMessage = wsGroupSaveResults.getResultMetadata().getResultMessage();
+				// JSONObject responseObject = JSONObject.fromObject(IOUtils.toString(method.getResponseBodyAsStream())); 
 
 				// see if request worked or not
 				if (!success) {
@@ -332,11 +310,11 @@ public class GrouperEventHandler implements EventHandler {
 	}
 	
 	/**
-	   * Convert an object to json. Stolen from GrouperUtil
+	   * Convert an object to json. Stolen from GrouperUtil.jsonConvertTo
 	   * @param object
 	   * @return the string of json
 	   */
-	  public static String jsonConvertTo(Object object) {
+	  public static String toJSONString(Object object) {
 	    if (object == null) {
 	      throw new NullPointerException();
 	    }
