@@ -117,7 +117,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 
 	/**
 	 * Delete a group from sakai3
-	 * curl -Fgo=1 http://localhost:8080/system/userManager/group/groupId.delete.html
+	 * curl -Fgo=1 http://localhost:8080/system/userManager/group/groupId.delete.json
 	 */
 	public void deleteGroup(String groupId, String groupName) throws GroupModificationException {
 
@@ -140,15 +140,14 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 				}
 	    		break;	
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-				errorMessage = "FAILURE: Unable to delete group " + nakamuraGroupName + 
-						". Received an HTTP 500 response.";
+				errorMessage = "FAILURE: 500: Unable to delete group " + nakamuraGroupName;
 				break;
 			case HttpStatus.SC_FORBIDDEN:
-				errorMessage = "FAILURE: Unable to create a group for " + nakamuraGroupName
-						+ ". Received an HTTP 403 Forbidden. Check the username and password.";
+				errorMessage = "FAILURE: 403: Unable to create a group for " + nakamuraGroupName
+						+ ". Check the username and password.";
 				break;
 			default:
-				errorMessage = "FAILURE: Unable to delete group " + nakamuraGroupName;
+				errorMessage = "FAILURE: " + returnCode + ": Unable to delete group " + nakamuraGroupName;
 				logUnhandledResponse(returnCode, response);
 				break;
 	    	}
@@ -249,7 +248,7 @@ public class HttpNakamuraGroupAdapter implements NakamuraGroupAdapter {
 	}
 
 	private String getDeletePath(String groupId){
-		return GROUP_UPDATE_PATH_PREFIX + groupId + ".delete.html";
+		return GROUP_UPDATE_PATH_PREFIX + groupId + ".delete.json";
 	}
 
 	/**
