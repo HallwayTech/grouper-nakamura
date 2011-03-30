@@ -52,6 +52,7 @@ import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupDeleteRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupSaveRequest;
 import edu.nyu.grouper.BaseGrouperIdHelper;
 import edu.nyu.grouper.api.GrouperIdHelper;
+import edu.nyu.grouper.osgi.api.GrouperConfiguration;
 
 @Service(value = EventHandler.class)
 @Component(immediate = true, metatype=true)
@@ -66,34 +67,9 @@ public class GrouperEventHandler implements EventHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(GrouperEventHandler.class);
 
-	// Configurable via the ConfigAdmin services.
-	private static final String DEFAULT_URL = "http://localhost:9090/grouper-ws/servicesRest";
-	@Property(value=DEFAULT_URL)
-	private static final String PROP_URL = "sakai.grouper.url";
+	@Reference
+	protected GrouperConfiguration grouperConfiguration;
 	
-	private static final String DEFAULT_WS_VERSION = "1_6_000";
-	@Property(value=DEFAULT_WS_VERSION)
-	private static final String PROP_WS_VERSION= "sakai.grouper.ws_version";
-
-	private static final String DEFAULT_USERNAME = "GrouperSystem";
-	@Property(value=DEFAULT_USERNAME)
-	private static final String PROP_USERNAME = "sakai.grouper.username";
-
-	private static final String DEFAULT_PASSWORD = "abc123";
-	@Property(value=DEFAULT_PASSWORD)
-	private static final String PROP_PASSWORD = "sakai.grouper.password";
-
-	private static final String DEFAULT_BASESTEM = "edu:apps:sakai3";
-	@Property(value=DEFAULT_BASESTEM)
-	private static final String PROP_BASESTEM = "sakai.grouper.basestem";
-	
-	// Grouper configuration.
-	private URL url;
-	private String wsVersion;
-	private String username;
-	private String password;
-	private String baseStem;
-
 	@Reference
 	protected Repository repository;
 
@@ -105,9 +81,6 @@ public class GrouperEventHandler implements EventHandler {
 	@Activate
 	public void activate(Map<?, ?> props) 
 		throws ConfigurationException, ClientPoolException, StorageClientException, AccessDeniedException{
-
-		// Initial configuration
-		updated(props);
 		
 		try {
 			// Intialize the Nakamura Session
@@ -119,29 +92,7 @@ public class GrouperEventHandler implements EventHandler {
 		catch (Exception e) {
 			log.debug(e.getMessage());
 		}
-		
 		log.debug("Activated!");
-	}
-
-	// -------------------------- Configuration Admin --------------------------
-	/**
-	 * Called by the Configuration Admin service when a new configuration is detected.
-	 * @see org.osgi.service.cm.ManagedService#updated
-	 */
-
-	@Modified
-	public void updated(Map<?,?> props) throws ConfigurationException {
-		try {
-			
-			url = new URL(OsgiUtil.toString(props.get(PROP_URL), DEFAULT_URL));
-			wsVersion = OsgiUtil.toString(props.get(PROP_WS_VERSION), DEFAULT_WS_VERSION);
-			username = OsgiUtil.toString(props.get(PROP_USERNAME), DEFAULT_USERNAME);
-			password = OsgiUtil.toString(props.get(PROP_PASSWORD), DEFAULT_PASSWORD);
-			baseStem = OsgiUtil.toString(props.get(PROP_BASESTEM), DEFAULT_BASESTEM);
-		}
-		catch (MalformedURLException mfe) {
-			throw new ConfigurationException(PROP_URL, mfe.getMessage(), mfe);
-		}
 	}
 	
 	/**
@@ -165,15 +116,16 @@ public class GrouperEventHandler implements EventHandler {
 						return;
 					}
 
-					String fullGrouperName = groupIdAdapter.getFullGrouperName(baseStem, groupId);
+					String fullGrouperName = groupIdAdapter.getFullGrouperName(
+							grouperConfiguration.getBaseStem(), groupId);
 					String grouperName = groupIdAdapter.getName(groupId);
 					
 					log.debug("Creating a new Grouper Group = {} for sakai authorizableId = {}", 
 								fullGrouperName, groupId);
 
 					HttpClient client = getHttpClient();
-		            // URL e.g. http://localhost:8093/grouper-ws/servicesRest/v1_6_000/...
-					String grouperWsRestUrl = url + "/" + wsVersion + "/groups";
+		            // URL e.g. http://localhost:9090/grouper-ws/servicesRest/v1_6_003/...
+					String grouperWsRestUrl = grouperConfiguration.getUrl() + "/" + grouperConfiguration.getWsVersion() + "/groups";
 		            PostMethod method = new PostMethod(grouperWsRestUrl);
 		            method.setRequestHeader("Connection", "close");
 
@@ -245,13 +197,13 @@ public class GrouperEventHandler implements EventHandler {
 			String groupId = (String) event.getProperty("path");
 
 			try {
-				String fullGrouperName = groupIdAdapter.getFullGrouperName(baseStem, groupId);
+				String fullGrouperName = groupIdAdapter.getFullGrouperName(grouperConfiguration.getBaseStem(), groupId);
 
 				log.debug("Deleting Grouper Group = {} for sakai authorizableId = {}", 
 						fullGrouperName, groupId);
 
 				HttpClient client = getHttpClient();
-				String grouperWsRestUrl = url + "/" + wsVersion + "/groups";
+				String grouperWsRestUrl = grouperConfiguration.getUrl() + "/" + grouperConfiguration.getWsVersion() + "/groups";
 				PostMethod method = new PostMethod(grouperWsRestUrl);
 				method.setRequestHeader("Connection", "close");
 
@@ -357,8 +309,9 @@ public class GrouperEventHandler implements EventHandler {
 
 		HttpState state = client.getState();
 		state.setCredentials(
-				new AuthScope(url.getHost(), getPort(url)),
-				new UsernamePasswordCredentials(username, password));
+				new AuthScope(grouperConfiguration.getUrl().getHost(), getPort(grouperConfiguration.getUrl())),
+				new UsernamePasswordCredentials(grouperConfiguration.getUsername(), 
+												grouperConfiguration.getPassword()));
 		client.getParams().setAuthenticationPreemptive(true);
 		client.getParams().setParameter("http.useragent", this.getClass().getName());
 		return client;
