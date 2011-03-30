@@ -86,7 +86,6 @@
                 		mockito-all,
                 		xercesImpl,
                 		xml-resolver,
-                		xom,
                 		xsdlib,
                 		xstream
                     	</Embed-Dependency>
