@@ -1,23 +1,16 @@
 package edu.nyu.grouper.osgi;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Map;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 import net.sf.json.util.PropertyFilter;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpState;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.httpclient.params.DefaultHttpParams;
-import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.io.IOUtils;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
@@ -42,11 +35,12 @@ import org.slf4j.LoggerFactory;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroup;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupLookup;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupToSave;
-import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupDeleteRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupSaveRequest;
 import edu.nyu.grouper.BaseGrouperIdHelper;
 import edu.nyu.grouper.api.GrouperIdHelper;
 import edu.nyu.grouper.osgi.api.GrouperConfiguration;
+import edu.nyu.grouper.util.GrouperHttpUtil;
+import edu.nyu.grouper.util.GrouperJsonUtil;
 
 @Service(value = EventHandler.class)
 @Component(immediate = true, metatype=true)
@@ -117,8 +111,10 @@ public class GrouperEventHandler implements EventHandler {
 					log.debug("Creating a new Grouper Group = {} for sakai authorizableId = {}", 
 								fullGrouperName, groupId);
 
-					HttpClient client = getHttpClient();
-		            // URL e.g. http://localhost:9090/grouper-ws/servicesRest/v1_6_003/...
+					// URL e.g. http://localhost:9090/grouper-ws/servicesRest/v1_6_003/...
+					HttpClient client = GrouperHttpUtil.getHttpClient(grouperConfiguration.getUrl(), 
+							grouperConfiguration.getUsername(),
+							grouperConfiguration.getPassword());		            
 					String grouperWsRestUrl = grouperConfiguration.getUrl() + "/" + grouperConfiguration.getWsVersion() + "/groups";
 		            PostMethod method = new PostMethod(grouperWsRestUrl);
 		            method.setRequestHeader("Connection", "close");
@@ -138,7 +134,7 @@ public class GrouperEventHandler implements EventHandler {
 				    log.debug("Group beans created.");
 
 				    // Encode the request and send it off
-				    String requestDocument = toJSONString(groupSave);
+				    String requestDocument = GrouperJsonUtil.toJSONString(groupSave);
 				    method.setRequestEntity(new StringRequestEntity(requestDocument, "text/x-json", "UTF-8"));
 				    
 				    log.debug("POST Method prepared for {} \n{}.", grouperWsRestUrl, requestDocument);
@@ -186,96 +182,7 @@ public class GrouperEventHandler implements EventHandler {
 				log.error(e.getMessage(), e);
 			}
 		}
-
-		if ("org/sakaiproject/nakamura/lite/authorizables/DELETE".equals(event.getTopic())){
-			String groupId = (String) event.getProperty("path");
-
-			try {
-				String fullGrouperName = groupIdAdapter.getFullGrouperName(grouperConfiguration.getBaseStem(), groupId);
-
-				log.debug("Deleting Grouper Group = {} for sakai authorizableId = {}", 
-						fullGrouperName, groupId);
-
-				HttpClient client = getHttpClient();
-				String grouperWsRestUrl = grouperConfiguration.getUrl() + "/" + grouperConfiguration.getWsVersion() + "/groups";
-				PostMethod method = new PostMethod(grouperWsRestUrl);
-				method.setRequestHeader("Connection", "close");
-
-				// Fill out the group delete request beans
-				WsRestGroupDeleteRequest groupDelete = new WsRestGroupDeleteRequest();
-				groupDelete.setWsGroupLookups(new WsGroupLookup[]{ new WsGroupLookup(fullGrouperName, null) });
-
-				log.debug("Group beans created.");
-
-				// Encode the request and send it off
-			    String requestDocument = toJSONString(groupDelete);
- 				method.setRequestEntity(new StringRequestEntity(requestDocument, "text/x-json", "UTF-8"));
-
-				log.debug("POST Method prepared for {} \n{}.", grouperWsRestUrl, requestDocument);
-
-				client.executeMethod(method);
-
-				log.debug("POST Method executed to {}.", grouperWsRestUrl);
-
-				// Check the response
-				Header successHeader = method.getResponseHeader("X-Grouper-success");
-				String successString = successHeader == null ? null : successHeader.getValue();
-				if (successString == null || successString.equals("")) {
-					throw new Exception("Web service did not even respond!");
-				}
-				boolean success = "T".equals(successString);
-				String resultCode = method.getResponseHeader("X-Grouper-resultCode").getValue();
-				String responseString = IOUtils.toString(method.getResponseBodyAsStream());
-				// JSONObject responseJSON = JSONObject.fromObject(); 
-
-				// see if request worked or not
-				if (!success) {
-					throw new Exception("Bad response from web service: successString: " + successString 
-							+ ", resultCode: " + resultCode + ", " + responseString);
-				}
-
-				log.debug("Success! Delete Grouper Group = {} for sakai authorizableId = {}", 
-						fullGrouperName, groupId);
-			}
-			catch (StorageClientException sce) {
-				log.error("Unable to fetch authorizable for " + groupId, sce);
-			} 
-			catch (AccessDeniedException ade) {
-				log.error("Unable to fetch authorizable for " + groupId + ". Access Denied.", ade);
-			}
-			catch (IOException ioe){
-				log.error("IOException while communicating with grouper web services.", ioe);
-			}
-			catch (RuntimeException e) {
-				log.error(e.getMessage(), e);
-			}
-			catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}
-		}
 	}
-	
-	/**
-	   * Convert an object to json. Stolen from GrouperUtil.jsonConvertTo
-	   * @param object
-	   * @return the string of json
-	   */
-	  public static String toJSONString(Object object) {
-	    if (object == null) {
-	      throw new NullPointerException();
-	    }
-
-	    JsonConfig jsonConfig = new JsonConfig();  
-	    jsonConfig.setJsonPropertyFilter( new PropertyFilter(){  
-	       public boolean apply( Object source, String name, Object value ) {  
-	          return value == null; 
-	       }  
-	    });  
-	    JSONObject jsonObject = JSONObject.fromObject( object, jsonConfig );  
-	    String json = jsonObject.toString();
-	    
-	    return "{\"" + object.getClass().getSimpleName() + "\":" + json + "}";
-	  }
 
 	/**
 	 * Print the event to the log.
@@ -289,43 +196,5 @@ public class GrouperEventHandler implements EventHandler {
 			}
 			log.info("\ntopic : " + event.getTopic() + " properties: " + buffer.toString());
 		}
-	}
-
-	/**
-	 * Construct an {@link HttpClient} which is configured to authenticate to Nakamura.
-	 * @return the configured client.
-	 */
-	private HttpClient getHttpClient(){
-		HttpClient client = new HttpClient();
-
-		DefaultHttpParams.getDefaultParams().setParameter(
-                HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(0, false));
-
-		HttpState state = client.getState();
-		state.setCredentials(
-				new AuthScope(grouperConfiguration.getUrl().getHost(), getPort(grouperConfiguration.getUrl())),
-				new UsernamePasswordCredentials(grouperConfiguration.getUsername(), 
-												grouperConfiguration.getPassword()));
-		client.getParams().setAuthenticationPreemptive(true);
-		client.getParams().setParameter("http.useragent", this.getClass().getName());
-		return client;
-	}
-
-	/**
-	 * If you don't specify a port when creating a {@link URL} {@link URL#getPort()} will return -1.
-	 * This function uses the default HTTP/s ports  
-	 * @return the port for this.url. 80 or 433 if not specified.
-	 */
-	private int getPort(URL url){
-		int port = url.getPort();
-		if (port == -1){
-			if (url.getProtocol().equals("http")){
-				port = 80;
-			}
-			else if(url.getProtocol().equals("https")){
-				port = 443;
-			}
-		}
-		return port;
 	}
 }
