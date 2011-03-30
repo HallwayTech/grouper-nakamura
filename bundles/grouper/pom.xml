@@ -71,17 +71,27 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-                                        <Bundle-Category>grouper</Bundle-Category>
-					    <Embed-Dependency>grouper,commons-jexl,dom4j,icu4j,jaxp-ri,jettison,jdom,jaxen,joda-time,mail,mockito-all,xercesImpl,xml-resolver,xom,xsdlib,xstream</Embed-Dependency>
+						<Bundle-Category>grouper</Bundle-Category>
+						<Embed-Dependency>
+					    grouper,
+                		commons-jexl,
+                		dom4j,
+                		icu4j,
+                		jaxp-ri,
+                		jettison,
+                		jdom,
+                		jaxen,
+                		joda-time,
+                		mail,
+                		mockito-all,
+                		xercesImpl,
+                		xml-resolver,
+                		xom,
+                		xsdlib,
+                		xstream
+                    	</Embed-Dependency>
+						
 						<_exportcontents>
-					        !javax.*,
-					        !net.sf.ehcache,
-						!nu.*,
-						!org.*,
-						!net.*,
-						!bsh,
-						!edu.umd.cs.findbugs.annotations,
-						!edu.internet2.middleware.morphString,
 						com.thoughtworks.xstream.*;version=1.2.2,
 						edu.internet2.middleware.grouper.*;version=1.6.3
 						</_exportcontents>
