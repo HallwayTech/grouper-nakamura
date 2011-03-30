@@ -3,10 +3,6 @@ package edu.nyu.grouper.osgi;
 import java.io.IOException;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
-import net.sf.json.util.PropertyFilter;
-
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -115,7 +111,7 @@ public class GrouperEventHandler implements EventHandler {
 					HttpClient client = GrouperHttpUtil.getHttpClient(grouperConfiguration.getUrl(), 
 							grouperConfiguration.getUsername(),
 							grouperConfiguration.getPassword());		            
-					String grouperWsRestUrl = grouperConfiguration.getUrl() + "/" + grouperConfiguration.getWsVersion() + "/groups";
+					String grouperWsRestUrl = grouperConfiguration.getRestWsGroupUrlString();
 		            PostMethod method = new PostMethod(grouperWsRestUrl);
 		            method.setRequestHeader("Connection", "close");
 
@@ -130,17 +126,14 @@ public class GrouperEventHandler implements EventHandler {
 				    wsGroup.setName(fullGrouperName);
 				    wsGroupToSave.setWsGroup(wsGroup);
 				    groupSave.setWsGroupToSaves(new WsGroupToSave[]{ wsGroupToSave });
-				    
-				    log.debug("Group beans created.");
 
 				    // Encode the request and send it off
 				    String requestDocument = GrouperJsonUtil.toJSONString(groupSave);
 				    method.setRequestEntity(new StringRequestEntity(requestDocument, "text/x-json", "UTF-8"));
-				    
+
 				    log.debug("POST Method prepared for {} \n{}.", grouperWsRestUrl, requestDocument);
-				    
+
 				    client.executeMethod(method);
-				    
 				    log.debug("POST Method executed to {}.", grouperWsRestUrl);
 
 				    // Check the response
@@ -158,7 +151,7 @@ public class GrouperEventHandler implements EventHandler {
 				    	throw new Exception("Bad response from web service: successString: " + successString 
 				    			+ ", resultCode: " + resultCode + ", " + responseString);
 				    }
-				    
+
 				    log.debug("Success! Created a new Grouper Group = {} for sakai authorizableId = {}", 
 							fullGrouperName, groupId);
 				}
