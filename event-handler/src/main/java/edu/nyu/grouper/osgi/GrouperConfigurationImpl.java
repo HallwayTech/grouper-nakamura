@@ -105,5 +105,13 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Override
 	public String getBaseStem() {
 		return baseStem;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.nyu.grouper.osgi.GrouperConfiguration#getRestWsGroupUrlString()
+	 */
+	@Override
+	public String getRestWsGroupUrlString() {
+		return url + "/" + wsVersion + "/groups";
 	}	
 }
