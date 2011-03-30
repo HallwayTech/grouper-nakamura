@@ -26,8 +26,7 @@ import org.slf4j.LoggerFactory;
 				"org/sakaiproject/nakamura/lite/authorizables/DELETE",
 				"org/sakaiproject/nakamura/lite/group/ADDED",
 				"org/sakaiproject/nakamura/lite/group/DELETE",
-				"org/sakaiproject/nakamura/lite/group/UPDATED",
-		})
+				"org/sakaiproject/nakamura/lite/group/UPDATED"})
 })
 public class LoggingEventHandler implements EventHandler {
 
