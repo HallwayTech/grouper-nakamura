@@ -209,13 +209,12 @@ public class GrouperEventHandler implements EventHandler {
 				    }
 				    boolean success = "T".equals(successString);
 				    String resultCode = method.getResponseHeader("X-Grouper-resultCode").getValue();
-				    
-				    // String jsonResponse = IOUtils.toString(method.getResponseBodyAsStream());
-				    // JSONObject jsonObject = JSONObject.fromObject(jsonResponse);
+				    String responseString = IOUtils.toString(method.getResponseBodyAsStream());
+				    // JSONObject responseJSON = JSONObject.fromObject(responseString);
 
 				    if (!success) {
 				    	throw new Exception("Bad response from web service: successString: " + successString 
-				    			+ ", resultCode: " + resultCode + ", " + jsonResponse);
+				    			+ ", resultCode: " + resultCode + ", " + responseString);
 				    }
 				    
 				    log.debug("Success! Created a new Grouper Group = {} for sakai authorizableId = {}", 
@@ -280,12 +279,13 @@ public class GrouperEventHandler implements EventHandler {
 				}
 				boolean success = "T".equals(successString);
 				String resultCode = method.getResponseHeader("X-Grouper-resultCode").getValue();
-				// JSONObject responseObject = JSONObject.fromObject(IOUtils.toString(method.getResponseBodyAsStream())); 
+				String responseString = IOUtils.toString(method.getResponseBodyAsStream());
+				// JSONObject responseJSON = JSONObject.fromObject(); 
 
 				// see if request worked or not
 				if (!success) {
 					throw new Exception("Bad response from web service: successString: " + successString 
-							+ ", resultCode: " + resultCode + ", " + responseObject.toString());
+							+ ", resultCode: " + resultCode + ", " + responseString);
 				}
 
 				log.debug("Success! Delete Grouper Group = {} for sakai authorizableId = {}", 
