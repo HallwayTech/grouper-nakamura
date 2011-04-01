@@ -84,8 +84,6 @@ public class GrouperEventHandler implements EventHandler {
 	 */
 	public void handleEvent(Event event) {
 
-		logEvent(event);
-
 		if ("org/sakaiproject/nakamura/lite/authorizables/ADDED".equals(event.getTopic())){
 			String groupId = (String) event.getProperty("path");
 
@@ -174,20 +172,6 @@ public class GrouperEventHandler implements EventHandler {
 			catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
-		}
-	}
-
-	/**
-	 * Print the event to the log.
-	 * @param event
-	 */
-	private void logEvent(Event event) {
-		if (log.isInfoEnabled()){
-			StringBuffer buffer = new StringBuffer();
-			for(String name: Iterables.of(event.getPropertyNames())){
-				buffer.append("\n" + name + "=" + event.getProperty(name));
-			}
-			log.info("\ntopic : " + event.getTopic() + " properties: " + buffer.toString());
 		}
 	}
 }
