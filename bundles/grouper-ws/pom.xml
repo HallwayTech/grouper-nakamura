@@ -24,7 +24,7 @@
 	<artifactId>grouper-ws.osgi</artifactId>
 	<packaging>bundle</packaging>
 	<name>Grouper :: Web Services</name>
-	<version>1.6.3</version>
+	<version>1.7.0</version>
 	<description>
 	    This bundle was created to export the necessary classes to make REST WS calls to a running grouper-ws service.
 	    It is not meant to run Grouper or Grouper WS services in an OSGi container.
@@ -67,7 +67,7 @@
 				<Embed-Dependency>grouper-ws</Embed-Dependency>
 				<!-- Only export grouper classes -->
 				<Export-Package>
-				    edu.internet2.middleware.grouper.ws.*;version=1.6.3
+				    edu.internet2.middleware.grouper.ws.*;version=1.7.0
 				</Export-Package>
 				<Import-Package>
 				    !bsh,
@@ -122,7 +122,7 @@
 	<dependency>
 		<groupId>edu.internet2.middleware.grouper</groupId>
 		<artifactId>grouper</artifactId>
-		<version>1.6.3</version>
+		<version>1.7.0</version>
 		<type>jar</type>
 		<scope>compile</scope>
 	</dependency>
@@ -130,7 +130,7 @@
 	<dependency>
 		<groupId>edu.internet2.middleware.grouper</groupId>
 		<artifactId>grouper-ws</artifactId>
-		<version>1.6.3</version>
+		<version>1.7.0</version>
 		<type>jar</type>
 		<scope>compile</scope>
 	</dependency>

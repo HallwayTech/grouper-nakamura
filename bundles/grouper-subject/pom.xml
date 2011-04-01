@@ -24,7 +24,7 @@
 	<artifactId>subject.osgi</artifactId>
 	<packaging>bundle</packaging>
 	<name>Internet2 Middleware :: Subject</name>
-	<version>1.6.3</version>
+	<version>1.7.0</version>
 	
 	<profiles>
         <profile>
@@ -62,7 +62,7 @@
 				<Bundle-Description>Internet2 Middleware :: Subject</Bundle-Description>
 				<!-- Only export grouper classes -->
 				<Export-Package>
-				    edu.internet2.*;version=1.6.3,
+				    edu.internet2.*;version=1.7.0,
 				    !javax.*,
 				    !org.xml.*,
 				    !org.apache.commons.lang.builder
@@ -105,7 +105,7 @@
 	<dependency>
 		<groupId>edu.internet2.middleware.subject</groupId>
 		<artifactId>subject</artifactId>
-		<version>1.6.3</version>
+		<version>1.7.0</version>
 		<type>jar</type>
 		<scope>compile</scope>
 	</dependency>

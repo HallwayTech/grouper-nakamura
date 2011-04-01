@@ -24,7 +24,7 @@
 	<artifactId>grouper-api.osgi</artifactId>
 	<packaging>bundle</packaging>
 	<name>Grouper :: Grouper API</name>
-	<version>1.6.3</version>
+	<version>1.7.0</version>
 	<description>
 	This bundle exports just enough classes to get the grouper-client and grouper-ws bundles working.
 	It's not meant to run Grouper inside of an OSGI container but to reduce the dependencies in the other Grouper bundles.
@@ -92,7 +92,7 @@
 						
 						<_exportcontents>
 						com.thoughtworks.xstream.*;version=1.2.2,
-						edu.internet2.middleware.grouper.*;version=1.6.3
+						edu.internet2.middleware.grouper.*;version=1.7.0
 						</_exportcontents>
 						    
 						<Import-Package>
@@ -149,7 +149,7 @@
 		<dependency>
 			<groupId>edu.internet2.middleware.grouper</groupId>
 			<artifactId>grouper</artifactId>
-			<version>1.6.3</version>
+			<version>1.7.0</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>

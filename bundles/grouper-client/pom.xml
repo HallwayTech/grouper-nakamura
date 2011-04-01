@@ -21,11 +21,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.internet2.middleware.grouper</groupId>
     <artifactId>grouperClient.osgi</artifactId>
-    <version>1.6.3</version>
+    <version>1.7.0</version>
     <packaging>bundle</packaging>
     <name>Grouper :: Grouper Client</name>
     <description>
-        This bundle simply wraps grouperClient-1.6.3.jar
+        This bundle simply wraps grouperClient-1.7.0.jar
     </description>
 
     <organization>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>edu.internet2.middleware.grouper</groupId>
             <artifactId>grouperClient</artifactId>
-            <version>1.6.3</version>
+            <version>1.7.0</version>
         </dependency>
     </dependencies>
 
@@ -62,7 +62,7 @@
 			<Private-Package>edu.internet2.middleware.grouperClientExt.*</Private-Package>
 
                         <Export-Package>
-			edu.internet2.middleware.grouperClient.*;version=1.6.3
+			edu.internet2.middleware.grouperClient.*;version=1.7.0
 			</Export-Package>
                     </instructions>
                 </configuration>
