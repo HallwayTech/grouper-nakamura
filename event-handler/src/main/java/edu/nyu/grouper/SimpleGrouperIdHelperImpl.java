@@ -11,7 +11,7 @@ import edu.nyu.grouper.osgi.api.GrouperConfiguration;
  * @see GrouperIdHelper
  */
 @Service
-@Component
+@Component(enabled=false)
 public class SimpleGrouperIdHelperImpl implements GrouperIdHelper{
 
 	@Reference
