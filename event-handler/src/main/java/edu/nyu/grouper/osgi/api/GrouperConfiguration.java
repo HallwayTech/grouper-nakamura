@@ -15,4 +15,6 @@ public interface GrouperConfiguration {
 	public abstract URL getUrl();
 
 	public abstract String getRestWsGroupUrlString();
+
+	public abstract String getSuffix();
 }

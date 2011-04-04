@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupLookup;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupDeleteRequest;
-import edu.nyu.grouper.BaseGrouperIdHelper;
 import edu.nyu.grouper.api.GrouperIdHelper;
 import edu.nyu.grouper.osgi.api.GrouperConfiguration;
 import edu.nyu.grouper.util.GrouperHttpUtil;
@@ -40,13 +39,9 @@ public class GrouperLiteAuthorizablePostProcessor implements
 	@Reference
 	protected GrouperConfiguration grouperConfiguration;
 
+	@Reference
 	protected GrouperIdHelper groupIdHelper;
 
-	public void activate(Map<?,?> props){
-		groupIdHelper = new BaseGrouperIdHelper();
-	}
-
-	@Override
 	public void process(SlingHttpServletRequest request,
 			Authorizable authorizable, Session session, Modification change,
 			Map<String, Object[]> parameters) throws Exception {
@@ -58,11 +53,10 @@ public class GrouperLiteAuthorizablePostProcessor implements
 
 		String fullGrouperName = (String)authorizable.getProperty("grouper:name");
 		if (fullGrouperName == null){
-			fullGrouperName = groupIdHelper.getFullGrouperName(grouperConfiguration.getBaseStem(), authorizable.getId());
+			fullGrouperName = groupIdHelper.getGrouperName(authorizable.getId());
 		}
 
 		try {
-
 			log.debug("Deleting Grouper Group = {} for sakai authorizableId = {}",
 					fullGrouperName, authorizable.getId());
 

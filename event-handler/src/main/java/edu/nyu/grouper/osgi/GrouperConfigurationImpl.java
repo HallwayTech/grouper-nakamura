@@ -25,23 +25,27 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	// Configurable via the ConfigAdmin services.
 	private static final String DEFAULT_URL = "http://localhost:9090/grouper-ws/servicesRest";
 	@Property(value=DEFAULT_URL)
-	private static final String PROP_URL = "sakai.grouper.url";
+	protected static final String PROP_URL = "sakai.grouper.url";
 	
 	private static final String DEFAULT_WS_VERSION = "1_6_003";
 	@Property(value=DEFAULT_WS_VERSION)
-	private static final String PROP_WS_VERSION= "sakai.grouper.ws_version";
+	protected static final String PROP_WS_VERSION= "sakai.grouper.ws_version";
 
 	private static final String DEFAULT_USERNAME = "GrouperSystem";
 	@Property(value=DEFAULT_USERNAME)
-	private static final String PROP_USERNAME = "sakai.grouper.username";
+	protected static final String PROP_USERNAME = "sakai.grouper.username";
 
 	private static final String DEFAULT_PASSWORD = "abc123";
 	@Property(value=DEFAULT_PASSWORD)
-	private static final String PROP_PASSWORD = "sakai.grouper.password";
+	protected static final String PROP_PASSWORD = "sakai.grouper.password";
 
 	private static final String DEFAULT_BASESTEM = "edu:apps:sakai3";
 	@Property(value=DEFAULT_BASESTEM)
-	private static final String PROP_BASESTEM = "sakai.grouper.basestem";
+	protected static final String PROP_BASESTEM = "sakai.grouper.basestem";
+	
+	private static final String DEFAULT_SUFFIX = "sakaioae";
+	@Property(value=DEFAULT_SUFFIX)
+	protected static final String PROP_SUFFIX = "sakai.grouper.suffix";
 	
 	// Grouper configuration.
 	private URL url;
@@ -49,6 +53,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	private String username;
 	private String password;
 	private String baseStem;
+	private String suffix;
 
 	// -------------------------- Configuration Admin --------------------------
 	/**
@@ -64,6 +69,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 			username = OsgiUtil.toString(props.get(PROP_USERNAME), DEFAULT_USERNAME);
 			password = OsgiUtil.toString(props.get(PROP_PASSWORD), DEFAULT_PASSWORD);
 			baseStem = OsgiUtil.toString(props.get(PROP_BASESTEM), DEFAULT_BASESTEM);
+			suffix   = OsgiUtil.toString(props.get(PROP_SUFFIX), DEFAULT_SUFFIX);
 		}
 		catch (MalformedURLException mfe) {
 			throw new ConfigurationException(PROP_URL, mfe.getMessage(), mfe);
@@ -78,7 +84,6 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	/* (non-Javadoc)
 	 * @see edu.nyu.grouper.osgi.GrouperConfiguration#getWsVersion()
 	 */
-	@Override
 	public String getWsVersion() {
 		return wsVersion;
 	}
@@ -86,7 +91,6 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	/* (non-Javadoc)
 	 * @see edu.nyu.grouper.osgi.GrouperConfiguration#getUsername()
 	 */
-	@Override
 	public String getUsername() {
 		return username;
 	}
@@ -94,7 +98,6 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	/* (non-Javadoc)
 	 * @see edu.nyu.grouper.osgi.GrouperConfiguration#getPassword()
 	 */
-	@Override
 	public String getPassword() {
 		return password;
 	}
@@ -102,7 +105,6 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	/* (non-Javadoc)
 	 * @see edu.nyu.grouper.osgi.GrouperConfiguration#getBaseStem()
 	 */
-	@Override
 	public String getBaseStem() {
 		return baseStem;
 	}
@@ -110,8 +112,11 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	/* (non-Javadoc)
 	 * @see edu.nyu.grouper.osgi.GrouperConfiguration#getRestWsGroupUrlString()
 	 */
-	@Override
 	public String getRestWsGroupUrlString() {
 		return url + "/" + wsVersion + "/groups";
-	}	
+	}
+	
+	public String getSuffix(){
+		return suffix;
+	}
 }
