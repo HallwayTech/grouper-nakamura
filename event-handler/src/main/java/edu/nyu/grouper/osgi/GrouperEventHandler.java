@@ -24,7 +24,6 @@ import org.sakaiproject.nakamura.api.lite.StorageClientException;
 import org.sakaiproject.nakamura.api.lite.accesscontrol.AccessDeniedException;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 import org.sakaiproject.nakamura.api.lite.authorizable.AuthorizableManager;
-import org.sakaiproject.nakamura.api.lite.util.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,13 +31,12 @@ import edu.internet2.middleware.grouperClient.ws.beans.WsGroup;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupLookup;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupToSave;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupSaveRequest;
-import edu.nyu.grouper.BaseGrouperIdHelper;
 import edu.nyu.grouper.api.GrouperIdHelper;
 import edu.nyu.grouper.osgi.api.GrouperConfiguration;
 import edu.nyu.grouper.util.GrouperHttpUtil;
 import edu.nyu.grouper.util.GrouperJsonUtil;
 
-@Service(value = EventHandler.class)
+@Service
 @Component(immediate = true, metatype=true)
 @Properties(value = { 
 		@Property(name = EventConstants.EVENT_TOPIC, 
@@ -57,22 +55,20 @@ public class GrouperEventHandler implements EventHandler {
 	@Reference
 	protected Repository repository;
 
-	// Fetched via the repository session.
+	@Reference
+	protected GrouperIdHelper groupIdAdapter;
+
+	// Fetched via the Repository Session.
 	private AuthorizableManager authorizableManager;
-	
-	private GrouperIdHelper groupIdAdapter;
 
 	@Activate
 	public void activate(Map<?, ?> props) 
 		throws ConfigurationException, ClientPoolException, StorageClientException, AccessDeniedException{
-		
+
 		try {
-			// Intialize the Nakamura Session
+			// Initialize the Nakamura Session
 			authorizableManager = repository.loginAdministrative().getAuthorizableManager();
-		
-			// TODO: Make this a service reference
-			groupIdAdapter = new BaseGrouperIdHelper();
-					}
+		}
 		catch (Exception e) {
 			log.debug(e.getMessage());
 		}
@@ -80,7 +76,7 @@ public class GrouperEventHandler implements EventHandler {
 	}
 	
 	/**
-	 * Respond to Group events in Nakamura by issuing WS calls to Grouper. 
+	 * Respond to Group events in SakaiOAE by issuing WS calls to Grouper. 
 	 */
 	public void handleEvent(Event event) {
 
@@ -98,12 +94,11 @@ public class GrouperEventHandler implements EventHandler {
 						return;
 					}
 
-					String fullGrouperName = groupIdAdapter.getFullGrouperName(
-							grouperConfiguration.getBaseStem(), groupId);
-					String grouperName = groupIdAdapter.getName(groupId);
+					String grouperName = groupIdAdapter.getGrouperName(groupId);
+					String grouperExtension = groupIdAdapter.getGrouperExtension(groupId);
 					
 					log.debug("Creating a new Grouper Group = {} for sakai authorizableId = {}", 
-								fullGrouperName, groupId);
+							grouperName, groupId);
 
 					// URL e.g. http://localhost:9090/grouper-ws/servicesRest/v1_6_003/...
 					HttpClient client = GrouperHttpUtil.getHttpClient(grouperConfiguration.getUrl(), 
@@ -116,20 +111,18 @@ public class GrouperEventHandler implements EventHandler {
 		            // Fill out the group save request beans
 					WsRestGroupSaveRequest groupSave = new WsRestGroupSaveRequest();
 				    WsGroupToSave wsGroupToSave = new WsGroupToSave();
-				    wsGroupToSave.setWsGroupLookup(new WsGroupLookup(fullGrouperName, null));
+				    wsGroupToSave.setWsGroupLookup(new WsGroupLookup(grouperName, null));
 				    WsGroup wsGroup = new WsGroup();
 				    wsGroup.setDescription((String)authorizable.getProperty("sakai:group-description"));
 				    wsGroup.setDisplayExtension(grouperName);
-				    wsGroup.setExtension(grouperName);
-				    wsGroup.setName(fullGrouperName);
+				    wsGroup.setExtension(grouperExtension);
+				    wsGroup.setName(grouperName);
 				    wsGroupToSave.setWsGroup(wsGroup);
 				    groupSave.setWsGroupToSaves(new WsGroupToSave[]{ wsGroupToSave });
 
 				    // Encode the request and send it off
 				    String requestDocument = GrouperJsonUtil.toJSONString(groupSave);
 				    method.setRequestEntity(new StringRequestEntity(requestDocument, "text/x-json", "UTF-8"));
-
-				    log.debug("POST Method prepared for {} \n{}.", grouperWsRestUrl, requestDocument);
 
 				    client.executeMethod(method);
 				    log.debug("POST Method executed to {}.", grouperWsRestUrl);
@@ -151,7 +144,7 @@ public class GrouperEventHandler implements EventHandler {
 				    }
 
 				    log.debug("Success! Created a new Grouper Group = {} for sakai authorizableId = {}", 
-							fullGrouperName, groupId);
+							grouperName, groupId);
 				}
 				else {
 					log.error("Group event : " + event.getTopic() + " fired for non group :" + authorizable.getId());
