@@ -51,10 +51,10 @@ public class AggregateGroupsGrouperIdHelperImpl implements GrouperIdHelper {
 		}
 		String extension;
 		if(isManagersGroup(groupId)){
-			extension = "managers_" + grouperConfiguration.getSuffix();
+			extension = "managers" + grouperConfiguration.getSuffix();
 		}
 		else {
-			extension = "members_" + grouperConfiguration.getSuffix();
+			extension = "members" + grouperConfiguration.getSuffix();
 		}
 		return extension;
 	}

@@ -27,7 +27,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Property(value=DEFAULT_URL)
 	protected static final String PROP_URL = "sakai.grouper.url";
 	
-	private static final String DEFAULT_WS_VERSION = "1_6_003";
+	private static final String DEFAULT_WS_VERSION = "1_7_000";
 	@Property(value=DEFAULT_WS_VERSION)
 	protected static final String PROP_WS_VERSION= "sakai.grouper.ws_version";
 
@@ -43,7 +43,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Property(value=DEFAULT_BASESTEM)
 	protected static final String PROP_BASESTEM = "sakai.grouper.basestem";
 	
-	private static final String DEFAULT_SUFFIX = "sakaioae";
+	private static final String DEFAULT_SUFFIX = "_sakaioae";
 	@Property(value=DEFAULT_SUFFIX)
 	protected static final String PROP_SUFFIX = "sakai.grouper.suffix";
 	
