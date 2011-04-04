@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import edu.nyu.grouper.osgi.api.GrouperConfiguration;
 
 @Service
-@Component(immediate = true, metatype=true)
+@Component(metatype=true)
 public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	private static final Logger log = LoggerFactory.getLogger(GrouperConfigurationImpl.class);
