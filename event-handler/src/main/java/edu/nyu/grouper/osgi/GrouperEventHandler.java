@@ -87,7 +87,7 @@ public class GrouperEventHandler implements EventHandler {
 				Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
 				if (authorizable.isGroup()){
 					
-					if (authorizable.getProperty("grouper:uuid") != null){
+					if (authorizable.getProperty("grouper:name") != null){
 						if (log.isDebugEnabled()){
 							log.debug("This group was created by grouper. No need to send it back.");
 						}
@@ -142,6 +142,8 @@ public class GrouperEventHandler implements EventHandler {
 				    	throw new Exception("Bad response from web service: successString: " + successString 
 				    			+ ", resultCode: " + resultCode + ", " + responseString);
 				    }
+
+				    authorizable.setProperty("grouper:name", grouperName);
 
 				    log.debug("Success! Created a new Grouper Group = {} for sakai authorizableId = {}", 
 							grouperName, groupId);
