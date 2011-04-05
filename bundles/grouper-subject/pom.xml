@@ -1,4 +1,5 @@
-  <!--
+<?xml version="1.0"?>
+<!--
     * Licensed to the Sakai Foundation (SF) under one
     * or more contributor license agreements. See the NOTICE file
     * distributed with this work for additional information
@@ -15,59 +16,42 @@
     * KIND, either express or implied. See the License for the
     * specific language governing permissions and limitations under the License.
   -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>edu.internet2.middleware.subject</groupId>
+  <artifactId>subject.osgi</artifactId>
+  <packaging>bundle</packaging>
+  <name>Internet2 Middleware :: Subject</name>
+  <version>1.7.0</version>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>edu.nyu</groupId>
+    <artifactId>grouper-bundles-parent</artifactId>
+    <version>1.0</version>
+  </parent>
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>edu.internet2.middleware.subject</groupId>
-	<artifactId>subject.osgi</artifactId>
-	<packaging>bundle</packaging>
-	<name>Internet2 Middleware :: Subject</name>
-	<version>1.7.0</version>
-	
-	<profiles>
-        <profile>
-            <id>deploy</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.sling</groupId>
-                        <artifactId>maven-sling-plugin</artifactId>
-                        <executions>
-                        <execution>
-                            <id>install-bundle</id>
-                            <goals><goal>install</goal></goals>
-                        </execution>
-                        </executions>
-                    </plugin>
-	        </plugins>
-            </build>
-        </profile>
-    </profiles>
-
-	<build>
-		<plugins>
-		<plugin>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>maven-scr-plugin</artifactId>
-		</plugin>
-		<plugin>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>maven-bundle-plugin</artifactId>
-			<extensions>true</extensions>
-			<configuration>
-				<instructions>
-				<Bundle-Category>grouper</Bundle-Category>
-				<Bundle-Description>Internet2 Middleware :: Subject</Bundle-Description>
-				<!-- Only export grouper classes -->
-				<Export-Package>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-scr-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-Category>grouper</Bundle-Category>
+            <Bundle-Description>Internet2 Middleware :: Subject</Bundle-Description>
+            <!-- Only export grouper classes -->
+            <Export-Package>
 				    edu.internet2.*;version=1.7.0,
 				    !javax.*,
 				    !org.xml.*,
 				    !org.apache.commons.lang.builder
 				</Export-Package>
-				<Import-Package>
+            <Import-Package>
 				    com.mchange.v2.*;resolution:=optional,
 				    !net.sf.cglib.*;resolution:=optional,
 				    !org.apache.commons.jexl;resolution:=optional,
@@ -75,41 +59,19 @@
 				    !org.hsqldb.*;resolution:=optional,
 				    *,
 				</Import-Package>
-				</instructions>
-			</configuration>
-			</plugin>
-			
-			<plugin>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>maven-sling-plugin</artifactId>
-                <version>2.0.5-SNAPSHOT</version>    
-                <executions>
-                    <execution>
-                        <id>install-bundle</id>
-                        <goals>
-                        <goal>install</goal>
-                        </goals>
-                        <configuration>
-                            <slingUrl>http://localhost:8080/system/console/install</slingUrl>
-                            <user>admin</user>
-                            <password>admin</password>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-		</plugins>
-	</build>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
-	<dependencies>
-
-	<dependency>
-		<groupId>edu.internet2.middleware.subject</groupId>
-		<artifactId>subject</artifactId>
-		<version>1.7.0</version>
-		<type>jar</type>
-		<scope>compile</scope>
-	</dependency>
-	
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>edu.internet2.middleware.subject</groupId>
+      <artifactId>subject</artifactId>
+      <version>1.7.0</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 </project>
-

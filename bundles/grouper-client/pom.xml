@@ -24,13 +24,17 @@
   <version>1.7.0</version>
   <packaging>bundle</packaging>
   <name>Grouper :: Grouper Client</name>
-  <description>
-      This bundle simply wraps grouperClient-1.7.0.jar
-  </description>
+  <description>This bundle simply wraps grouperClient-1.7.0.jar</description>
   <organization>
-    <name>Internet2 Middleware Intitive</name>
+    <name>Internet2 Middleware Intiative</name>
     <url>http://www.internet2.edu/grouper/</url>
   </organization>
+  
+  <parent>
+    <groupId>edu.nyu</groupId>
+    <artifactId>grouper-bundles-parent</artifactId>
+    <version>1.0</version>
+  </parent>
 
   <dependencies>
     <dependency>
@@ -87,25 +91,4 @@
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <id>deploy</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>maven-sling-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>install-bundle</id>
-                <goals>
-                  <goal>install</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>

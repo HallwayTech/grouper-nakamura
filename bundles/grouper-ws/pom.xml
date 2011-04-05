@@ -28,27 +28,11 @@
 	    This bundle was created to export the necessary classes to make REST WS calls to a running grouper-ws service. It is not meant to run Grouper or Grouper WS services in an OSGi container.
 	</description>
 
-  <profiles>
-    <profile>
-      <id>deploy</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>maven-sling-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>install-bundle</id>
-                <goals>
-                  <goal>install</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+  <parent>
+    <groupId>edu.nyu</groupId>
+    <artifactId>grouper-bundles-parent</artifactId>
+    <version>1.0</version>
+  </parent>
 
   <build>
     <plugins>
@@ -92,6 +76,7 @@
           </instructions>
         </configuration>
       </plugin>
+    </plugins>
   </build>
   
   <dependencies>
