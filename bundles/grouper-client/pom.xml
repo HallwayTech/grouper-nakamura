@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
@@ -18,76 +18,94 @@
     under the License. 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>edu.internet2.middleware.grouper</groupId>
-    <artifactId>grouperClient.osgi</artifactId>
-    <version>1.7.0</version>
-    <packaging>bundle</packaging>
-    <name>Grouper :: Grouper Client</name>
-    <description>
-        This bundle simply wraps grouperClient-1.7.0.jar
-    </description>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>edu.internet2.middleware.grouper</groupId>
+  <artifactId>grouperClient.osgi</artifactId>
+  <version>1.7.0</version>
+  <packaging>bundle</packaging>
+  <name>Grouper :: Grouper Client</name>
+  <description>
+      This bundle simply wraps grouperClient-1.7.0.jar
+  </description>
+  <organization>
+    <name>Internet2 Middleware Intitive</name>
+    <url>http://www.internet2.edu/grouper/</url>
+  </organization>
 
-    <organization>
-        <name>Internet2 Middleware Intitive</name>
-        <url>http://www.internet2.edu/grouper/</url>
-    </organization>
+  <dependencies>
+    <dependency>
+      <groupId>edu.internet2.middleware.grouper</groupId>
+      <artifactId>grouperClient</artifactId>
+      <version>1.7.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <version>1.1</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+  </dependencies>
 
-    <dependencies>
-        <dependency>
-            <groupId>edu.internet2.middleware.grouper</groupId>
-            <artifactId>grouperClient</artifactId>
-            <version>1.7.0</version>
-        </dependency>
-    </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>1.4.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-Category>grouper</Bundle-Category>
+            <Embed-Dependency>jdom,dom4j,jaxen,pull-parser</Embed-Dependency>
+            <Import-Package>
+          			  com.sun.net.ssl;resolution:=optional,
+          			  com.sun.msv.*;resolution:=optional,
+          			  junit.*;resolution:=optional,
+              		oracle.xml.parser.*;resolution:=optional,
+              		org.gjt.xpp;resolution:=optional,
+          			  net.sf.cglib.proxy;resolution:=optional,
+          			  sun.*;resolution:=optional,
+          			  .;resolution:=optional,
+          			  *
+          			</Import-Package>
+            <Private-Package>edu.internet2.middleware.grouperClientExt.*</Private-Package>
+            <Export-Package>edu.internet2.middleware.grouperClient.*;version=1.7.0
+          			</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
-    <build>
+  <profiles>
+    <profile>
+      <id>deploy</id>
+      <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>1.4.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-			<Bundle-Category>grouper</Bundle-Category>
-                        <Import-Package>
-			com.sun.net.ssl;resolution:=optional,*
-			net.sf.cglib.proxy;resolution:=optional,*
-			sun.*;resolution:=optional,
-			junit.*;resolution:=optional,
-			*
-			</Import-Package>
-
-			<Private-Package>edu.internet2.middleware.grouperClientExt.*</Private-Package>
-
-                        <Export-Package>
-			edu.internet2.middleware.grouperClient.*;version=1.7.0
-			</Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
+          <plugin>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>maven-sling-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>install-bundle</id>
+                <goals>
+                  <goal>install</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
-    </build>
-
-    <profiles>
-        <profile>
-        <id>deploy</id>
-        <build>
-            <plugins>
-            <plugin>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>maven-sling-plugin</artifactId>
-                <executions>
-                <execution>
-                  <id>install-bundle</id>
-                  <goals><goal>install</goal></goals>
-                </execution>
-                </executions>
-            </plugin>
-            </plugins>
-        </build>
-        </profile>
-    </profiles>
-
+      </build>
+    </profile>
+  </profiles>
 </project>
