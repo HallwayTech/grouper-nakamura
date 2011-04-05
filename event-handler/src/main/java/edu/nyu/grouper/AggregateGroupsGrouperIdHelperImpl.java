@@ -1,9 +1,20 @@
 package edu.nyu.grouper;
 
+import java.util.Map;
+
+import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.sakaiproject.nakamura.api.lite.ClientPoolException;
+import org.sakaiproject.nakamura.api.lite.Repository;
+import org.sakaiproject.nakamura.api.lite.StorageClientException;
+import org.sakaiproject.nakamura.api.lite.accesscontrol.AccessDeniedException;
+import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
+import org.sakaiproject.nakamura.api.lite.authorizable.AuthorizableManager;
 import org.sakaiproject.nakamura.api.lite.authorizable.Group;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.nyu.grouper.api.GrouperIdHelper;
 import edu.nyu.grouper.osgi.api.GrouperConfiguration;
@@ -31,14 +42,50 @@ import edu.nyu.grouper.osgi.api.GrouperConfiguration;
 @Component
 public class AggregateGroupsGrouperIdHelperImpl implements GrouperIdHelper {
 	
+	private static final Logger log = LoggerFactory.getLogger(AggregateGroupsGrouperIdHelperImpl.class);
+	
 	@Reference
 	protected GrouperConfiguration grouperConfiguration;
+	
+	@Reference
+	protected Repository repository;
+	
+	private AuthorizableManager authorizableManager;
+	
+	@Activate
+	public void activate(Map<?,?> props) throws ClientPoolException, StorageClientException, AccessDeniedException{
+		authorizableManager = repository.loginAdministrative().getAuthorizableManager();
+	}
 
 	public String getGrouperName(String groupId) {
 		if (groupId == null){
 			return null;
 		}
-		return getFullStem(groupId) + ":" + getGrouperExtension(groupId);
+		String grouperName = null;
+		Authorizable authorizable = null;
+		try {
+			if (authorizableManager != null){
+				authorizable = authorizableManager.findAuthorizable(groupId);
+			}
+			if (authorizable != null){
+				grouperName = (String)authorizable.getProperty("grouper:name");
+			}
+		} 
+		catch (AccessDeniedException e) {
+			if (log.isErrorEnabled()){
+				log.error("Error finding authorizable for {}. Access denied", groupId, e.getMessage());
+			}
+		} 
+		catch (StorageClientException e) {
+			if (log.isErrorEnabled()){
+				log.error("Error finding authorizable for {}. StorageClientException", groupId, e.getMessage());
+			}
+		}
+		
+		if (grouperName == null){
+			grouperName = getFullStem(groupId) + ":" + getGrouperExtension(groupId);
+		}
+		return grouperName;
 	}
 
 	/**
