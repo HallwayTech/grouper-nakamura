@@ -51,12 +51,14 @@
 					    grouper,
           		commons-jexl,
           		dom4j,
+          		ezmorph,
           		icu4j,
           		jaxp-ri,
           		jettison,
           		jdom,
           		jaxen,
           		joda-time,
+          		json-lib,
           		mail,
           		mockito-all,
           		xercesImpl,
@@ -77,27 +79,19 @@
 						!bsh,
 						!COM.jrockit.reflect,
 						!jrockit.vm,
-						!com.mchange.v2.c3p0,
 						!com.sun.java_cup.internal,
-						!com.sun.net.ssl,
 						!edu.internet2.middleware.morphString,
-						!oracle.xml.parser,
-						!oracle.xml.parser.v2,
+						!junit.framework.*,
+						!oracle.xml.parser.*,
 						!org.apache.commons.cli,
-						!org.apache.commons.jexl,
-						!org.apache.commons.jexl2,
 						!org.apache.commons.math.stat.descriptive,
 						!org.apache.commons.logging.impl,
-						!org.apache.ddlutils,
 						!org.apache.ddlutils.*,
-						!org.apache.tools.ant,
+						!org.apache.oro.text.regex,
 						!org.apache.tools.ant.*,
 						!org.codehaus.aspectwerkz.hook,
-						!org.hibernate,
 						!org.hibernate.*,
-						!org.hsqldb,
 						!org.gjt.xpp,
-						!org.mortbay.jetty,
 						!org.mortbay.jetty.*,
 						!net.sf.cglib.asm.util,
 						!net.sf.ehcache,
@@ -148,6 +142,11 @@
       <version>2.0</version>
     </dependency>
     <dependency>
+        <groupId>net.sf.ezmorph</groupId>
+        <artifactId>ezmorph</artifactId>
+        <version>1.0.6</version>
+    </dependency>
+    <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <version>1.4.4</version>
@@ -166,19 +165,22 @@
       <groupId>org.codehaus.jettison</groupId>
       <artifactId>jettison</artifactId>
       <version>1.0-RC2</version>
-      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
       <version>1.5.1</version>
-      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.jdom</groupId>
       <artifactId>jdom</artifactId>
       <version>1.1</version>
-      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <version>2.4</version>
+      <classifier>jdk15</classifier>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
