@@ -17,4 +17,6 @@ public interface GrouperConfiguration {
 	public abstract String getRestWsGroupUrlString();
 
 	public abstract String getSuffix();
+
+	public abstract int getHttpTimeout();
 }

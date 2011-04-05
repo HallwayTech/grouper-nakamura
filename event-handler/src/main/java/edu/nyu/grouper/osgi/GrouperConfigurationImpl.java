@@ -47,6 +47,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Property(value=DEFAULT_SUFFIX)
 	protected static final String PROP_SUFFIX = "sakai.grouper.suffix";
 	
+	private static final int DEFAULT_TIMEOUT = 4000;
+	@Property
+	protected static final String PROP_TIMEOUT = "sakai.grouper.httpTimeout";
+	
 	// Grouper configuration.
 	private URL url;
 	private String wsVersion;
@@ -54,6 +58,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	private String password;
 	private String baseStem;
 	private String suffix;
+	private int httpTimeout;
 
 	// -------------------------- Configuration Admin --------------------------
 	/**
@@ -70,6 +75,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 			password = OsgiUtil.toString(props.get(PROP_PASSWORD), DEFAULT_PASSWORD);
 			baseStem = OsgiUtil.toString(props.get(PROP_BASESTEM), DEFAULT_BASESTEM);
 			suffix   = OsgiUtil.toString(props.get(PROP_SUFFIX), DEFAULT_SUFFIX);
+			httpTimeout   = OsgiUtil.toInteger(props.get(PROP_TIMEOUT), DEFAULT_TIMEOUT);
 		}
 		catch (MalformedURLException mfe) {
 			throw new ConfigurationException(PROP_URL, mfe.getMessage(), mfe);
@@ -116,7 +122,11 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		return url + "/" + wsVersion + "/groups";
 	}
 	
-	public String getSuffix(){
+	public String getSuffix() {
 		return suffix;
+	}
+
+	public int getHttpTimeout() {
+		return httpTimeout;
 	}
 }
