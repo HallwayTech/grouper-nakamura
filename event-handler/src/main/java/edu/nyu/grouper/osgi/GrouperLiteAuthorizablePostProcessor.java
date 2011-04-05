@@ -60,9 +60,7 @@ public class GrouperLiteAuthorizablePostProcessor implements
 			log.debug("Deleting Grouper Group = {} for sakai authorizableId = {}",
 					fullGrouperName, authorizable.getId());
 
-			HttpClient client = GrouperHttpUtil.getHttpClient(grouperConfiguration.getUrl(),
-															grouperConfiguration.getUsername(),
-															grouperConfiguration.getPassword());
+			HttpClient client = GrouperHttpUtil.getHttpClient(grouperConfiguration);
 			// Create a POST
 			String grouperWsRestUrl = grouperConfiguration.getRestWsGroupUrlString();
 			PostMethod method = new PostMethod(grouperWsRestUrl);

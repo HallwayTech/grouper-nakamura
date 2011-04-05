@@ -9,13 +9,16 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.DefaultHttpParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.felix.scr.annotations.Component;
+
+import edu.nyu.grouper.osgi.api.GrouperConfiguration;
 
 public class GrouperHttpUtil {
 	/**
 	 * Construct an {@link HttpClient} which is configured to authenticate to Nakamura.
 	 * @return the configured client.
 	 */
-	public static HttpClient getHttpClient(URL url, String username, String password){
+	public static HttpClient getHttpClient(GrouperConfiguration grouperConfiguration){
 		HttpClient client = new HttpClient();
 
 		DefaultHttpParams.getDefaultParams().setParameter(
@@ -23,9 +26,10 @@ public class GrouperHttpUtil {
 
 		HttpState state = client.getState();
 		state.setCredentials(
-				new AuthScope(url.getHost(), getPort(url)),
-				new UsernamePasswordCredentials(username, password));
+				new AuthScope(grouperConfiguration.getUrl().getHost(), getPort(grouperConfiguration.getUrl())),
+				new UsernamePasswordCredentials(grouperConfiguration.getUsername(), grouperConfiguration.getPassword()));
 		client.getParams().setAuthenticationPreemptive(true);
+		client.getParams().setSoTimeout(grouperConfiguration.getHttpTimeout());
 		return client;
 	}
 
