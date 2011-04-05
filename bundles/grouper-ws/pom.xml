@@ -26,8 +26,7 @@
 	<name>Grouper :: Web Services</name>
 	<version>1.7.0</version>
 	<description>
-	    This bundle was created to export the necessary classes to make REST WS calls to a running grouper-ws service.
-	    It is not meant to run Grouper or Grouper WS services in an OSGi container.
+	    This bundle was created to export the necessary classes to make REST WS calls to a running grouper-ws service. It is not meant to run Grouper or Grouper WS services in an OSGi container.
 	</description>
 	
 	<profiles>
@@ -73,7 +72,6 @@
 				    !bsh,
 				    !com.mchange.*,
 				    !com.sun.msv.datatype.*,
-				    !net.sf.*,
 				    !org.apache.axis2.*,
 				    !org.apache.commons.cli,
 				    !org.apache.commons.jexl,
@@ -86,35 +84,32 @@
 				    !org.apache.tools.ant,
 				    !org.apache.tools.ant.taskdefs,
 				    !org.gjt.xpp,
-				    !org.hibernate.*,
 				    !org.hsqldb.*,
 				    !org.jaxen.*,
 				    !org.jdom.*,
-				    !org.mortbay.jetty.*,
-				    !org.quartz.*,
 				*</Import-Package>
 				</instructions>
 			</configuration>
 			</plugin>
 			
 			<plugin>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>maven-sling-plugin</artifactId>
-                <version>2.0.5-SNAPSHOT</version>    
-                <executions>
-                    <execution>
-                        <id>install-bundle</id>
-                        <goals>
-                        <goal>install</goal>
-                        </goals>
-                        <configuration>
-                            <slingUrl>http://localhost:8080/system/console/install</slingUrl>
-                            <user>admin</user>
-                            <password>admin</password>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+        <groupId>org.apache.sling</groupId>
+        <artifactId>maven-sling-plugin</artifactId>
+        <version>2.0.5-SNAPSHOT</version>    
+        <executions>
+          <execution>
+            <id>install-bundle</id>
+            <goals>
+            <goal>install</goal>
+            </goals>
+            <configuration>
+              <slingUrl>http://localhost:8080/system/console/install</slingUrl>
+              <user>admin</user>
+              <password>admin</password>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 		</plugins>
 	</build>
 
@@ -135,5 +130,5 @@
 		<scope>compile</scope>
 	</dependency>
 	</dependencies>
-</project>
 
+</project>
