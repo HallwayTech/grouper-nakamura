@@ -11,16 +11,15 @@ import edu.internet2.middleware.grouper.SubjectFinder;
 import edu.internet2.middleware.grouper.app.loader.GrouperLoaderConfig;
 import edu.internet2.middleware.grouper.changeLog.ChangeLogConsumerBase;
 import edu.internet2.middleware.grouper.changeLog.ChangeLogEntry;
-import edu.internet2.middleware.grouper.changeLog.ChangeLogProcessorMetadata;
 import edu.internet2.middleware.grouper.changeLog.ChangeLogLabels;
+import edu.internet2.middleware.grouper.changeLog.ChangeLogProcessorMetadata;
 import edu.internet2.middleware.grouper.changeLog.ChangeLogTypeBuiltin;
 import edu.internet2.middleware.grouper.exception.GrouperException;
 import edu.internet2.middleware.grouper.exception.SessionException;
 import edu.internet2.middleware.grouper.util.GrouperUtil;
 import edu.internet2.middleware.subject.Subject;
-import edu.nyu.grouper.util.BaseNakamuraGroupIdAdapter;
+import edu.nyu.grouper.util.AggregateGroupIdAdapter;
 import edu.nyu.grouper.util.StaticInitialGroupPropertiesProvider;
-import edu.nyu.grouper.esb.HttpNakamuraGroupAdapter;
 
 /**
  * Process changelog entries and update group information in sakai3-nakamura
@@ -42,7 +41,7 @@ public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 		nakamuraGroupAdapter.setUsername(GrouperLoaderConfig.getPropertyString("nakamura.username", true));
 		nakamuraGroupAdapter.setPassword(GrouperLoaderConfig.getPropertyString("nakamura.password", true));
 		nakamuraGroupAdapter.setInitialPropertiesProvider(new StaticInitialGroupPropertiesProvider());
-		nakamuraGroupAdapter.setGroupIdAdapter(new BaseNakamuraGroupIdAdapter(GrouperLoaderConfig.getPropertyString("nakamura.basestem", true)));
+		nakamuraGroupAdapter.setGroupIdAdapter(new AggregateGroupIdAdapter(GrouperLoaderConfig.getPropertyString("nakamura.basestem", true)));
 	}
 
 	/**
@@ -65,11 +64,15 @@ public class NakamuraEsbConsumer extends ChangeLogConsumerBase {
 
 				if (changeLogEntry.equalsCategoryAndAction(ChangeLogTypeBuiltin.GROUP_ADD)) {
 					String groupName = changeLogEntry.retrieveValueForLabel(ChangeLogLabels.GROUP_ADD.name);
+
 					if (log.isDebugEnabled()){
 						log.debug(ChangeLogTypeBuiltin.GROUP_ADD + ": name=" + groupName);
 					}
+
 					Group group = GroupFinder.findByName(getGrouperSession(), groupName, false);
-					if (group != null){
+
+					// Nakamura creates the -managers groups on its own.
+					if (group != null && !group.getExtension().equals("managers")){
 						getNakamuraGroupAdapter().createGroup(group);
 					}
 				}
