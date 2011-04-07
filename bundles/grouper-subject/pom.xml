@@ -9,16 +9,12 @@
 
   <parent>
     <groupId>edu.nyu</groupId>
-    <artifactId>grouper-bundles-parent</artifactId>
+    <artifactId>grouper-bundles</artifactId>
     <version>1.0</version>
   </parent>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-scr-plugin</artifactId>
-      </plugin>
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>

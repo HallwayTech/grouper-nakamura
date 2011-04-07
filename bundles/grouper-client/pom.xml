@@ -32,10 +32,41 @@
   
   <parent>
     <groupId>edu.nyu</groupId>
-    <artifactId>grouper-bundles-parent</artifactId>
+    <artifactId>grouper-bundles</artifactId>
     <version>1.0</version>
   </parent>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>1.4.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-Category>grouper</Bundle-Category>
+            <Embed-Dependency>jdom,dom4j,jaxen,pull-parser</Embed-Dependency>
+            <Import-Package>
+          			  com.sun.net.ssl;resolution:=optional,
+          			  com.sun.msv.*;resolution:=optional,
+          			  junit.*;resolution:=optional,
+          			  net.sf.cglib.proxy;resolution:=optional,
+              		oracle.xml.parser.*;resolution:=optional,
+              		org.gjt.xpp;resolution:=optional,
+              		org.quartz.*;resolution:=optional,
+          			  sun.*;resolution:=optional,
+          			  .;resolution:=optional,
+          			  *
+            </Import-Package>
+            <Private-Package>edu.internet2.middleware.grouperClientExt.*</Private-Package>
+            <Export-Package>edu.internet2.middleware.grouperClient.*;version=1.7.0</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
   <dependencies>
     <dependency>
       <groupId>edu.internet2.middleware.grouper</groupId>
@@ -59,36 +90,5 @@
       <version>1.1.1</version>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>1.4.0</version>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Bundle-Category>grouper</Bundle-Category>
-            <Embed-Dependency>jdom,dom4j,jaxen,pull-parser</Embed-Dependency>
-            <Import-Package>
-          			  com.sun.net.ssl;resolution:=optional,
-          			  com.sun.msv.*;resolution:=optional,
-          			  junit.*;resolution:=optional,
-              		oracle.xml.parser.*;resolution:=optional,
-              		org.gjt.xpp;resolution:=optional,
-          			  net.sf.cglib.proxy;resolution:=optional,
-          			  sun.*;resolution:=optional,
-          			  .;resolution:=optional,
-          			  *
-          			</Import-Package>
-            <Private-Package>edu.internet2.middleware.grouperClientExt.*</Private-Package>
-            <Export-Package>edu.internet2.middleware.grouperClient.*;version=1.7.0
-          			</Export-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

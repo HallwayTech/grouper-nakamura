@@ -1,11 +1,12 @@
 <project
+
   xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.nyu</groupId>
-  <artifactId>grouper-bundles-parent</artifactId>
+  <artifactId>grouper-bundles</artifactId>
   <name>Grouper Bundles Parent</name>
   <description>Common bundle pom.</description>
   <version>1.0</version>
@@ -15,7 +16,7 @@
     <name>New York University</name> 
     <url>http://www.nyu.edu/</url> 
   </organization>
-  
+
   <repositories>
     <repository>
       <id>maven2-repository.dev.java.net</id>
@@ -24,6 +25,14 @@
       <layout>default</layout>
     </repository>
   </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>hallwaytech-obr</id>
+      <name>HallwayTech OBR</name>
+      <url>scp://home.hallwaytech.com/var/www/obr</url>
+    </repository>
+  </distributionManagement>
 
   <profiles>
     <profile>
@@ -43,6 +52,28 @@
          </plugins>
        </build>
      </profile>
+
+     <profile>
+       <id>deploy-obr</id>
+         <build>
+           <plugins>
+             <plugin>
+               <groupId>org.apache.felix</groupId>
+               <artifactId>maven-bundle-plugin</artifactId>
+               <executions>
+               <execution>
+                 <id>deploy-obr</id>
+                 <goals><goal>deploy</goal></goals>
+                 <configuration>
+                   <prefixUrl>http://home.hallwaytech.com/obr</prefixUrl>
+                   <remoteOBR>hallwaytech-obr</remoteOBR>
+                 </configuration>
+               </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
   </profiles>
 
 </project>
