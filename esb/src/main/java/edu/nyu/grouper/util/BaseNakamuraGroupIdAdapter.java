@@ -15,11 +15,17 @@ public class BaseNakamuraGroupIdAdapter implements GroupIdAdapter {
 		this.basestem = basestem;
 	}
 
-	public String getNakamuraName(String grouperName) {
+	public String getNakamuraGroupId(String grouperName) {
+		if (grouperName == null){
+			return null;
+		}
 		return stripBaseStem(grouperName).replaceAll(":", "_");
 	}
 
-	public String getGrouperFullName(String nakamuraGroupName) {
+	public String getGrouperName(String nakamuraGroupName) {
+		if (nakamuraGroupName == null){
+			return null;
+		}
 		String grouperFullName = nakamuraGroupName.replaceAll("_", ":");
 		if(basestem != null && ! "".equals(basestem)){
 			grouperFullName = basestem + ":" + grouperFullName;
@@ -27,7 +33,10 @@ public class BaseNakamuraGroupIdAdapter implements GroupIdAdapter {
 		return grouperFullName;
 	}
 	
-	private String stripBaseStem(String grouperName){
+	protected String stripBaseStem(String grouperName){
+		if (grouperName == null){
+			return null;
+		}
 		if (grouperName.startsWith(basestem + ":")){
 			grouperName = grouperName.substring(basestem.length() + 1);
 		}
