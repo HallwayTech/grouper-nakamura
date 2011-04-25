@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * @see OSGiStoreListener for the list of topics
  */
 @Service(value = EventHandler.class)
-@Component(metatype=true)
+@Component(metatype = true, enabled = false)
 @Properties(value = { 
 		@Property(name = EventConstants.EVENT_TOPIC, 
 				value = {
