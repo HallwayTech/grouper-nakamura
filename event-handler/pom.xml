@@ -56,7 +56,7 @@
 						<Bundle-Category>sakai-nakamura</Bundle-Category>
 						<Embed-Dependency>json-lib,ezmorph</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
-						<Export-Package>edu.nyu.grouper.osgi</Export-Package>
+						<Export-Package>edu.nyu.grouper.*</Export-Package>
 						<Import-Package>
 						  !org.apache.oro.text.*,
 						  javax.crypto,
@@ -183,6 +183,7 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>net.sf.json-lib</groupId>
 			<artifactId>json-lib</artifactId>
@@ -191,11 +192,20 @@
 			<classifier>jdk15</classifier>
 			<scope>compile</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>net.sf.ezmorph</groupId>
 			<artifactId>ezmorph</artifactId>
 			<version>1.0.6</version>
 			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.sakaiproject.nakamura</groupId>
+			<artifactId>org.sakaiproject.nakamura.core</artifactId>
+			<version>0.10-SNAPSHOT</version>
+			<type>bundle</type>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
