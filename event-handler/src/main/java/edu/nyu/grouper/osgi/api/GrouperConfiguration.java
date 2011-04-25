@@ -19,4 +19,6 @@ public interface GrouperConfiguration {
 	public abstract String getSuffix();
 
 	public abstract int getHttpTimeout();
+
+	public abstract String getIgnoredUserId();
 }

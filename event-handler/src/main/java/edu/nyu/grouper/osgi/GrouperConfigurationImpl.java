@@ -51,6 +51,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Property
 	protected static final String PROP_TIMEOUT = "sakai.grouper.httpTimeout";
 	
+	private static final String DEFAULT_IGNORED_USER = "sakai";
+	@Property(value=DEFAULT_IGNORED_USER)
+	protected static final String PROP_IGNORED_USER = "sakai.grouper.ignoredUser";
+
 	// Grouper configuration.
 	private URL url;
 	private String wsVersion;
@@ -58,6 +62,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	private String password;
 	private String baseStem;
 	private String suffix;
+	private String ignoredUser;
 	private int httpTimeout;
 
 	// -------------------------- Configuration Admin --------------------------
@@ -75,6 +80,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 			password = OsgiUtil.toString(props.get(PROP_PASSWORD), DEFAULT_PASSWORD);
 			baseStem = OsgiUtil.toString(props.get(PROP_BASESTEM), DEFAULT_BASESTEM);
 			suffix   = OsgiUtil.toString(props.get(PROP_SUFFIX), DEFAULT_SUFFIX);
+			ignoredUser = OsgiUtil.toString(props.get(PROP_IGNORED_USER), DEFAULT_IGNORED_USER);
 			httpTimeout   = OsgiUtil.toInteger(props.get(PROP_TIMEOUT), DEFAULT_TIMEOUT);
 		}
 		catch (MalformedURLException mfe) {
@@ -128,5 +134,9 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	public int getHttpTimeout() {
 		return httpTimeout;
+	}
+
+	public String getIgnoredUserId() {
+		return ignoredUser;
 	}
 }
