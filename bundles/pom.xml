@@ -17,6 +17,11 @@
     <url>http://www.nyu.edu/</url> 
   </organization>
 
+  <modules>
+    <module>grouper-subject</module>
+    <module>grouper-client</module>
+  </modules>
+
   <repositories>
     <repository>
       <id>maven2-repository.dev.java.net</id>
