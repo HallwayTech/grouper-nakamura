@@ -46,17 +46,19 @@
         <configuration>
           <instructions>
             <Bundle-Category>grouper</Bundle-Category>
-            <Embed-Dependency>jdom,dom4j,jaxen,pull-parser</Embed-Dependency>
+            <Embed-Dependency>ezmorph,json-lib,jdom,dom4j,jaxen,pull-parser</Embed-Dependency>
             <Import-Package>
-          			  com.sun.net.ssl;resolution:=optional,
-          			  com.sun.msv.*;resolution:=optional,
-          			  junit.*;resolution:=optional,
-          			  net.sf.cglib.proxy;resolution:=optional,
+          		com.sun.net.ssl;resolution:=optional,
+          		com.sun.msv.*;resolution:=optional,
+          		junit.*;resolution:=optional,
+          		net.sf.cglib.proxy;resolution:=optional,
               		oracle.xml.parser.*;resolution:=optional,
+              		org.apache.oro.text.regex;resolution:=optional,
               		org.gjt.xpp;resolution:=optional,
               		org.quartz.*;resolution:=optional,
-          			  sun.*;resolution:=optional,
-          			  .;resolution:=optional,
+              		org.jivesoftware.*;resolution:=optional,
+          		sun.*;resolution:=optional,
+          		.;resolution:=optional,
           			  *
             </Import-Package>
             <Private-Package>edu.internet2.middleware.grouperClientExt.*</Private-Package>
@@ -89,6 +91,20 @@
       <artifactId>jaxen</artifactId>
       <version>1.1.1</version>
     </dependency>
+    <dependency>
+			<groupId>net.sf.ezmorph</groupId>
+			<artifactId>ezmorph</artifactId>
+			<version>1.0.6</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <version>2.4</version>
+      <type>jar</type>
+      <classifier>jdk15</classifier>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
-
 </project>
