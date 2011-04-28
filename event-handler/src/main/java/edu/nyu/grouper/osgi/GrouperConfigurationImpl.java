@@ -124,8 +124,8 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	/* (non-Javadoc)
 	 * @see edu.nyu.grouper.osgi.GrouperConfiguration#getRestWsGroupUrlString()
 	 */
-	public String getRestWsGroupUrlString() {
-		return url + "/" + wsVersion + "/groups";
+	public String getRestWsUrlString() {
+		return url + "/" + wsVersion;
 	}
 	
 	public String getSuffix() {
