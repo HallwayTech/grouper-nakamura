@@ -1,5 +1,8 @@
 package edu.nyu.grouper.osgi;
 
+import java.util.Arrays;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
@@ -23,10 +26,13 @@ import edu.nyu.grouper.osgi.api.GrouperConfiguration;
 		})
 })
 public class GrouperEventHandler implements EventHandler {
+	
+	private static String MEMBERS_ADDED_PROP = "added";
+	private static String MEMBERS_REMOVED_PROP = "removed";
 
 	@Reference
 	protected GrouperConfiguration grouperConfiguration;
-
+	
 	@Reference
 	protected GrouperManager grouperManager;
 
@@ -40,14 +46,26 @@ public class GrouperEventHandler implements EventHandler {
 		if (ignoreEvent(event)){
 			return;
 		}
+		String groupId = (String) event.getProperty("path");
 
 		if ("org/sakaiproject/nakamura/lite/authorizables/ADDED".equals(event.getTopic())){
-			String groupId = (String) event.getProperty("path");
-			grouperManager.createGroup(groupId);
+			String membersAdded = (String)event.getProperty(MEMBERS_ADDED_PROP);
+			String membersRemoved = (String)event.getProperty(MEMBERS_REMOVED_PROP);
+
+			if (membersAdded != null){
+				grouperManager.addMemberships(groupId, 
+						Arrays.asList(StringUtils.split(membersAdded, ",")));
+			} 
+			else if (membersRemoved != null){
+				grouperManager.removeMemberships(groupId, 
+						Arrays.asList(StringUtils.split(membersRemoved, ",")));
+			}
+			else {
+				grouperManager.createGroup(groupId);
+			}
 		}
-		
+
 		if ("org/sakaiproject/nakamura/lite/authorizables/UPDATED".equals(event.getTopic())){
-			String groupId = (String) event.getProperty("path");
 			grouperManager.updateGroup(groupId, event);
 		}
 	}
@@ -61,6 +79,12 @@ public class GrouperEventHandler implements EventHandler {
 		if (grouperConfiguration.getIgnoredUserId().equals((String)event.getProperty(StoreListener.USERID_PROPERTY))){
 			ignore = true;
 		}
+
+		String type = (String)event.getProperty("type");
+		if (type != null && !type.equals("group")){
+			ignore = true;
+		}
+
 		return ignore;
 	}
 }
