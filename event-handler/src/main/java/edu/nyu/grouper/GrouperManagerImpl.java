@@ -12,6 +12,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
@@ -33,8 +34,11 @@ import org.slf4j.LoggerFactory;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroup;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupLookup;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupToSave;
+import edu.internet2.middleware.grouperClient.ws.beans.WsRestAddMemberRequest;
+import edu.internet2.middleware.grouperClient.ws.beans.WsRestDeleteMemberRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupDeleteRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupSaveRequest;
+import edu.internet2.middleware.grouperClient.ws.beans.WsSubjectLookup;
 import edu.nyu.grouper.api.GrouperIdHelper;
 import edu.nyu.grouper.api.GrouperManager;
 import edu.nyu.grouper.osgi.api.GrouperConfiguration;
@@ -95,7 +99,7 @@ public class GrouperManagerImpl implements GrouperManager {
 			String grouperNameProperty = (String)authorizable.getProperty("grouper:name");
 			if (grouperNameProperty != null){
 				if (log.isDebugEnabled()){
-					log.debug("This group was already has grouper information.");
+					log.debug("{}, already has grouper group: {}.", groupId, grouperNameProperty);
 				}
 				return;
 			}
@@ -119,7 +123,7 @@ public class GrouperManagerImpl implements GrouperManager {
 			wsGroupToSave.setCreateParentStemsIfNotExist("T");
 			groupSave.setWsGroupToSaves(new WsGroupToSave[]{ wsGroupToSave });
 
-			JSONObject response = post(groupSave);
+			JSONObject response = post("/groups", groupSave);
 
 			authorizable.setProperty("grouper:name", grouperName);
 			authorizableManager.updateAuthorizable(authorizable);
@@ -140,7 +144,9 @@ public class GrouperManagerImpl implements GrouperManager {
 			log.error(e.getMessage(), e);
 		}
 	}
-	
+	/**
+	 * @{inheritDoc}
+	 */
 	public void deleteGroup(String groupId) {
 
 		try {
@@ -163,7 +169,7 @@ public class GrouperManagerImpl implements GrouperManager {
 			WsRestGroupDeleteRequest groupDelete = new WsRestGroupDeleteRequest();
 			groupDelete.setWsGroupLookups(new WsGroupLookup[]{ new WsGroupLookup(grouperName, null) });
 
-			JSONObject response = post(groupDelete);
+			JSONObject response = post("/groups", groupDelete);
 		}
 		catch (StorageClientException sce) {
 			log.error("Unable to fetch authorizable for " + groupId, sce);
@@ -180,14 +186,107 @@ public class GrouperManagerImpl implements GrouperManager {
 		
 	}
 	
+	/**
+	 * @{inheritDoc}
+	 */
 	public void addMemberships(String groupId, Collection<String> membersToAdd){
-		
+		try {
+			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
+
+			if (!authorizable.isGroup()){
+				log.error("{} is not a group", authorizable.getId());
+				return;
+			}
+
+			String grouperName = groupIdHelper.getGrouperName(groupId);
+			String membersString = StringUtils.join(membersToAdd, ',');
+			log.debug("Adding members: Group = {} members = {}", 
+						grouperName, membersString);
+
+			WsRestAddMemberRequest addMembers = new WsRestAddMemberRequest();
+			// Don't overwrite the entire group membership. just add to it.
+			addMembers.setReplaceAllExisting("F");
+
+			// Each subjectId must have a lookup 
+			WsSubjectLookup[] subjectLookups = new WsSubjectLookup[membersToAdd.size()];
+			int  i = 0;
+			for (String subjectId: membersToAdd){
+				subjectLookups[i] = new WsSubjectLookup(subjectId, null, null);
+				i++;
+			}
+			addMembers.setSubjectLookups(subjectLookups);
+
+			String urlPath = "/groups/" + grouperName + "/members";
+			urlPath = urlPath.replace(":", "%3A");
+			JSONObject response = post(urlPath, addMembers);
+
+			log.debug("Success! Added members: Group = {} members = {}", 
+					grouperName, membersString);
+		}
+		catch (StorageClientException sce) {
+			log.error("Unable to fetch authorizable for " + groupId, sce);
+		} 
+		catch (AccessDeniedException ade) {
+			log.error("Unable to fetch authorizable for " + groupId + ". Access Denied.", ade);
+		}
+		catch (GrouperException ge) {
+			log.error("An error occurred while communicating with the grouper web services.", ge);
+		}
+		catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 
+	/**
+	 * @{inheritDoc}
+	 */
 	public void removeMemberships(String groupId, Collection<String> membersToRemove){
-		
+		try {
+			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
+
+			if (!authorizable.isGroup()){
+				log.error("{} is not a group", authorizable.getId());
+				return;
+			}
+
+			String grouperName = groupIdHelper.getGrouperName(groupId);
+			String membersString = StringUtils.join(membersToRemove, ',');
+			log.debug("Removing members: Group = {} members = {}", 
+						grouperName, membersString);
+
+			WsRestDeleteMemberRequest deleteMembers = new WsRestDeleteMemberRequest();
+			// Each subjectId must have a lookup 
+			WsSubjectLookup[] subjectLookups = new WsSubjectLookup[membersToRemove.size()];
+			int  i = 0;
+			for (String subjectId: membersToRemove){
+				subjectLookups[i] = new WsSubjectLookup(subjectId, null, null);
+				i++;
+			}
+			deleteMembers.setSubjectLookups(subjectLookups);
+			String urlPath = "/groups/" + grouperName + "/members";
+			urlPath = urlPath.replace(":", "%3A");
+			JSONObject response = post(urlPath, deleteMembers);
+
+			log.debug("Success! Added members: Group = {} members = {}", 
+					grouperName, membersString);
+		}
+		catch (StorageClientException sce) {
+			log.error("Unable to fetch authorizable for " + groupId, sce);
+		} 
+		catch (AccessDeniedException ade) {
+			log.error("Unable to fetch authorizable for " + groupId + ". Access Denied.", ade);
+		}
+		catch (GrouperException ge) {
+			log.error("An error occurred while communicating with the grouper web services.", ge);
+		}
+		catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 	
+	/**
+	 * @{inheritDoc}
+	 */
 	public void updateGroup(String groupId, Event event) {
 		// TODO Auto-generated method stub
 	}
@@ -200,11 +299,11 @@ public class GrouperManagerImpl implements GrouperManager {
 	 * @throws IOException
 	 * @throws GrouperException
 	 */
-	private JSONObject post(Object grouperRequestBean) throws HttpException, IOException, GrouperException  {
+	private JSONObject post(String urlPath, Object grouperRequestBean) throws HttpException, IOException, GrouperException  {
 		
 		// URL e.g. http://localhost:9090/grouper-ws/servicesRest/v1_6_003/...
 		HttpClient client = GrouperHttpUtil.getHttpClient(grouperConfiguration);		            
-		String grouperWsRestUrl = grouperConfiguration.getRestWsGroupUrlString();
+		String grouperWsRestUrl = grouperConfiguration.getRestWsUrlString() + urlPath;
         PostMethod method = new PostMethod(grouperWsRestUrl);
         method.setRequestHeader("Connection", "close");
 
