@@ -1,4 +1,4 @@
-package edu.nyu.grouper.osgi;
+package edu.nyu.grouper;
 
 
 import java.util.HashMap;
@@ -10,7 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.nyu.grouper.AggregateGroupsGrouperIdHelperImpl;
-import edu.nyu.grouper.osgi.api.GrouperConfiguration;
+import edu.nyu.grouper.GrouperConfigurationImpl;
+import edu.nyu.grouper.api.GrouperConfiguration;
 
 public class AggregateGroupsGrouperIdHelperImplTest extends TestCase {
 

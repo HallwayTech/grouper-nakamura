@@ -5,7 +5,7 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 
 import edu.nyu.grouper.api.GrouperIdHelper;
-import edu.nyu.grouper.osgi.api.GrouperConfiguration;
+import edu.nyu.grouper.api.GrouperConfiguration;
 
 /**
  * @see GrouperIdHelper

@@ -1,4 +1,4 @@
-package edu.nyu.grouper.osgi.api;
+package edu.nyu.grouper.api;
 
 import java.net.URL;
 

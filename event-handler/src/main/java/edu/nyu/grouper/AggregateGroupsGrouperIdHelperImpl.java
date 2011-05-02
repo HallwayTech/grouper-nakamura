@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.nyu.grouper.api.GrouperIdHelper;
-import edu.nyu.grouper.osgi.api.GrouperConfiguration;
+import edu.nyu.grouper.api.GrouperConfiguration;
 
 /**
  * 

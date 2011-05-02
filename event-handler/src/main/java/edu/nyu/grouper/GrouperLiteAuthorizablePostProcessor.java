@@ -1,4 +1,4 @@
-package edu.nyu.grouper.osgi;
+package edu.nyu.grouper;
 
 import java.util.Map;
 

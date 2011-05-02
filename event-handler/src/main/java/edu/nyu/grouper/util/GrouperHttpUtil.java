@@ -9,9 +9,8 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.DefaultHttpParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.felix.scr.annotations.Component;
 
-import edu.nyu.grouper.osgi.api.GrouperConfiguration;
+import edu.nyu.grouper.api.GrouperConfiguration;
 
 public class GrouperHttpUtil {
 	/**

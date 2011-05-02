@@ -1,4 +1,4 @@
-package edu.nyu.grouper.osgi;
+package edu.nyu.grouper;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,7 +14,7 @@ import org.osgi.service.cm.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.nyu.grouper.osgi.api.GrouperConfiguration;
+import edu.nyu.grouper.api.GrouperConfiguration;
 
 @Service
 @Component(metatype=true)

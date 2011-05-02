@@ -41,7 +41,7 @@ import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupSaveRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsSubjectLookup;
 import edu.nyu.grouper.api.GrouperIdHelper;
 import edu.nyu.grouper.api.GrouperManager;
-import edu.nyu.grouper.osgi.api.GrouperConfiguration;
+import edu.nyu.grouper.api.GrouperConfiguration;
 import edu.nyu.grouper.util.GrouperHttpUtil;
 import edu.nyu.grouper.util.GrouperJsonUtil;
 

@@ -14,7 +14,7 @@ import org.osgi.service.event.EventHandler;
 import org.sakaiproject.nakamura.api.lite.StoreListener;
 
 import edu.nyu.grouper.api.GrouperManager;
-import edu.nyu.grouper.osgi.api.GrouperConfiguration;
+import edu.nyu.grouper.api.GrouperConfiguration;
 
 @Service
 @Component(immediate = true, metatype=true)
