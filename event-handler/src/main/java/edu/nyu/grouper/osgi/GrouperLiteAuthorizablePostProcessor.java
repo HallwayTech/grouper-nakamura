@@ -26,7 +26,7 @@ import edu.nyu.grouper.api.GrouperManager;
  * doesn't have an active reference to a list of handlers.
  *
  */
-@Component(immediate = true, metatype = true)
+@Component(immediate = true)
 @Service
 public class GrouperLiteAuthorizablePostProcessor implements
 		LiteAuthorizablePostProcessor {
