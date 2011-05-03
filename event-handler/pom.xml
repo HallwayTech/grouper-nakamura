@@ -100,6 +100,14 @@
 			<type>bundle</type>
 			<scope>compile</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.sakaiproject.nakamura</groupId>
+			<artifactId>org.sakaiproject.nakamura.activemq</artifactId>
+			<version>5.3.0-0.10</version>
+			<type>bundle</type>
+			<scope>compile</scope>
+		</dependency>
 
 		<!-- scr annotations -->
 		<dependency>
@@ -202,10 +210,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.sakaiproject.nakamura</groupId>
-			<artifactId>org.sakaiproject.nakamura.core</artifactId>
-			<version>0.10-SNAPSHOT</version>
-			<type>bundle</type>
+			<groupId>javax.jms</groupId>
+			<artifactId>jms</artifactId>
+			<version>1.1</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
