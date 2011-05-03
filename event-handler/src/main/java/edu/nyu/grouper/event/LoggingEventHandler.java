@@ -1,4 +1,4 @@
-package edu.nyu.grouper.osgi;
+package edu.nyu.grouper.event;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * @author froese
  * @see OSGiStoreListener for the list of topics
  */
-@Service(value = EventHandler.class)
+@Service
 @Component(metatype = true, enabled = false)
 @Properties(value = { 
 		@Property(name = EventConstants.EVENT_TOPIC, 

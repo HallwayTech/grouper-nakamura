@@ -1,4 +1,4 @@
-package edu.nyu.grouper.osgi;
+package edu.nyu.grouper.event;
 
 import java.util.Arrays;
 
@@ -17,7 +17,7 @@ import edu.nyu.grouper.api.GrouperManager;
 import edu.nyu.grouper.api.GrouperConfiguration;
 
 @Service
-@Component(immediate = true, metatype=true)
+@Component(immediate = true, metatype=true, enabled = false)
 @Properties(value = { 
 		@Property(name = EventConstants.EVENT_TOPIC, 
 				value = {
@@ -26,9 +26,6 @@ import edu.nyu.grouper.api.GrouperConfiguration;
 		})
 })
 public class GrouperEventHandler implements EventHandler {
-	
-	private static String MEMBERS_ADDED_PROP = "added";
-	private static String MEMBERS_REMOVED_PROP = "removed";
 
 	@Reference
 	protected GrouperConfiguration grouperConfiguration;
@@ -49,8 +46,8 @@ public class GrouperEventHandler implements EventHandler {
 		String groupId = (String) event.getProperty("path");
 
 		if ("org/sakaiproject/nakamura/lite/authorizables/ADDED".equals(event.getTopic())){
-			String membersAdded = (String)event.getProperty(MEMBERS_ADDED_PROP);
-			String membersRemoved = (String)event.getProperty(MEMBERS_REMOVED_PROP);
+			String membersAdded = (String)event.getProperty(GrouperEventUtils.MEMBERS_ADDED_PROP);
+			String membersRemoved = (String)event.getProperty(GrouperEventUtils.MEMBERS_REMOVED_PROP);
 
 			if (membersAdded != null){
 				grouperManager.addMemberships(groupId, 
