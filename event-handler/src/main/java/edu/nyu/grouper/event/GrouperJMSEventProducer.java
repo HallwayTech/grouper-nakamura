@@ -91,12 +91,14 @@ public class GrouperJMSEventProducer implements EventHandler {
 	 */
 	private boolean ignoreEvent(Event event){
 		boolean ignore = false;
-		/*
-		 * Ignore events that were posted by the Grouper system to sakai so we don't wind up
-		 * with a feedback loop between sakai and Grouper.
-		 */
-		if (grouperConfiguration.getIgnoredUserId().equals((String)event.getProperty(StoreListener.USERID_PROPERTY))){
-			ignore = true;
+
+		// Ignore events that were posted by the Grouper system to SakaiOAE. 
+		// We don't want to wind up with a feedback loop between SakaiOAE and Grouper.
+		String ignoreUser = grouperConfiguration.getIgnoredUserId();
+		String eventCausedBy = (String)event.getProperty(StoreListener.USERID_PROPERTY); 
+		if ( (ignoreUser != null && eventCausedBy != null) && 
+			 (ignoreUser.equals(eventCausedBy))) {
+				ignore = true;
 		}
 
 		// Ignore non-group events
