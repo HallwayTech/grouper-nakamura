@@ -37,16 +37,15 @@ public class GrouperJMSEventConsumer {
 	
 	private Connection connection;
 	private Session session;
+	private MessageConsumer consumer;
 
 	@Activate
 	public void activate(Map<?,?> props){
 		try {
 			connection = connFactoryService.getDefaultPooledConnectionFactory().createConnection();
 			session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-
 			Destination destination = session.createQueue(QUEUE_NAME);
-			MessageConsumer consumer = session.createConsumer(destination);
-
+			consumer = session.createConsumer(destination);
 			consumer.setMessageListener(new GrouperMessageListener());
 			connection.start();
 
@@ -57,6 +56,12 @@ public class GrouperJMSEventConsumer {
 	
 	@Deactivate
 	public void deactivate(){
+		try {
+			consumer.setMessageListener(null);
+		}
+		catch (JMSException jmse){
+			log.error("Problem clearing the MessageListener.");
+		}
 		try {
 			session.close();
 		}
@@ -81,33 +86,45 @@ public class GrouperJMSEventConsumer {
 	private class GrouperMessageListener implements MessageListener {
 
 		public void onMessage(Message message){
-			log.debug("Receiving a message on {}", QUEUE_NAME);
-
+			log.debug("Receiving a message on {} : {}", QUEUE_NAME, message);
 			try {
-				String groupId = (String) message.getStringProperty("event.topics");
 
-				if ("org/sakaiproject/nakamura/lite/authorizables/ADDED".equals(message.getStringProperty("osgi.topic"))){
+				String groupId = (String) message.getStringProperty("path");
+				String operation = "CREATE";
+
+				if ("org/sakaiproject/nakamura/lite/authorizables/ADDED".equals(message.getStringProperty("event.topics"))){
+
+					// These events should be under org/sakaiproject/nakamura/lite/authorizables/UPDATED
+					// http://jira.sakaiproject.org/browse/KERN-1795
 					String membersAdded = (String)message.getStringProperty(GrouperEventUtils.MEMBERS_ADDED_PROP);
-					String membersRemoved = (String)message.getStringProperty(GrouperEventUtils.MEMBERS_REMOVED_PROP);
-
 					if (membersAdded != null){
-						grouperManager.addMemberships(groupId, 
-								Arrays.asList(StringUtils.split(membersAdded, ",")));
-						message.acknowledge();
-					} 
-					else if (membersRemoved != null){
-						grouperManager.removeMemberships(groupId, 
-								Arrays.asList(StringUtils.split(membersRemoved, ",")));
-						message.acknowledge();
-					}
-					else {
+						// membership adds can be attached to the same event for the group add.
 						grouperManager.createGroup(groupId);
-						message.acknowledge();
+						grouperManager.addMemberships(groupId,
+								Arrays.asList(StringUtils.split(membersAdded, ",")));
+						operation = "ADD_MEMBERS";
 					}
+
+					String membersRemoved = (String)message.getStringProperty(GrouperEventUtils.MEMBERS_REMOVED_PROP);
+					if (membersRemoved != null){
+						grouperManager.removeMemberships(groupId,
+								Arrays.asList(StringUtils.split(membersRemoved, ",")));
+						operation = "REMOVE_MEMBERS";
+					}
+
+					if (membersAdded == null && membersRemoved == null) {
+						grouperManager.createGroup(groupId);
+					}
+
+					message.acknowledge();
+					log.info("Successfully processed and acknowledged. {}, {}", operation, groupId);
 				}
 			}
 			catch (JMSException jmse){
-				log.error("Exception while processing message.", jmse);
+				log.error("JMSException while processing message.", jmse);
+			}
+			catch (Exception e){
+				log.error("Exception while processing message.", e);
 			}
 		}
 	}
