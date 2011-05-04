@@ -64,17 +64,22 @@ public class GrouperJMSEventProducer implements EventHandler {
 			Session sender_session = sender_connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 			Queue squeue = sender_session.createQueue(QUEUE_NAME);
 
-			log.debug("Sending a message on " + squeue);
 			Message message = sender_session.createObjectMessage();
 			copyEventToMessage(event, message);
 
 			MessageProducer producer = sender_session.createProducer(squeue);
 			sender_connection.start();
 			producer.send(message);
-			log.debug("Sent: " + message);
+
+			if (log.isDebugEnabled()){
+				log.debug("Sent: " + message);
+			}
+			else if (log.isInfoEnabled()){
+				log.info("Sent: {}, {}", event.getTopic(), (String)event.getProperty("path"));
+			}
 
 			sender_connection.close();
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException (e);
 		}
@@ -97,6 +102,12 @@ public class GrouperJMSEventProducer implements EventHandler {
 		// Ignore non-group events
 		String type = (String)event.getProperty("type");
 		if (type != null && !type.equals("group")){
+			ignore = true;
+		}
+
+		// Ignore op=acl events
+		String op = (String)event.getProperty("op");
+		if (op != null && op.equals("acl")){
 			ignore = true;
 		}
 
