@@ -12,7 +12,10 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.sakaiproject.nakamura.api.lite.StoreListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import edu.nyu.grouper.GrouperException;
 import edu.nyu.grouper.api.GrouperManager;
 import edu.nyu.grouper.api.GrouperConfiguration;
 
@@ -27,9 +30,11 @@ import edu.nyu.grouper.api.GrouperConfiguration;
 })
 public class GrouperEventHandler implements EventHandler {
 
+	private Logger log = LoggerFactory.getLogger(GrouperEventHandler.class);
+
 	@Reference
 	protected GrouperConfiguration grouperConfiguration;
-	
+
 	@Reference
 	protected GrouperManager grouperManager;
 
@@ -43,27 +48,38 @@ public class GrouperEventHandler implements EventHandler {
 		if (ignoreEvent(event)){
 			return;
 		}
+		
 		String groupId = (String) event.getProperty("path");
 
-		if ("org/sakaiproject/nakamura/lite/authorizables/ADDED".equals(event.getTopic())){
-			String membersAdded = (String)event.getProperty(GrouperEventUtils.MEMBERS_ADDED_PROP);
-			String membersRemoved = (String)event.getProperty(GrouperEventUtils.MEMBERS_REMOVED_PROP);
+		try {
 
-			if (membersAdded != null){
-				grouperManager.addMemberships(groupId, 
-						Arrays.asList(StringUtils.split(membersAdded, ",")));
-			} 
-			else if (membersRemoved != null){
-				grouperManager.removeMemberships(groupId, 
-						Arrays.asList(StringUtils.split(membersRemoved, ",")));
+			if ("org/sakaiproject/nakamura/lite/authorizables/ADDED".equals(event.getTopic())){
+
+				// These events should be under org/sakaiproject/nakamura/lite/authorizables/UPDATED
+				// http://jira.sakaiproject.org/browse/KERN-1795
+				String membersAdded = (String)event.getProperty(GrouperEventUtils.MEMBERS_ADDED_PROP);
+				if (membersAdded != null){
+					grouperManager.addMemberships(groupId,
+							Arrays.asList(StringUtils.split(membersAdded, ",")));
+				} 
+
+				String membersRemoved = (String)event.getProperty(GrouperEventUtils.MEMBERS_REMOVED_PROP);
+				if (membersRemoved != null){
+					grouperManager.removeMemberships(groupId,
+							Arrays.asList(StringUtils.split(membersRemoved, ",")));
+				}
+
+				if (membersAdded == null && membersRemoved == null) {
+					grouperManager.createGroup(groupId);
+				}
 			}
-			else {
-				grouperManager.createGroup(groupId);
+
+			if ("org/sakaiproject/nakamura/lite/authorizables/UPDATED".equals(event.getTopic())){
+				grouperManager.updateGroup(groupId, event);
 			}
 		}
-
-		if ("org/sakaiproject/nakamura/lite/authorizables/UPDATED".equals(event.getTopic())){
-			grouperManager.updateGroup(groupId, event);
+		catch (GrouperException e){
+			log.error("An error occured while updating Grouper.", e);
 		}
 	}
 
