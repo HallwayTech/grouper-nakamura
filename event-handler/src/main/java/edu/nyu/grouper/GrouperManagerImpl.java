@@ -1,6 +1,7 @@
 package edu.nyu.grouper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -48,14 +49,14 @@ import edu.nyu.grouper.util.GrouperJsonUtil;
 @Service
 @Component
 public class GrouperManagerImpl implements GrouperManager {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(GrouperManager.class);
-	
+
 	private static String GROUPER_NAME_PROP = "grouper:name";
-	
+
 	@Reference
 	protected GrouperConfiguration grouperConfiguration;
-	
+
 	@Reference
 	protected GrouperIdHelper groupIdHelper;
 	
@@ -65,16 +66,16 @@ public class GrouperManagerImpl implements GrouperManager {
 	private Session session;
 	// Fetched via the Repository Session.
 	private AuthorizableManager authorizableManager;
-	
+
 	@Activate
 	public void activate(Map<?, ?> props) 
 		throws ConfigurationException, ClientPoolException, StorageClientException, AccessDeniedException{
 
-		session = repository.loginAdministrative();
+		session = repository.loginAdministrative(grouperConfiguration.getIgnoredUserId());
 		authorizableManager = session.getAuthorizableManager();
 		log.debug("Activated!");
 	}
-	
+
 	@Deactivate
 	public void deactivate(){
 		if (session != null) {
@@ -87,7 +88,10 @@ public class GrouperManagerImpl implements GrouperManager {
 		}
 	}
 
-	public void createGroup(String groupId) {
+	/** 
+	 * @{inheritDoc}
+	 */
+	public void createGroup(String groupId) throws GrouperException {
 		try {
 			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
 
@@ -125,29 +129,27 @@ public class GrouperManagerImpl implements GrouperManager {
 
 			JSONObject response = post("/groups", groupSave);
 
-			authorizable.setProperty("grouper:name", grouperName);
+			authorizable.setProperty(GROUPER_NAME_PROP, grouperName);
 			authorizableManager.updateAuthorizable(authorizable);
 
 			log.debug("Success! Created a new Grouper Group = {} for sakai authorizableId = {}", 
 					grouperName, groupId);
 		}
 		catch (StorageClientException sce) {
-			log.error("Unable to fetch authorizable for " + groupId, sce);
-		} 
-		catch (AccessDeniedException ade) {
-			log.error("Unable to fetch authorizable for " + groupId + ". Access Denied.", ade);
+			throw new GrouperException("Unable to fetch authorizable for " + groupId);
 		}
-		catch (GrouperException ge) {
-			log.error("An error occurred while communicating with the grouper web services.", ge);
+		catch (AccessDeniedException ade) {
+			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
 		}
 		catch (Exception e) {
-			log.error(e.getMessage(), e);
+			throw new GrouperException(e.getMessage());
 		}
 	}
+
 	/**
 	 * @{inheritDoc}
 	 */
-	public void deleteGroup(String groupId) {
+	public void deleteGroup(String groupId) throws GrouperException {
 
 		try {
 			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
@@ -172,16 +174,13 @@ public class GrouperManagerImpl implements GrouperManager {
 			JSONObject response = post("/groups", groupDelete);
 		}
 		catch (StorageClientException sce) {
-			log.error("Unable to fetch authorizable for " + groupId, sce);
+			throw new GrouperException("Unable to fetch authorizable for " + groupId);
 		}
 		catch (AccessDeniedException ade) {
-			log.error("Unable to fetch authorizable for " + groupId + ". Access Denied.", ade);
-		}
-		catch (IOException ioe){
-			log.error("IOException while communicating with grouper web services.", ioe);
+			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
 		}
 		catch (Exception e) {
-			log.error(e.getMessage(), e);
+			throw new GrouperException(e.getMessage());
 		}
 		
 	}
@@ -189,7 +188,7 @@ public class GrouperManagerImpl implements GrouperManager {
 	/**
 	 * @{inheritDoc}
 	 */
-	public void addMemberships(String groupId, Collection<String> membersToAdd){
+	public void addMemberships(String groupId, Collection<String> membersToAdd) throws GrouperException{
 		try {
 			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
 
@@ -203,44 +202,59 @@ public class GrouperManagerImpl implements GrouperManager {
 			log.debug("Adding members: Group = {} members = {}", 
 						grouperName, membersString);
 
-			WsRestAddMemberRequest addMembers = new WsRestAddMemberRequest();
-			// Don't overwrite the entire group membership. just add to it.
-			addMembers.setReplaceAllExisting("F");
-
-			// Each subjectId must have a lookup 
-			WsSubjectLookup[] subjectLookups = new WsSubjectLookup[membersToAdd.size()];
-			int  i = 0;
+			// Clean the list of principles/subjects to be added.
+			Collection<String> cleanedMembersToAdd = new ArrayList<String>();
 			for (String subjectId: membersToAdd){
-				subjectLookups[i] = new WsSubjectLookup(subjectId, null, null);
-				i++;
+				Authorizable authorizableToAdd = authorizableManager.findAuthorizable(subjectId);
+				if (authorizableToAdd == null){
+					log.error("Cannot find {}", subjectId);
+					continue;
+				}
+				if (authorizableToAdd.isGroup()){
+					log.error("Adding groups as members is not supported yet.");
+					continue;
+				}
+				cleanedMembersToAdd.add(subjectId);
 			}
-			addMembers.setSubjectLookups(subjectLookups);
 
-			String urlPath = "/groups/" + grouperName + "/members";
-			urlPath = urlPath.replace(":", "%3A");
-			JSONObject response = post(urlPath, addMembers);
+			if (!cleanedMembersToAdd.isEmpty()){
+				// Each subjectId must have a lookup 
+				WsSubjectLookup[] subjectLookups = new WsSubjectLookup[membersToAdd.size()];
+				int  i = 0;
+				for (String subjectId: membersToAdd){
+					// TODO - Specify the Grouper subject source in the lookup.
+					subjectLookups[i] = new WsSubjectLookup(subjectId, null, null);
+					i++;
+				}
 
-			log.debug("Success! Added members: Group = {} members = {}", 
-					grouperName, membersString);
+				WsRestAddMemberRequest addMembers = new WsRestAddMemberRequest();
+				// Don't overwrite the entire group membership. just add to it.
+				addMembers.setReplaceAllExisting("F");
+				addMembers.setSubjectLookups(subjectLookups);
+
+				String urlPath = "/groups/" + grouperName + "/members";
+				urlPath = urlPath.replace(":", "%3A");
+				JSONObject response = post(urlPath, addMembers);
+	
+				log.debug("Success! Added members: Group = {} members = {}", 
+						grouperName, membersString);
+			}
 		}
 		catch (StorageClientException sce) {
-			log.error("Unable to fetch authorizable for " + groupId, sce);
+			throw new GrouperException("Unable to fetch authorizable for " + groupId);
 		} 
 		catch (AccessDeniedException ade) {
-			log.error("Unable to fetch authorizable for " + groupId + ". Access Denied.", ade);
-		}
-		catch (GrouperException ge) {
-			log.error("An error occurred while communicating with the grouper web services.", ge);
+			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
 		}
 		catch (Exception e) {
-			log.error(e.getMessage(), e);
+			throw new GrouperException(e.getMessage());
 		}
 	}
 
 	/**
 	 * @{inheritDoc}
 	 */
-	public void removeMemberships(String groupId, Collection<String> membersToRemove){
+	public void removeMemberships(String groupId, Collection<String> membersToRemove) throws GrouperException {
 		try {
 			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
 
@@ -271,64 +285,69 @@ public class GrouperManagerImpl implements GrouperManager {
 					grouperName, membersString);
 		}
 		catch (StorageClientException sce) {
-			log.error("Unable to fetch authorizable for " + groupId, sce);
+			throw new GrouperException("Unable to fetch authorizable for " + groupId);
 		} 
 		catch (AccessDeniedException ade) {
-			log.error("Unable to fetch authorizable for " + groupId + ". Access Denied.", ade);
-		}
-		catch (GrouperException ge) {
-			log.error("An error occurred while communicating with the grouper web services.", ge);
+			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
 		}
 		catch (Exception e) {
-			log.error(e.getMessage(), e);
+			throw new GrouperException(e.getMessage());
 		}
 	}
 	
 	/**
 	 * @{inheritDoc}
 	 */
-	public void updateGroup(String groupId, Event event) {
+	public void updateGroup(String groupId, Event event) throws GrouperException {
 		// TODO Auto-generated method stub
 	}
 	
 	/**
 	 * Issue an HTTP POST to Grouper Web Services
+	 * 
+	 * TODO: Is there a better type for the grouperRequestBean parameter?
+	 * 
 	 * @param grouperRequestBean a Grouper WS bean representing a grouper action
 	 * @return the parsed JSON response
 	 * @throws HttpException
 	 * @throws IOException
 	 * @throws GrouperException
 	 */
-	private JSONObject post(String urlPath, Object grouperRequestBean) throws HttpException, IOException, GrouperException  {
-		
-		// URL e.g. http://localhost:9090/grouper-ws/servicesRest/v1_6_003/...
-		HttpClient client = GrouperHttpUtil.getHttpClient(grouperConfiguration);		            
-		String grouperWsRestUrl = grouperConfiguration.getRestWsUrlString() + urlPath;
-        PostMethod method = new PostMethod(grouperWsRestUrl);
-        method.setRequestHeader("Connection", "close");
+	private JSONObject post(String urlPath, Object grouperRequestBean) throws GrouperException  {
+		try {
 
-	    // Encode the request and send it off
-	    String requestDocument = GrouperJsonUtil.toJSONString(grouperRequestBean);
-	    method.setRequestEntity(new StringRequestEntity(requestDocument, "text/x-json", "UTF-8"));
+			// URL e.g. http://localhost:9090/grouper-ws/servicesRest/v1_6_003/...
+			HttpClient client = GrouperHttpUtil.getHttpClient(grouperConfiguration);		            
+			String grouperWsRestUrl = grouperConfiguration.getRestWsUrlString() + urlPath;
+	        PostMethod method = new PostMethod(grouperWsRestUrl);
+	        method.setRequestHeader("Connection", "close");
 
-	    int responseCode = client.executeMethod(method);
-	    log.debug("POST to {} . response code {}", grouperWsRestUrl, responseCode);
+		    // Encode the request and send it off
+		    String requestDocument = GrouperJsonUtil.toJSONString(grouperRequestBean);
+		    method.setRequestEntity(new StringRequestEntity(requestDocument, "text/x-json", "UTF-8"));
 
-	    // Check the response
-	    Header successHeader = method.getResponseHeader("X-Grouper-success");
-	    String successString = successHeader == null ? null : successHeader.getValue();
-	    if (successString == null || successString.equals("")) {
-	    	throw new GrouperException("The Grouper WS did not respond.");
-	    }
-	    
-	    String resultCode = method.getResponseHeader("X-Grouper-resultCode").getValue();
-	    String responseString = IOUtils.toString(method.getResponseBodyAsStream());
-	    
-	    if (!"T".equals(successString)) {
-	    	throw new GrouperException("Bad response from web service: successString: " + successString 
-	    			+ ", resultCode: " + resultCode + ", " + responseString);
-	    }
+		    int responseCode = client.executeMethod(method);
+		    log.debug("POST to {} : {}", grouperWsRestUrl, responseCode);
 
-	    return JSONObject.fromObject(responseString);
+		    // Check the response
+		    Header successHeader = method.getResponseHeader("X-Grouper-success");
+		    String successString = successHeader == null ? null : successHeader.getValue();
+		    if (successString == null || successString.equals("")) {
+		    	throw new GrouperException("The Grouper WS did not respond.");
+		    }
+
+		    String resultCode = method.getResponseHeader("X-Grouper-resultCode").getValue();
+		    String responseString = IOUtils.toString(method.getResponseBodyAsStream());
+
+		    if (!"T".equals(successString)) {
+		    	throw new GrouperException("Bad response from web service: successString: " + successString 
+		    			+ ", resultCode: " + resultCode + ", " + responseString);
+		    }
+
+		    return JSONObject.fromObject(responseString);
+		}
+		catch (Exception e) {
+			throw new GrouperException(e.getMessage());
+		}
 	}
 }
