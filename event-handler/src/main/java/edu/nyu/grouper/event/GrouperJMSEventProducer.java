@@ -61,7 +61,7 @@ public class GrouperJMSEventProducer implements EventHandler {
 
 		try {
 			Connection sender_connection = connFactoryService.getDefaultPooledConnectionFactory().createConnection();
-			Session sender_session = sender_connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			Session sender_session = sender_connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
 			Queue squeue = sender_session.createQueue(QUEUE_NAME);
 
 			Message message = sender_session.createObjectMessage();
