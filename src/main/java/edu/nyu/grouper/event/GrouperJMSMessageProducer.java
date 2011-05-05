@@ -37,9 +37,9 @@ import edu.nyu.grouper.api.GrouperConfiguration;
 /**
  * Capture Authorizable events and put them on a special Queue to be processed.
  */
-public class GrouperJMSEventProducer implements EventHandler {
+public class GrouperJMSMessageProducer implements EventHandler {
 
-	private static Logger log = LoggerFactory.getLogger(GrouperJMSEventProducer.class);
+	private static Logger log = LoggerFactory.getLogger(GrouperJMSMessageProducer.class);
 
 	private static final String QUEUE_NAME = "org/sakaiproject/nakamura/grouper/sync";
 

@@ -23,9 +23,9 @@ import org.slf4j.LoggerFactory;
 import edu.nyu.grouper.api.GrouperManager;
 
 @Component(metatype=true)
-public class GrouperJMSEventConsumer {
+public class GrouperJMSMessageConsumer {
 
-	private static Logger log = LoggerFactory.getLogger(GrouperJMSEventConsumer.class);
+	private static Logger log = LoggerFactory.getLogger(GrouperJMSMessageConsumer.class);
 
 	private static String QUEUE_NAME = "org/sakaiproject/nakamura/grouper/sync";
 
