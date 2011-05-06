@@ -1,17 +1,25 @@
-The aim of this project is to produce a plugin for the nakamura kernel that can
-resolve Groups from Grouper via the GrouperWS REST API.
+Send group information tom Grouper via JSON web services.
 
-Sakai3:
+SakaiOAE (nakamura) emits OSGi events for Authorizable objects. 
+The GrouperJMSMessageProducer is notified of OSGi events and adds them to a JMS queue as messages.
+The GrouperJMSMessageConsumer listens for JMS Messages on that queue and makes calls to a GrouperManager.
+The GrouperManagerImpl sends HTTP POSTs to Grouper web services to add/remove groups and group memberships.
+If the message has been successfully processed it is removed from the queue and we proceed to the next message.
+
+When we add a group in sakai we also create a group in grouper. We store a property on the Authorizable
+grouper:name => stema:stemb:stemc:groupname. Unfortunately this causes another authorizables/UPDATED event to
+fire. To get around this we filter out messages caused by a specific user. In testing we've used grouper-admin.
+
+YOu create the grouper-admin user like any other sakai user. Then you add it to the administrators group to
+give it administrative access to SakaiOAE.
+
+curl -uadmin:ADMIN_PASSWORD -F:member=grouper-admin \
+	http://localhost:8080/system/userManager/group/administrators.update.json 
+
+Nakamura, the SakaiOAE back-end built on Apache Sling:
 http://sakaiproject.org/projects/sakai-3
-
-Nakamura (Sakai3 backend built on Apache Sling):
 https://confluence.sakaiproject.org/display/KERNDOC/Nakamura+Documentation
-
-Proposal for federating User and Group services in Nakamura:
-https://confluence.sakaiproject.org/display/KERNDOC/AuthorizableManager+Plugins
 
 Grouper:
 https://spaces.internet2.edu/display/Grouper/
-
-Grouper API:
 https://spaces.internet2.edu/display/Grouper/Grouper+Web+Services
