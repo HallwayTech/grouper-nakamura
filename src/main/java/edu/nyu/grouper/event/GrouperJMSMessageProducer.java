@@ -18,6 +18,7 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.servlets.post.Modification;
+import org.apache.sling.servlets.post.ModificationType;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
@@ -113,6 +114,10 @@ public class GrouperJMSMessageProducer implements EventHandler, LiteAuthorizable
 			org.sakaiproject.nakamura.api.lite.Session session,
 			Modification change, Map<String, Object[]> parameters)
 			throws Exception {
+		
+		if (!change.getType().equals(ModificationType.DELETE)){
+			return;
+		}
 		
 		try {
 			Connection senderConnection = connFactoryService.getDefaultPooledConnectionFactory().createConnection();
