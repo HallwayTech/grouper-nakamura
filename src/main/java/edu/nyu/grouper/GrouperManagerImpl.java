@@ -52,8 +52,6 @@ public class GrouperManagerImpl implements GrouperManager {
 
 	private static final Logger log = LoggerFactory.getLogger(GrouperManager.class);
 
-	private static String GROUPER_NAME_PROP = "grouper:name";
-
 	@Reference
 	protected GrouperConfiguration grouperConfiguration;
 

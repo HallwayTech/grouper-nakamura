@@ -11,6 +11,8 @@ import edu.nyu.grouper.GrouperException;
  * Manage the interaction with a Grouper WS server.
  */
 public interface GrouperManager {
+	
+	static String GROUPER_NAME_PROP = "grouper:name";
 
 	/**
 	 * Create a Grouper group for a nakamura group
