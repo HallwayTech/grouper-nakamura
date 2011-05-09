@@ -91,6 +91,10 @@ public class GrouperJMSMessageConsumer {
 
 				String groupId = (String) message.getStringProperty("path");
 				String operation = "CREATE";
+				
+				if ("org/sakaiproject/nakamura/lite/authorizables/DELETED".equals(message.getStringProperty("event.topics"))){
+					grouperManager.deleteGroup(groupId);
+				}
 
 				if ("org/sakaiproject/nakamura/lite/authorizables/ADDED".equals(message.getStringProperty("event.topics"))){
 
