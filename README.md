@@ -16,9 +16,29 @@ When we add a group in sakai we also create a group in grouper. We store a prope
 
 # Installation #
 ## Create an admin user for Grouper ##
-Create a user in Grouper for the SakaiOAE application server. The process for this will vary depending on 
-how you have Grouper authentication set up. The user should have a stem where it has permission to create
-new stems and groups. We refer to this in the code as the base stem.
+Create a user in Grouper for the SakaiOAE application server. The process for this will vary depending on how you have Grouper authentication set up. The user should have a stem where it has permission to create new stems and groups. We refer to this in the code as the base stem.
+
+## Install the Grouper Client OSGi Bundle ##
+The easiest way to install the bundles you need is to add the HallwayTech OBR to felix. Felix will take care of downloading and installing the necessary bundles from the OBR.
+
+There are 2 ways to do it:
+Via the Web Console
+Go to http://localhost:8080/system/console/obr
+Paste http://home.hallwaytech.com/obr/repository.xml into the Bundle Repository field and hit add.
+
+In a config file 
+Edit sling.properties and change the obr.repository property.
+
+    obr.repository.url=http\://sling.apache.org/obr/repository.xml http\://home.hallwaytech.com/obr/repository.xml
+
+After the OBR has been added:
+1. Go to the OBR tab, http://localhost:8080/system/console/obr.
+2. Click G and look for Grouper :: Grouper Client
+3. Click the version (1.7.0)
+4. Check the "deploy optional dependencies"" box
+5. Click "Deploy and Start"
+
+It will take a few seconds to download and install the bundles. You should be able to find the Grouper :: Grouper Client bundle in the bundles tab at http://localhost:8080/system/console/bundles
 
 ## Install this bundle ##
 Use mvn to install the bundle or you can build it and install it by hand using the felix web admin console.
@@ -29,9 +49,7 @@ Use mvn to install the bundle or you can build it and install it by hand using t
 
 ## Configure the bundle ##
 
-You can use the felix web admin console to configure this bundle. Log in, go to the configuration tab, and look for 
-Sakai Nakamura :: Grouper Client. Once you've configured it the way you'd like you can copy the configuration to 
-your nakamura/load directory or wherever you've configured fileinstall to read configurations
+You can use the felix web admin console to configure this bundle. Log in, go to the configuration tab, and look for Sakai Nakamura :: Grouper Client. Once you've configured it the way you'd like you can copy the configuration to your nakamura/load directory or wherever you've configured fileinstall to read configurations
 
     cp nakamura/sling/config/edu/nyu/grouper/GrouperConfigurationImpl.config \
         nakamura/load/edu.nyu.grouper.GrouperConfigurationImpl.config
