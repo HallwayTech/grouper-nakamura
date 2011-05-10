@@ -90,7 +90,6 @@
         </profile>
     </profiles>
 
-
 	<dependencies>
 		<!-- nakamura -->
 		<dependency>
@@ -100,7 +99,7 @@
 			<type>bundle</type>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.sakaiproject.nakamura</groupId>
 			<artifactId>org.sakaiproject.nakamura.activemq</artifactId>
@@ -109,13 +108,29 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- scr annotations -->
+		<dependency>
+			<groupId>org.sakaiproject.nakamura</groupId>
+			<artifactId>org.sakaiproject.nakamura.user</artifactId>
+			<version>0.10-SNAPSHOT</version>
+			<type>bundle</type>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Grouper -->
+		<dependency>
+			<groupId>edu.internet2.middleware.grouper</groupId>
+			<artifactId>grouperClient</artifactId>
+			<version>1.6.3</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- OSGi -->
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.scr.annotations</artifactId>
 		</dependency>
 
-		<!-- osgi -->
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.osgi.core</artifactId>
@@ -126,11 +141,28 @@
 			<artifactId>org.osgi.compendium</artifactId>
 		</dependency>
 
-		<!-- OSGi utils -->
+		<!-- OSGiUtils -->
 		<dependency>
 			<groupId>org.apache.sling</groupId>
 			<artifactId>org.apache.sling.commons.osgi</artifactId>
 			<version>2.0.6</version>
+		</dependency>
+
+		<!--  Sling -->
+		<dependency>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>org.apache.sling.api</artifactId>
+			<version>2.1.0</version>
+			<type>bundle</type>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>org.apache.sling.servlets.post</artifactId>
+			<version>2.1.0</version>
+			<type>bundle</type>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- logging -->
@@ -161,38 +193,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.sakaiproject.nakamura</groupId>
-			<artifactId>org.sakaiproject.nakamura.user</artifactId>
-			<version>0.10-SNAPSHOT</version>
-			<type>bundle</type>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.sling</groupId>
-			<artifactId>org.apache.sling.api</artifactId>
-			<version>2.1.0</version>
-			<type>bundle</type>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.sling</groupId>
-			<artifactId>org.apache.sling.servlets.post</artifactId>
-			<version>2.1.0</version>
-			<type>bundle</type>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>edu.internet2.middleware.grouper</groupId>
-			<artifactId>grouperClient</artifactId>
-			<version>1.6.3</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>net.sf.json-lib</groupId>
 			<artifactId>json-lib</artifactId>
 			<version>2.4</version>
@@ -215,6 +215,7 @@
 			<version>1.1</version>
 			<scope>compile</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.collections</groupId>
 			<artifactId>google-collections</artifactId>
