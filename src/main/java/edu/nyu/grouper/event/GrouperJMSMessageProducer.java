@@ -1,13 +1,15 @@
 package edu.nyu.grouper.event;
 
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
-import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
 
@@ -29,6 +31,8 @@ import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 import org.sakaiproject.nakamura.api.user.LiteAuthorizablePostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableSet;
 
 import edu.nyu.grouper.api.GrouperConfiguration;
 import edu.nyu.grouper.api.GrouperManager;
@@ -59,6 +63,9 @@ public class GrouperJMSMessageProducer implements EventHandler, LiteAuthorizable
 
 	private static final String QUEUE_NAME = "org/sakaiproject/nakamura/grouper/sync";
 
+	// Specific keys to copy from Events to Messages
+	private static Set<String> GROUPER_EVENT_PROPERTY_KEYS = ImmutableSet.of(GrouperManager.GROUPER_NAME_PROP);
+
 	@Reference
 	protected ConnectionFactoryService connFactoryService;
 
@@ -71,33 +78,13 @@ public class GrouperJMSMessageProducer implements EventHandler, LiteAuthorizable
 	 */
 	@Override
 	public void handleEvent(Event event) {
-		if (ignoreEvent(event)){
-			return;
-		}
-
 		try {
-			Connection senderConnection = connFactoryService.getDefaultPooledConnectionFactory().createConnection();
-			Session senderSession = senderConnection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-			Queue squeue = senderSession.createQueue(QUEUE_NAME);
-
-			Message message = senderSession.createObjectMessage();
-			copyEventToMessage(event, message);
-
-			MessageProducer producer = senderSession.createProducer(squeue);
-			senderConnection.start();
-			producer.send(message);
-
-			if (log.isDebugEnabled()){
-				log.debug("Sent: " + message);
+			if (ignoreEvent(event) == false){
+				sendMessage(event);
 			}
-			else if (log.isInfoEnabled()){
-				log.info("Sent: {}, {}", event.getTopic(), (String)event.getProperty("path"));
-			}
-
-			senderConnection.close();
-
-		} catch (Exception e) {
-			throw new RuntimeException (e);
+		} 
+		catch (JMSException e) {
+			log.error("There was an error sending this event to the JMS queue", e);
 		}
 	}
 	
@@ -114,43 +101,58 @@ public class GrouperJMSMessageProducer implements EventHandler, LiteAuthorizable
 			org.sakaiproject.nakamura.api.lite.Session session,
 			Modification change, Map<String, Object[]> parameters)
 			throws Exception {
-		
+
 		if (!change.getType().equals(ModificationType.DELETE)){
 			return;
 		}
-		
+
 		try {
-			Connection senderConnection = connFactoryService.getDefaultPooledConnectionFactory().createConnection();
-			Session senderSession = senderConnection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-			Queue squeue = senderSession.createQueue(QUEUE_NAME);
+			// Making an event made it easier to unify Message sending
+			Map<String, Object> props = new HashMap<String, Object>();
+			props.put("path", authorizable.getId());
+			props.put("type", "group");
 
-			String topic = "org/sakaiproject/nakamura/lite/authorizables/DELETED";
-
-			ObjectMessage msg = senderSession.createObjectMessage();
-			msg.setStringProperty("event.topics", topic);
-			msg.setStringProperty("path", authorizable.getId());
-			msg.setStringProperty("type", "group");
-			String grouperName = (String)authorizable.getProperty(GrouperManager.GROUPER_NAME_PROP);
-			if (grouperName != null){
-				msg.setStringProperty(GrouperManager.GROUPER_NAME_PROP, grouperName);
+			for (String key: GROUPER_EVENT_PROPERTY_KEYS){
+				String val = (String)authorizable.getProperty(key);
+				if (val != null){
+					props.put(GrouperManager.GROUPER_NAME_PROP, val);
+				}
 			}
-
-			MessageProducer producer = senderSession.createProducer(squeue);
-			senderConnection.start();
-			producer.send(msg);
-
-			if (log.isDebugEnabled()){
-				log.debug("Sent: " + msg);
-			}
-			else if (log.isInfoEnabled()){
-				log.info("Sent: {}, {}", topic, authorizable.getId());
-			}
-			senderConnection.close();
+			// TODO - Is there a better way to use Dictionary?
+			Event event = new Event("org/sakaiproject/nakamura/lite/authorizables/DELETED", (Dictionary) props);
+			sendMessage(event);
 		}
 		catch (JMSException e){
 			log.error("An error occurred while sending a DELETED message.", e);
 			throw e;
 		}
+	}
+
+	/**
+	 * Convert an OSGi {@link Event} into a JMS {@link Message} and post it on a {@link Queue}.
+	 * @param event the event we're sending
+	 * @throws JMSException
+	 */
+	private void sendMessage(Event event) throws JMSException {
+		Connection senderConnection = connFactoryService.getDefaultPooledConnectionFactory().createConnection();
+		Session senderSession = senderConnection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+		Queue squeue = senderSession.createQueue(QUEUE_NAME);
+		MessageProducer producer = senderSession.createProducer(squeue);
+
+		Message msg = senderSession.createObjectMessage();
+		copyEventToMessage(event, msg);
+
+		senderConnection.start();
+		producer.send(msg);
+
+		if (log.isDebugEnabled()){
+			log.debug("Sent: " + msg);
+		}
+		else if (log.isInfoEnabled()){
+			log.info("Sent: {}, {}", event.getTopic(), event.getProperty("path"));
+		}
+
+		senderConnection.close();
 	}
 
 	/**
