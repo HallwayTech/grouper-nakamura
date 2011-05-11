@@ -15,8 +15,11 @@ When we add a group in sakai we also create a group in grouper. We store a prope
 3. Grouper Web Services. We use only the RESTful JSON web services.
 
 # Installation #
-## Create an admin user for Grouper ##
+## Create an admin user in Grouper ##
 Create a user in Grouper for the SakaiOAE application server. The process for this will vary depending on how you have Grouper authentication set up. The user should have a stem where it has permission to create new stems and groups. We refer to this in the code as the base stem.
+
+## Create an admin user in SakaiOAE ##
+curl -uadmin:admin -F:name=grouper-admin -Fpwd=PASSWORD -FpwdConfirm=PASSWORD http://localhost:8080/system/userManager/user.create.json
 
 ## Install the Grouper Client OSGi Bundle ##
 The easiest way to install the bundles you need is to add the HallwayTech OBR to felix. Felix will take care of downloading and installing the necessary bundles from the OBR.
