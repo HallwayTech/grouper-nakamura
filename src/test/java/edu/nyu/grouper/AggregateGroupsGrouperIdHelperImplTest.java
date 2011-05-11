@@ -42,19 +42,19 @@ public class AggregateGroupsGrouperIdHelperImplTest extends TestCase {
 					idHelper.getGrouperName("gstem1_gstem2_gext"));
 		assertEquals(BASE_STEM + ":gstem1:gstem2:gext:managers_sakaioae",
 					idHelper.getGrouperName("gstem1_gstem2_gext-managers"));
+		assertEquals(BASE_STEM + ":gstem1:gstem2:gext:ta_sakaioae",
+				idHelper.getGrouperName("gstem1_gstem2_gext-ta"));
 	}
 	
 	@Test
 	public void testGetGrouperExtension(){
+		assertNull(idHelper.getGrouperExtension(null));
 		assertEquals("members_sakaioae",
 				idHelper.getGrouperExtension("group1"));
 		assertEquals("managers_sakaioae",
 				idHelper.getGrouperExtension("group1-managers"));
-		
-		assertEquals("members_sakaioae",
-				idHelper.getGrouperExtension("group1"));
-		assertEquals("managers_sakaioae",
-				idHelper.getGrouperExtension("group1-managers"));
+		assertEquals("ta_sakaioae",
+				idHelper.getGrouperExtension("group1-ta"));
 	}
 	
 	@Test
@@ -66,6 +66,7 @@ public class AggregateGroupsGrouperIdHelperImplTest extends TestCase {
 		
 		assertEquals(BASE_STEM + ":stem1:group1", idHelper.getFullStem("stem1_group1"));
 		assertEquals(BASE_STEM + ":stem1:group1", idHelper.getFullStem("stem1_group1-managers"));
+		assertEquals(BASE_STEM + ":stem1:group1", idHelper.getFullStem("stem1_group1-ta"));
 	}
 	
 }

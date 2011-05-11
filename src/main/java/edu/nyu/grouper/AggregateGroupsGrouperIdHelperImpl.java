@@ -16,8 +16,8 @@ import org.sakaiproject.nakamura.api.lite.authorizable.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.nyu.grouper.api.GrouperIdHelper;
 import edu.nyu.grouper.api.GrouperConfiguration;
+import edu.nyu.grouper.api.GrouperIdHelper;
 
 /**
  * 
@@ -52,6 +52,8 @@ public class AggregateGroupsGrouperIdHelperImpl implements GrouperIdHelper {
 	
 	private AuthorizableManager authorizableManager;
 	
+	public static String[] SPECIAL_GROUP_SUFFIXES = new String[] {"-managers", "-ta"};
+
 	@Activate
 	public void activate(Map<?,?> props) throws ClientPoolException, StorageClientException, AccessDeniedException{
 		authorizableManager = repository.loginAdministrative().getAuthorizableManager();
@@ -96,13 +98,15 @@ public class AggregateGroupsGrouperIdHelperImpl implements GrouperIdHelper {
 		if (groupId == null){
 			return null;
 		}
-		String extension;
-		if(isManagersGroup(groupId)){
-			extension = "managers" + grouperConfiguration.getSuffix();
+		String extension = "members";
+		for (String suffix: SPECIAL_GROUP_SUFFIXES) {
+			int indexOfSuffix= groupId.indexOf(suffix);
+			if (indexOfSuffix != -1){
+				extension = groupId.substring(indexOfSuffix + 1);
+			}
 		}
-		else {
-			extension = "members" + grouperConfiguration.getSuffix();
-		}
+		extension += grouperConfiguration.getSuffix();
+
 		return extension;
 	}
 	
@@ -116,9 +120,11 @@ public class AggregateGroupsGrouperIdHelperImpl implements GrouperIdHelper {
 		if (groupId == null){
 			return null;
 		}
-		int indexOfManagers = groupId.indexOf("-managers");
-		if (indexOfManagers != -1){
-			groupId = groupId.substring(0, indexOfManagers);
+		for (String suffix: SPECIAL_GROUP_SUFFIXES){
+			int indexOfSuffix = groupId.indexOf(suffix);
+			if (indexOfSuffix != -1){
+				groupId = groupId.substring(0, indexOfSuffix);
+			}
 		}
 		return grouperConfiguration.getBaseStem() + ":" + getPartialStem(groupId);
 	}
@@ -136,15 +142,7 @@ public class AggregateGroupsGrouperIdHelperImpl implements GrouperIdHelper {
 		}
 		return groupId.replaceAll("_", ":");
 	}
-	
-	/**
-	 * @param groupId
-	 * @return whether or not this is a managers group for another group
-	 */
-	private boolean isManagersGroup(String groupId){
-		return groupId.endsWith("-managers");
-	}
-	
+
 	public void bindGrouperConfiguration(GrouperConfiguration config){
 		this.grouperConfiguration = config;
 	}
