@@ -1,10 +1,7 @@
 package edu.nyu.grouper.event;
 
-import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
@@ -18,9 +15,6 @@ import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.servlets.post.Modification;
-import org.apache.sling.servlets.post.ModificationType;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
@@ -32,10 +26,7 @@ import org.sakaiproject.nakamura.api.user.LiteAuthorizablePostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableSet;
-
 import edu.nyu.grouper.api.GrouperConfiguration;
-import edu.nyu.grouper.api.GrouperManager;
 
 /**
  * Capture {@link Authorizable} events and put them on a special Queue to be processed.
@@ -54,17 +45,15 @@ import edu.nyu.grouper.api.GrouperManager;
 		@Property(name = EventConstants.EVENT_TOPIC, 
 				value = {
 				"org/sakaiproject/nakamura/lite/authorizables/ADDED",
-				"org/sakaiproject/nakamura/lite/authorizables/UPDATED"
+				"org/sakaiproject/nakamura/lite/authorizables/UPDATED",
+				"org/sakaiproject/nakamura/lite/authorizables/DELETE"
 		})
 })
-public class GrouperJMSMessageProducer implements EventHandler, LiteAuthorizablePostProcessor {
+public class GrouperJMSMessageProducer implements EventHandler {
 
 	private static Logger log = LoggerFactory.getLogger(GrouperJMSMessageProducer.class);
 
 	private static final String QUEUE_NAME = "org/sakaiproject/nakamura/grouper/sync";
-
-	// Specific keys to copy from Events to Messages
-	private static Set<String> GROUPER_EVENT_PROPERTY_KEYS = ImmutableSet.of(GrouperManager.GROUPER_NAME_PROP);
 
 	@Reference
 	protected ConnectionFactoryService connFactoryService;
@@ -85,46 +74,6 @@ public class GrouperJMSMessageProducer implements EventHandler, LiteAuthorizable
 		} 
 		catch (JMSException e) {
 			log.error("There was an error sending this event to the JMS queue", e);
-		}
-	}
-	
-	/**
-	 * Construct a delete message that has enough information to handle the delete in Grouper.
-	 * This method comes from the {@link LiteAuthorizablePostProcessor} api. We use this instead 
-	 * the OSGi EventAdmin interface because the {@link Authorizable} still exists at this point.
-	 * 
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void process(SlingHttpServletRequest request,
-			Authorizable authorizable,
-			org.sakaiproject.nakamura.api.lite.Session session,
-			Modification change, Map<String, Object[]> parameters)
-			throws Exception {
-
-		if (!change.getType().equals(ModificationType.DELETE)){
-			return;
-		}
-
-		try {
-			// Making an event made it easier to unify Message sending
-			Map<String, Object> props = new HashMap<String, Object>();
-			props.put("path", authorizable.getId());
-			props.put("type", "group");
-
-			for (String key: GROUPER_EVENT_PROPERTY_KEYS){
-				String val = (String)authorizable.getProperty(key);
-				if (val != null){
-					props.put(GrouperManager.GROUPER_NAME_PROP, val);
-				}
-			}
-			// TODO - Is there a better way to use Dictionary?
-			Event event = new Event("org/sakaiproject/nakamura/lite/authorizables/DELETED", (Dictionary) props);
-			sendMessage(event);
-		}
-		catch (JMSException e){
-			log.error("An error occurred while sending a DELETED message.", e);
-			throw e;
 		}
 	}
 
