@@ -15,14 +15,9 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package edu.nyu.grouper;
+package org.sakaiproject.nakamura.grouper.event;
 
-public class GrouperException extends Exception {
-
-	public GrouperException(String message) {
-		super(message);
-	}
-
-	private static final long serialVersionUID = 8890097157050389546L;
-
+public class GrouperEventUtils {
+	public static String MEMBERS_ADDED_PROP = "added";
+	public static String MEMBERS_REMOVED_PROP = "removed";
 }

@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package edu.nyu.grouper.event;
+package org.sakaiproject.nakamura.grouper.event;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -38,7 +38,7 @@ import org.sakaiproject.nakamura.api.lite.StoreListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.nyu.grouper.api.GrouperManager;
+import org.sakaiproject.nakamura.grouper.api.GrouperManager;
 
 @Component
 public class GrouperJMSMessageConsumer {

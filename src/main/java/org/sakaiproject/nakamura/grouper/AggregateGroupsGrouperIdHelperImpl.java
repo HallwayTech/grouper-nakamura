@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package edu.nyu.grouper;
+package org.sakaiproject.nakamura.grouper;
 
 import java.util.Map;
 
@@ -33,8 +33,8 @@ import org.sakaiproject.nakamura.api.lite.authorizable.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.nyu.grouper.api.GrouperConfiguration;
-import edu.nyu.grouper.api.GrouperIdHelper;
+import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
+import org.sakaiproject.nakamura.grouper.api.GrouperIdHelper;
 
 /**
  * 

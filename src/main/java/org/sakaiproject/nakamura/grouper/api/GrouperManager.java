@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package edu.nyu.grouper.api;
+package org.sakaiproject.nakamura.grouper.api;
 
 import java.util.Collection;
 import java.util.Map;
@@ -23,7 +23,7 @@ import java.util.Map;
 import org.osgi.service.event.Event;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 
-import edu.nyu.grouper.GrouperException;
+import org.sakaiproject.nakamura.grouper.GrouperException;
 
 /**
  * Manage the interaction with a Grouper WS server.

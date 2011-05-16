@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package edu.nyu.grouper.api;
+package org.sakaiproject.nakamura.grouper.api;
 
 import java.net.URL;
 import java.util.regex.Pattern;

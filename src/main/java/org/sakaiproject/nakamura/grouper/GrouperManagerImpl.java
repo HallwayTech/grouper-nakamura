@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package edu.nyu.grouper;
+package org.sakaiproject.nakamura.grouper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,11 +58,11 @@ import edu.internet2.middleware.grouperClient.ws.beans.WsRestDeleteMemberRequest
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupDeleteRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupSaveRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsSubjectLookup;
-import edu.nyu.grouper.api.GrouperConfiguration;
-import edu.nyu.grouper.api.GrouperIdHelper;
-import edu.nyu.grouper.api.GrouperManager;
-import edu.nyu.grouper.util.GrouperHttpUtil;
-import edu.nyu.grouper.util.GrouperJsonUtil;
+import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
+import org.sakaiproject.nakamura.grouper.api.GrouperIdHelper;
+import org.sakaiproject.nakamura.grouper.api.GrouperManager;
+import org.sakaiproject.nakamura.grouper.util.GrouperHttpUtil;
+import org.sakaiproject.nakamura.grouper.util.GrouperJsonUtil;
 
 @Service
 @Component

@@ -15,27 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package edu.nyu.grouper.api;
+package org.sakaiproject.nakamura.grouper;
 
-/**
- * Utility class to translate ids to Grouper ids
- * First pass at converting grouper groups to Nakamura groups by the name.
- * 
- * groupId is the authorizableId if of the form some_thing_name1
- * baseStem is of the form edu:apps:sakai3
- */
-public interface GrouperIdHelper {
+public class GrouperException extends Exception {
 
-	/**
-	 * @param baseStem the folder in Grouper for sakai3
-	 * @param the authorizableId of the Group
-	 * @return the fully qualified name of this group in Grouper
-	 */
-	public String getGrouperName(String groupId);
-	
-	/**
-	 * @param groupId
-	 * @return the Grouper group extension
-	 */
-	public String getGrouperExtension(String groupId);
+	public GrouperException(String message) {
+		super(message);
+	}
+
+	private static final long serialVersionUID = 8890097157050389546L;
+
 }

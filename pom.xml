@@ -26,8 +26,8 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>edu.nyu.grouper</groupId>
-	<artifactId>edu.nyu.grouper.event-handler</artifactId>
+	<groupId>org.sakaiproject.nakamura</groupId>
+	<artifactId>org.sakaiproject.nakamura.grouper.sync</artifactId>
 	<packaging>bundle</packaging>
 	<name>Sakai Nakamura :: Grouper Event Handler</name>
 	<version>0.1</version>

@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package edu.nyu.grouper;
+package org.sakaiproject.nakamura.grouper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,9 +25,9 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.nyu.grouper.AggregateGroupsGrouperIdHelperImpl;
-import edu.nyu.grouper.GrouperConfigurationImpl;
-import edu.nyu.grouper.api.GrouperConfiguration;
+import org.sakaiproject.nakamura.grouper.AggregateGroupsGrouperIdHelperImpl;
+import org.sakaiproject.nakamura.grouper.GrouperConfigurationImpl;
+import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
 public class AggregateGroupsGrouperIdHelperImplTest extends TestCase {
 

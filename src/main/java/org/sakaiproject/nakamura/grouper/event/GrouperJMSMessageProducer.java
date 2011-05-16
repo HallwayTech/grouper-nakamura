@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package edu.nyu.grouper.event;
+package org.sakaiproject.nakamura.grouper.event;
 
 import java.util.List;
 import java.util.Map;
@@ -45,7 +45,7 @@ import org.sakaiproject.nakamura.api.user.LiteAuthorizablePostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.nyu.grouper.api.GrouperConfiguration;
+import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
 /**
  * Capture {@link Authorizable} events and put them on a special Queue to be processed.

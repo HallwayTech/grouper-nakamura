@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package edu.nyu.grouper.util;
+package org.sakaiproject.nakamura.grouper.util;
 
 import java.net.URL;
 
@@ -27,7 +27,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.DefaultHttpParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 
-import edu.nyu.grouper.api.GrouperConfiguration;
+import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
 public class GrouperHttpUtil {
 	/**
