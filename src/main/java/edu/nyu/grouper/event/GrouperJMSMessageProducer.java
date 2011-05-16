@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.jms.Connection;
+import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
@@ -85,14 +86,14 @@ public class GrouperJMSMessageProducer implements EventHandler {
 	 */
 	private void sendMessage(Event event) throws JMSException {
 		Connection senderConnection = connFactoryService.getDefaultPooledConnectionFactory().createConnection();
-		Session senderSession = senderConnection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+		Session senderSession = senderConnection.createSession(true, Session.CLIENT_ACKNOWLEDGE);
 		Queue squeue = senderSession.createQueue(QUEUE_NAME);
 		MessageProducer producer = senderSession.createProducer(squeue);
 
 		Message msg = senderSession.createObjectMessage();
+		msg.setJMSDeliveryMode(DeliveryMode.PERSISTENT);
+		msg.setJMSType(event.getTopic());
 		copyEventToMessage(event, msg);
-
-		senderConnection.start();
 		producer.send(msg);
 
 		if (log.isDebugEnabled()){
