@@ -41,22 +41,18 @@ import org.osgi.service.event.EventHandler;
 import org.sakaiproject.nakamura.api.activemq.ConnectionFactoryService;
 import org.sakaiproject.nakamura.api.lite.StoreListener;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
-import org.sakaiproject.nakamura.api.user.LiteAuthorizablePostProcessor;
+import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
 /**
  * Capture {@link Authorizable} events and put them on a special Queue to be processed.
  * 
  * When Groups are created or updated we are notified of an {@link Event} via the OSGi
- * {@link EventAdmin} service.
+ * {@link EventAdmin} service. We then create a {@link Message} and place it on a {@link Queue}. 
  * 
- * When Groups are deleted we are notified via the {@link LiteAuthorizablePostProcessor} service.
- * 
- * We then create a {@link Message} and place it on a {@link Queue}. The {@link GrouperJMSMessageConsumer}
- * will receive those messages and acknowledge them as they are successfully processed.
+ * The {@link GrouperJMSMessageConsumer} will receive those messages and acknowledge them as they 
+ * are successfully processed.
  */
 @Service
 @Component(immediate = true, metatype=true)
