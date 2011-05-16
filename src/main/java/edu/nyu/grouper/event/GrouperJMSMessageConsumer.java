@@ -17,12 +17,13 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Reference;
 import org.sakaiproject.nakamura.api.activemq.ConnectionFactoryService;
+import org.sakaiproject.nakamura.api.lite.StoreListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.nyu.grouper.api.GrouperManager;
 
-@Component(metatype=true)
+@Component
 public class GrouperJMSMessageConsumer {
 
 	private static Logger log = LoggerFactory.getLogger(GrouperJMSMessageConsumer.class);
@@ -91,9 +92,10 @@ public class GrouperJMSMessageConsumer {
 
 				String groupId = (String) message.getStringProperty("path");
 				String operation = "CREATE";
-				
+
 				if ("org/sakaiproject/nakamura/lite/authorizables/DELETED".equals(message.getStringProperty("event.topics"))){
-					grouperManager.deleteGroup(groupId);
+					Map<String, Object> attributes = (Map<String,Object>)message.getObjectProperty(StoreListener.BEFORE_EVENT_PROPERTY);
+					grouperManager.deleteGroup(groupId, attributes);
 				}
 
 				if ("org/sakaiproject/nakamura/lite/authorizables/ADDED".equals(message.getStringProperty("event.topics"))){

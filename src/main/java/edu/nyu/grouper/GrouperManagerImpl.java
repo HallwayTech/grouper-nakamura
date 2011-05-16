@@ -25,6 +25,7 @@ import org.sakaiproject.nakamura.api.lite.ClientPoolException;
 import org.sakaiproject.nakamura.api.lite.Repository;
 import org.sakaiproject.nakamura.api.lite.Session;
 import org.sakaiproject.nakamura.api.lite.StorageClientException;
+import org.sakaiproject.nakamura.api.lite.StoreListener;
 import org.sakaiproject.nakamura.api.lite.accesscontrol.AccessDeniedException;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 import org.sakaiproject.nakamura.api.lite.authorizable.AuthorizableManager;
@@ -40,9 +41,9 @@ import edu.internet2.middleware.grouperClient.ws.beans.WsRestDeleteMemberRequest
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupDeleteRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupSaveRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsSubjectLookup;
+import edu.nyu.grouper.api.GrouperConfiguration;
 import edu.nyu.grouper.api.GrouperIdHelper;
 import edu.nyu.grouper.api.GrouperManager;
-import edu.nyu.grouper.api.GrouperConfiguration;
 import edu.nyu.grouper.util.GrouperHttpUtil;
 import edu.nyu.grouper.util.GrouperJsonUtil;
 
@@ -148,7 +149,6 @@ public class GrouperManagerImpl implements GrouperManager {
 	 * @{inheritDoc}
 	 */
 	public void deleteGroup(String groupId) throws GrouperException {
-
 		try {
 			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
 
@@ -161,26 +161,52 @@ public class GrouperManagerImpl implements GrouperManager {
 			if (grouperName == null){
 				grouperName = groupIdHelper.getGrouperName(group.getId());
 			}
-			
+
 			log.debug("Deleting Grouper Group = {} for sakai authorizableId = {}",
 					grouperName, group.getId());
+			internalDeleteGroup(grouperName);
+		}
+		catch (StorageClientException sce){
+			throw new GrouperException("Unable to fetch authorizable for " + groupId);
+		}
+		catch (AccessDeniedException e) {
+			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public void deleteGroup(String groupId, Map<String, Object> attributes) throws GrouperException{
+		String grouperName = null;
+		if (attributes != null ){
+			grouperName = (String)attributes.get(StoreListener.BEFORE_EVENT_PROPERTY);
+		}
+		if (grouperName != null){
+			internalDeleteGroup(grouperName);
+		}
+		else {
+			deleteGroup(groupId);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param groupIdentifier either the grouper name or uuid
+	 * @throws GrouperException 
+	 */
+	private void internalDeleteGroup(String groupIdentifier) throws GrouperException{
+		try {
 
 			// Fill out the group delete request beans
 			WsRestGroupDeleteRequest groupDelete = new WsRestGroupDeleteRequest();
-			groupDelete.setWsGroupLookups(new WsGroupLookup[]{ new WsGroupLookup(grouperName, null) });
+			groupDelete.setWsGroupLookups(new WsGroupLookup[]{ new WsGroupLookup(groupIdentifier, null) });
 
 			JSONObject response = post("/groups", groupDelete);
-		}
-		catch (StorageClientException sce) {
-			throw new GrouperException("Unable to fetch authorizable for " + groupId);
-		}
-		catch (AccessDeniedException ade) {
-			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
 		}
 		catch (Exception e) {
 			throw new GrouperException(e.getMessage());
 		}
-		
 	}
 	
 	/**
