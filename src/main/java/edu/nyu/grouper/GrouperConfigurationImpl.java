@@ -55,7 +55,11 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	private static final String DEFAULT_IGNORED_USER = "sakai";
 	@Property(value = DEFAULT_IGNORED_USER)
 	protected static final String PROP_IGNORED_USER = "sakai.grouper.ignoredUser";
-
+	
+	private static final String DEFAULT_IGNORED_GROUP_PATTERN = "administrators";
+	@Property(value = DEFAULT_IGNORED_GROUP_PATTERN, cardinality=1)
+	protected static final String PROP_IGNORED_GROUP_PATTERN = "grouper.ignoredGroupsPatterns"; 
+	
 	// Grouper configuration.
 	private URL url;
 	private String wsVersion;
@@ -64,6 +68,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	private String baseStem;
 	private String suffix;
 	private String ignoredUser;
+	private String[] ignoredGroupPatterns;
 	private int httpTimeout;
 
 	// -------------------------- Configuration Admin --------------------------
@@ -91,6 +96,17 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 					DEFAULT_IGNORED_USER);
 			httpTimeout = OsgiUtil.toInteger(props.get(PROP_TIMEOUT),
 					DEFAULT_TIMEOUT);
+
+			Object ignoredGroupsProp = OsgiUtil.toStringArray(PROP_IGNORED_GROUP_PATTERN);
+			if (ignoredGroupsProp == null){
+				ignoredGroupPatterns = new String[] { DEFAULT_IGNORED_GROUP_PATTERN };
+			}
+			else if (ignoredGroupsProp instanceof String){
+				ignoredGroupPatterns = new String[] { (String)ignoredGroupsProp };
+			}
+			else {
+				ignoredGroupPatterns = (String[])ignoredGroupsProp;
+			}
 		} catch (MalformedURLException mfe) {
 			throw new ConfigurationException(PROP_URL, mfe.getMessage(), mfe);
 		}
@@ -101,47 +117,22 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		return url;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.nyu.grouper.osgi.GrouperConfiguration#getWsVersion()
-	 */
 	public String getWsVersion() {
 		return wsVersion;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.nyu.grouper.osgi.GrouperConfiguration#getUsername()
-	 */
 	public String getUsername() {
 		return username;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.nyu.grouper.osgi.GrouperConfiguration#getPassword()
-	 */
 	public String getPassword() {
 		return password;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.nyu.grouper.osgi.GrouperConfiguration#getBaseStem()
-	 */
 	public String getBaseStem() {
 		return baseStem;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.nyu.grouper.osgi.GrouperConfiguration#getRestWsGroupUrlString()
-	 */
 	public String getRestWsUrlString() {
 		return url + "/" + wsVersion;
 	}
@@ -156,5 +147,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	public String getIgnoredUserId() {
 		return ignoredUser;
+	}
+
+	@Override
+	public String[] getIgnoredGroups() {
+		return ignoredGroupPatterns;
 	}
 }

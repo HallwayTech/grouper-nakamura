@@ -2,6 +2,7 @@ package edu.nyu.grouper.event;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
@@ -109,7 +110,6 @@ public class GrouperJMSMessageProducer implements EventHandler {
 	 * @return whether or not to ignore this event.
 	 */
 	private boolean ignoreEvent(Event event){
-		boolean ignore = false;
 
 		// Ignore events that were posted by the Grouper system to SakaiOAE. 
 		// We don't want to wind up with a feedback loop between SakaiOAE and Grouper.
@@ -117,22 +117,28 @@ public class GrouperJMSMessageProducer implements EventHandler {
 		String eventCausedBy = (String)event.getProperty(StoreListener.USERID_PROPERTY); 
 		if ( (ignoreUser != null && eventCausedBy != null) && 
 			 (ignoreUser.equals(eventCausedBy))) {
-				ignore = true;
+				return true;
 		}
 
 		// Ignore non-group events
 		String type = (String)event.getProperty("type");
 		if (type != null && !type.equals("group")){
-			ignore = true;
+			return true;
 		}
 
 		// Ignore op=acl events
 		String op = (String)event.getProperty("op");
 		if (op != null && op.equals("acl")){
-			ignore = true;
+			return true;
 		}
 
-		return ignore;
+		for (String p: grouperConfiguration.getIgnoredGroups()){
+			if (Pattern.matches(p, (String)event.getProperty(StoreListener.PATH_PROPERTY))){
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

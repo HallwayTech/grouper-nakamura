@@ -1,6 +1,7 @@
 package edu.nyu.grouper.api;
 
 import java.net.URL;
+import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.HttpClient;
 
@@ -58,4 +59,10 @@ public interface GrouperConfiguration {
 	 * @return the userId to ignore.
 	 */
 	public abstract String getIgnoredUserId();
+	
+	/** 
+	 * Ignore groups that one match these patterns.
+	 * @return the {@link Pattern}s to ignore.
+	 */
+	public abstract String[] getIgnoredGroups();
 }
