@@ -34,6 +34,7 @@ import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.commons.osgi.OsgiUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
@@ -103,7 +104,7 @@ public class GrouperJMSMessageProducer implements EventHandler {
 		Queue squeue = senderSession.createQueue(QUEUE_NAME);
 		MessageProducer producer = senderSession.createProducer(squeue);
 
-		Message msg = senderSession.createObjectMessage();
+		Message msg = senderSession.createMessage();
 		msg.setJMSDeliveryMode(DeliveryMode.PERSISTENT);
 		msg.setJMSType(event.getTopic());
 		copyEventToMessage(event, msg);
@@ -120,7 +121,11 @@ public class GrouperJMSMessageProducer implements EventHandler {
 	}
 
 	/**
-	 * @param event
+	 * This method indicates whether or not we should post a {@link Message} for 
+	 * the {@link Event}. There's some specific messages on the interesting topics
+	 * that we don't want to handle for one reason or another.
+	 * 
+	 * @param event the OSGi {@link Event} we're considering.
 	 * @return whether or not to ignore this event.
 	 */
 	private boolean ignoreEvent(Event event){
@@ -167,9 +172,13 @@ public class GrouperJMSMessageProducer implements EventHandler {
 			// "Only objectified primitive objects, String, Map and List types are
 			// allowed" as stated by an exception when putting something into the
 			// message that was not of one of these types.
-			if (obj instanceof Byte || obj instanceof Boolean || obj instanceof Character
-					|| obj instanceof Number || obj instanceof Map || obj instanceof String
-					|| obj instanceof List) {
+			if (obj instanceof Byte 
+				|| obj instanceof Boolean 
+				|| obj instanceof Character
+				|| obj instanceof Number 
+				|| obj instanceof Map 
+				|| obj instanceof String
+				|| obj instanceof List) {
 				message.setObjectProperty(name, obj);
 			}
 		}
