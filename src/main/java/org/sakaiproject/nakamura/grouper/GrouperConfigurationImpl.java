@@ -65,11 +65,12 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Property(value = DEFAULT_SUFFIX)
 	protected static final String PROP_SUFFIX = "sakai.grouper.suffix";
 
-	private static final int DEFAULT_TIMEOUT = 4000;
+	// HTTP Timeout in milliseconds
+	private static final int DEFAULT_TIMEOUT = 5000;
 	@Property
 	protected static final String PROP_TIMEOUT = "sakai.grouper.httpTimeout";
 
-	private static final String DEFAULT_IGNORED_USER = "sakai";
+	private static final String DEFAULT_IGNORED_USER = "grouper-admin";
 	@Property(value = DEFAULT_IGNORED_USER)
 	protected static final String PROP_IGNORED_USER = "sakai.grouper.ignoredUser";
 	
@@ -100,19 +101,13 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	public void updated(Map<?, ?> props) throws ConfigurationException {
 		try {
 			url = new URL(OsgiUtil.toString(props.get(PROP_URL), DEFAULT_URL));
-			wsVersion = OsgiUtil.toString(props.get(PROP_WS_VERSION),
-					DEFAULT_WS_VERSION);
-			username = OsgiUtil.toString(props.get(PROP_USERNAME),
-					DEFAULT_USERNAME);
-			password = OsgiUtil.toString(props.get(PROP_PASSWORD),
-					DEFAULT_PASSWORD);
-			baseStem = OsgiUtil.toString(props.get(PROP_BASESTEM),
-					DEFAULT_BASESTEM);
-			suffix = OsgiUtil.toString(props.get(PROP_SUFFIX), DEFAULT_SUFFIX);
-			ignoredUser = OsgiUtil.toString(props.get(PROP_IGNORED_USER),
-					DEFAULT_IGNORED_USER);
-			httpTimeout = OsgiUtil.toInteger(props.get(PROP_TIMEOUT),
-					DEFAULT_TIMEOUT);
+			wsVersion = OsgiUtil.toString(props.get(PROP_WS_VERSION), DEFAULT_WS_VERSION);
+			username  = OsgiUtil.toString(props.get(PROP_USERNAME), DEFAULT_USERNAME);
+			password  = OsgiUtil.toString(props.get(PROP_PASSWORD), DEFAULT_PASSWORD);
+			baseStem  = OsgiUtil.toString(props.get(PROP_BASESTEM), DEFAULT_BASESTEM);
+			suffix    = OsgiUtil.toString(props.get(PROP_SUFFIX), DEFAULT_SUFFIX);
+			ignoredUser = OsgiUtil.toString(props.get(PROP_IGNORED_USER),DEFAULT_IGNORED_USER);
+			httpTimeout = OsgiUtil.toInteger(props.get(PROP_TIMEOUT),DEFAULT_TIMEOUT);
 
 			Object ignoredGroupsProp = OsgiUtil.toStringArray(PROP_IGNORED_GROUP_PATTERN);
 			if (ignoredGroupsProp == null){
@@ -166,7 +161,6 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		return ignoredUser;
 	}
 
-	@Override
 	public String[] getIgnoredGroups() {
 		return ignoredGroupPatterns;
 	}
