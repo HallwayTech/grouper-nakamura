@@ -379,16 +379,16 @@ public class GrouperManagerImpl implements GrouperManager {
 		    // Check the response
 		    Header successHeader = method.getResponseHeader("X-Grouper-success");
 		    String successString = successHeader == null ? null : successHeader.getValue();
-		    if (successString == null || successString.equals("")) {
-		    	throw new GrouperException("The Grouper WS did not respond.");
-		    }
 
-		    String resultCode = method.getResponseHeader("X-Grouper-resultCode").getValue();
+		    Header resultCodeHeader = method.getResponseHeader("X-Grouper-resultCode");
+		    String resultCode = resultCodeHeader == null ? null : resultCodeHeader.getValue();
+
 		    String responseString = IOUtils.toString(method.getResponseBodyAsStream());
 
 		    if (!"T".equals(successString)) {
-		    	throw new GrouperException("Bad response from web service: successString: " + successString 
-		    			+ ", resultCode: " + resultCode + ", " + responseString);
+		    	throw new GrouperException("Bad response from web service, http code: " + responseCode 
+		    			+ ", successString: " + successString + ", resultCode: " + resultCode
+		    			+ ", response: " + responseString);
 		    }
 
 		    return JSONObject.fromObject(responseString);
