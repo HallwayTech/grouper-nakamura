@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.nakamura.grouper.event;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -34,7 +35,6 @@ import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.commons.osgi.OsgiUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
@@ -152,6 +152,7 @@ public class GrouperJMSMessageProducer implements EventHandler {
 		}
 
 		for (String p: grouperConfiguration.getIgnoredGroups()){
+			// The path is the authorizableId of the group
 			if (Pattern.matches(p, (String)event.getProperty(StoreListener.PATH_PROPERTY))){
 				return true;
 			}
@@ -161,14 +162,36 @@ public class GrouperJMSMessageProducer implements EventHandler {
 	}
 
 	/**
-	 * Stolen from org.sakaiproject.nakamura.events.OsgiJmsBridge
-	 * @param event
-	 * @param message
-	 * @throws JMSException 
+	 * Populate a Message's properties with those from an Event.
+	 *
+	 * @see org.sakaiproject.nakamura.events.OsgiJmsBridge
+	 *
+	 * @param event the source
+	 * @param message the destination
+	 * @throws JMSException
 	 */
 	public static void copyEventToMessage(Event event, Message message) throws JMSException{
 		for (String name : event.getPropertyNames()) {
 			Object obj = event.getProperty(name);
+
+			// HACK HACK HACK
+			// Convert Object[] -> List<Object>
+			if (obj instanceof Map){
+				@SuppressWarnings("unchecked")
+				Map<String,Object> m = (Map<String,Object>)obj; 
+				for(String key: m.keySet()){
+					Object val = m.get(key);
+					if (val instanceof Object[]){
+						m.put(key, Arrays.asList(val));
+					}
+				}
+			}
+
+			// Convert Object[] -> List<Object>
+			if (obj instanceof Object[]){
+				obj = Arrays.asList(obj);
+			}
+
 			// "Only objectified primitive objects, String, Map and List types are
 			// allowed" as stated by an exception when putting something into the
 			// message that was not of one of these types.
