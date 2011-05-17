@@ -166,21 +166,26 @@ public class GrouperManagerImpl implements GrouperManager {
 	 * @{inheritDoc}
 	 */
 	public void deleteGroup(String groupId) throws GrouperException {
+		// Try to figure out the grouper name for this group.
+		// If its still a group check for the GROUPER_NAME_PROP property
+		// If not use the groupIdHelper
 		try {
+			String grouperName = null;
 			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
-
-			if (!authorizable.isGroup()){
-				log.error("{} is not a group", authorizable.getId());
-				return;
+			if (authorizable != null){
+				if (!authorizable.isGroup()){
+					log.error("{} is not a group", authorizable.getId());
+					return;
+				}
+				Group group = (Group) authorizable;
+				grouperName = (String)group.getProperty(GROUPER_NAME_PROP);
 			}
-			Group group = (Group) authorizable;
-			String grouperName = (String)group.getProperty(GROUPER_NAME_PROP);
 			if (grouperName == null){
-				grouperName = groupIdHelper.getGrouperName(group.getId());
+				grouperName = groupIdHelper.getGrouperName(groupId);
 			}
 
 			log.debug("Deleting Grouper Group = {} for sakai authorizableId = {}",
-					grouperName, group.getId());
+					grouperName, groupId);
 			internalDeleteGroup(grouperName);
 		}
 		catch (StorageClientException sce){
@@ -197,8 +202,9 @@ public class GrouperManagerImpl implements GrouperManager {
 	public void deleteGroup(String groupId, Map<String, Object> attributes) throws GrouperException{
 		String grouperName = null;
 		if (attributes != null ){
-			grouperName = (String)attributes.get(StoreListener.BEFORE_EVENT_PROPERTY);
+			grouperName = (String)attributes.get(GROUPER_NAME_PROP);
 		}
+
 		if (grouperName != null){
 			internalDeleteGroup(grouperName);
 		}
