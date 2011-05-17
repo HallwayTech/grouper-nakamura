@@ -38,24 +38,23 @@ After the OBR has been added:
 1. Go to the OBR tab, http://localhost:8080/system/console/obr.
 2. Click G and look for Grouper :: Grouper Client
 3. Click the version (1.7.0)
-4. Check the "deploy optional dependencies"" box
-5. Click "Deploy and Start"
+4. Click "Deploy and Start"
 
 It will take a few seconds to download and install the bundles. You should be able to find the Grouper :: Grouper Client bundle in the bundles tab at http://localhost:8080/system/console/bundles
 
 ## Install this bundle ##
 Use mvn to install the bundle or you can build it and install it by hand using the felix web admin console.
 
-	git clone git://github.com/HallwayTech/grouper-nakamura.git
-	cd grouper-nakamura
+    git clone git://github.com/HallwayTech/grouper-nakamura.git
+    cd grouper-nakamura
     mvn clean install -Pdeploy
 
 ## Configure the bundle ##
 
 You can use the felix web admin console to configure this bundle. Log in, go to the configuration tab, and look for Sakai Nakamura :: Grouper Client. Once you've configured it the way you'd like you can copy the configuration to your nakamura/load directory or wherever you've configured fileinstall to read configurations
 
-    cp nakamura/sling/config/edu/nyu/grouper/GrouperConfigurationImpl.config \
-        nakamura/load/edu.nyu.grouper.GrouperConfigurationImpl.config
+    cp nakamura/sling/config/org/sakaiproject/nakamura/grouper/GrouperConfigurationImpl.config \
+        nakamura/load/org.sakaiproject.nakamura.grouper.GrouperConfigurationImpl.config
  
 # Links #
 Nakamura, the SakaiOAE back-end built on Apache Sling:
