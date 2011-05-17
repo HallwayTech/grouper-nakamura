@@ -41,11 +41,9 @@ import org.slf4j.LoggerFactory;
 import org.sakaiproject.nakamura.grouper.api.GrouperManager;
 
 @Component
-public class GrouperJMSMessageConsumer {
+public class GrouperJMSMessageConsumer implements MessageListener {
 
 	private static Logger log = LoggerFactory.getLogger(GrouperJMSMessageConsumer.class);
-
-	private static String QUEUE_NAME = "org/sakaiproject/nakamura/grouper/sync";
 
 	@Reference
 	protected ConnectionFactoryService connFactoryService;
@@ -60,12 +58,14 @@ public class GrouperJMSMessageConsumer {
 	@Activate
 	public void activate(Map<?,?> props){
 		try {
-			connection = connFactoryService.getDefaultPooledConnectionFactory().createConnection();
-			session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-			Destination destination = session.createQueue(QUEUE_NAME);
-			consumer = session.createConsumer(destination);
-			consumer.setMessageListener(new GrouperMessageListener());
-			connection.start();
+ 			if (connection == null){
+				connection = connFactoryService.getDefaultPooledConnectionFactory().createConnection();
+				session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+				Destination destination = session.createQueue(GrouperJMSMessageProducer.QUEUE_NAME);
+				consumer = session.createConsumer(destination);
+				consumer.setMessageListener(this);
+				connection.start();
+			}
 
 		} catch (Exception e) {
 			throw new RuntimeException (e);
@@ -101,54 +101,59 @@ public class GrouperJMSMessageConsumer {
 		}
 	}
 
-	private class GrouperMessageListener implements MessageListener {
+	public void onMessage(Message message){
+		log.debug("Receiving a message on {} : {}", GrouperJMSMessageProducer.QUEUE_NAME, message);
+		try {
 
-		public void onMessage(Message message){
-			log.debug("Receiving a message on {} : {}", QUEUE_NAME, message);
-			try {
+			String topic = message.getJMSType();
+			String groupId = (String) message.getStringProperty("path");
+			String operation = "UNKNOWN";
 
-				String groupId = (String) message.getStringProperty("path");
-				String operation = "CREATE";
+			if ("org/sakaiproject/nakamura/lite/authorizables/DELETE".equals(topic)){
+				Map<String, Object> attributes = (Map<String,Object>)message.getObjectProperty(StoreListener.BEFORE_EVENT_PROPERTY);
+				grouperManager.deleteGroup(groupId, attributes);
+				operation = "DELETED";
+			}
 
-				if ("org/sakaiproject/nakamura/lite/authorizables/DELETED".equals(message.getStringProperty("event.topics"))){
-					Map<String, Object> attributes = (Map<String,Object>)message.getObjectProperty(StoreListener.BEFORE_EVENT_PROPERTY);
-					grouperManager.deleteGroup(groupId, attributes);
+			if ("org/sakaiproject/nakamura/lite/authorizables/ADDED".equals(topic)
+					|| "org/sakaiproject/nakamura/lite/authorizables/UPDATED".equals(topic) ){
+
+				// These events should be under org/sakaiproject/nakamura/lite/authorizables/UPDATED
+				// http://jira.sakaiproject.org/browse/KERN-1795
+				String membersAdded = (String)message.getStringProperty(GrouperEventUtils.MEMBERS_ADDED_PROP);
+				if (membersAdded != null){
+					// membership adds can be attached to the same event for the group add.
+					grouperManager.createGroup(groupId);
+					grouperManager.addMemberships(groupId,
+							Arrays.asList(StringUtils.split(membersAdded, ",")));
+					operation = "ADD_MEMBERS";
 				}
 
-				if ("org/sakaiproject/nakamura/lite/authorizables/ADDED".equals(message.getStringProperty("event.topics"))){
+				String membersRemoved = (String)message.getStringProperty(GrouperEventUtils.MEMBERS_REMOVED_PROP);
+				if (membersRemoved != null){
+					grouperManager.removeMemberships(groupId,
+							Arrays.asList(StringUtils.split(membersRemoved, ",")));
+					operation = "REMOVE_MEMBERS";
+				}
 
-					// These events should be under org/sakaiproject/nakamura/lite/authorizables/UPDATED
-					// http://jira.sakaiproject.org/browse/KERN-1795
-					String membersAdded = (String)message.getStringProperty(GrouperEventUtils.MEMBERS_ADDED_PROP);
-					if (membersAdded != null){
-						// membership adds can be attached to the same event for the group add.
-						grouperManager.createGroup(groupId);
-						grouperManager.addMemberships(groupId,
-								Arrays.asList(StringUtils.split(membersAdded, ",")));
-						operation = "ADD_MEMBERS";
-					}
-
-					String membersRemoved = (String)message.getStringProperty(GrouperEventUtils.MEMBERS_REMOVED_PROP);
-					if (membersRemoved != null){
-						grouperManager.removeMemberships(groupId,
-								Arrays.asList(StringUtils.split(membersRemoved, ",")));
-						operation = "REMOVE_MEMBERS";
-					}
-
-					if (membersAdded == null && membersRemoved == null) {
-						grouperManager.createGroup(groupId);
-					}
-
-					message.acknowledge();
-					log.info("Successfully processed and acknowledged. {}, {}", operation, groupId);
+				if (membersAdded == null && membersRemoved == null) {
+					grouperManager.createGroup(groupId);
+					operation = "CREATE";
 				}
 			}
-			catch (JMSException jmse){
-				log.error("JMSException while processing message.", jmse);
+			message.acknowledge();
+			if (operation.equals("UNKNOWN")){
+				log.error("I don't know what to do with this topic: {}. Turn on debug logs to see the message.", topic);
+				log.debug(message.toString());
+			} else {
+				log.info("Successfully processed and acknowledged. {}, {}", operation, groupId);
 			}
-			catch (Exception e){
-				log.error("Exception while processing message.", e);
-			}
+		}
+		catch (JMSException jmse){
+			log.error("JMSException while processing message.", jmse);
+		}
+		catch (Exception e){
+			log.error("Exception while processing message.", e);
 		}
 	}
 }
