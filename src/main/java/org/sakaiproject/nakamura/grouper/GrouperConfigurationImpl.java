@@ -43,36 +43,36 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	// Configurable via the ConfigAdmin services.
 	private static final String DEFAULT_URL = "http://localhost:9090/grouper-ws/servicesRest";
 	@Property(value = DEFAULT_URL)
-	protected static final String PROP_URL = "sakai.grouper.url";
+	protected static final String PROP_URL = "grouper.url";
 
 	private static final String DEFAULT_WS_VERSION = "1_7_000";
 	@Property(value = DEFAULT_WS_VERSION)
-	protected static final String PROP_WS_VERSION = "sakai.grouper.ws_version";
+	protected static final String PROP_WS_VERSION = "grouper.ws_version";
 
 	private static final String DEFAULT_USERNAME = "GrouperSystem";
 	@Property(value = DEFAULT_USERNAME)
-	protected static final String PROP_USERNAME = "sakai.grouper.username";
+	protected static final String PROP_USERNAME = "grouper.username";
 
 	private static final String DEFAULT_PASSWORD = "abc123";
 	@Property(value = DEFAULT_PASSWORD)
-	protected static final String PROP_PASSWORD = "sakai.grouper.password";
+	protected static final String PROP_PASSWORD = "grouper.password";
 
-	private static final String DEFAULT_BASESTEM = "edu:apps:sakai3";
+	private static final String DEFAULT_BASESTEM = "edu:apps:sakaioae";
 	@Property(value = DEFAULT_BASESTEM)
-	protected static final String PROP_BASESTEM = "sakai.grouper.basestem";
+	protected static final String PROP_BASESTEM = "grouper.basestem";
 
 	private static final String DEFAULT_SUFFIX = "_sakaioae";
 	@Property(value = DEFAULT_SUFFIX)
-	protected static final String PROP_SUFFIX = "sakai.grouper.suffix";
+	protected static final String PROP_SUFFIX = "grouper.suffix";
 
 	// HTTP Timeout in milliseconds
-	private static final int DEFAULT_TIMEOUT = 5000;
-	@Property
-	protected static final String PROP_TIMEOUT = "sakai.grouper.httpTimeout";
+	private static final String DEFAULT_TIMEOUT = "5000";
+	@Property(value = DEFAULT_TIMEOUT)
+	protected static final String PROP_TIMEOUT = "grouper.httpTimeout";
 
 	private static final String DEFAULT_IGNORED_USER = "grouper-admin";
 	@Property(value = DEFAULT_IGNORED_USER)
-	protected static final String PROP_IGNORED_USER = "sakai.grouper.ignoredUser";
+	protected static final String PROP_IGNORED_USER = "grouper.ignoredUser";
 	
 	private static final String DEFAULT_IGNORED_GROUP_PATTERN = "administrators";
 	@Property(value = DEFAULT_IGNORED_GROUP_PATTERN, cardinality=1)
@@ -107,7 +107,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 			baseStem  = OsgiUtil.toString(props.get(PROP_BASESTEM), DEFAULT_BASESTEM);
 			suffix    = OsgiUtil.toString(props.get(PROP_SUFFIX), DEFAULT_SUFFIX);
 			ignoredUser = OsgiUtil.toString(props.get(PROP_IGNORED_USER),DEFAULT_IGNORED_USER);
-			httpTimeout = OsgiUtil.toInteger(props.get(PROP_TIMEOUT),DEFAULT_TIMEOUT);
+			httpTimeout = OsgiUtil.toInteger(props.get(PROP_TIMEOUT), Integer.parseInt(DEFAULT_TIMEOUT));
 
 			Object ignoredGroupsProp = OsgiUtil.toStringArray(PROP_IGNORED_GROUP_PATTERN);
 			if (ignoredGroupsProp == null){
