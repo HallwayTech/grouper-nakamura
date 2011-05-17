@@ -17,7 +17,9 @@
  */
 package org.sakaiproject.nakamura.grouper.event;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -31,10 +33,12 @@ import javax.jms.Queue;
 import javax.jms.Session;
 
 import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Modified;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.commons.osgi.OsgiUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
@@ -69,13 +73,22 @@ public class GrouperJMSMessageProducer implements EventHandler {
 
 	private static Logger log = LoggerFactory.getLogger(GrouperJMSMessageProducer.class);
 
-	private static final String QUEUE_NAME = "org/sakaiproject/nakamura/grouper/sync";
+	protected static final String QUEUE_NAME = "org/sakaiproject/nakamura/grouper/sync";
 
 	@Reference
 	protected ConnectionFactoryService connFactoryService;
 
 	@Reference
 	protected GrouperConfiguration grouperConfiguration;
+
+	@Property(boolValue=false)
+	protected static final String TRANSACTED_NAME = "transacted";
+	protected boolean transacted;
+
+	@Modified
+	public void updated(Map<String,Object> props){
+		transacted = OsgiUtil.toBoolean(TRANSACTED_NAME, false);
+	}
 
 	/**
 	 * @{inheritDoc}
@@ -100,7 +113,7 @@ public class GrouperJMSMessageProducer implements EventHandler {
 	 */
 	private void sendMessage(Event event) throws JMSException {
 		Connection senderConnection = connFactoryService.getDefaultPooledConnectionFactory().createConnection();
-		Session senderSession = senderConnection.createSession(true, Session.CLIENT_ACKNOWLEDGE);
+		Session senderSession = senderConnection.createSession(transacted, Session.CLIENT_ACKNOWLEDGE);
 		Queue squeue = senderSession.createQueue(QUEUE_NAME);
 		MessageProducer producer = senderSession.createProducer(squeue);
 
@@ -110,14 +123,21 @@ public class GrouperJMSMessageProducer implements EventHandler {
 		copyEventToMessage(event, msg);
 		producer.send(msg);
 
-		if (log.isDebugEnabled()){
-			log.debug("Sent: " + msg);
-		}
-		else if (log.isInfoEnabled()){
-			log.info("Sent: {}, {}", event.getTopic(), event.getProperty("path"));
-		}
+		log.info("Sent: {} {} : messageId {}", new Object[] { event.getTopic(), event.getProperty("path"), msg.getJMSMessageID()});
+		log.debug("{} : {}", msg.getJMSMessageID(), msg);
 
-		senderConnection.close();
+		try {
+			senderSession.close();
+		}
+		finally {
+			senderSession = null;
+		}
+		try {
+			senderConnection.close();
+		}
+		finally {
+			senderConnection = null;
+		}
 	}
 
 	/**
@@ -141,8 +161,8 @@ public class GrouperJMSMessageProducer implements EventHandler {
 
 		// Ignore non-group events
 		String type = (String)event.getProperty("type");
-		if (type != null && !type.equals("group")){
-			return true;
+		if ("group".equals(type) || "g".equals(type)){
+			return false;
 		}
 
 		// Ignore op=acl events
@@ -170,6 +190,7 @@ public class GrouperJMSMessageProducer implements EventHandler {
 	 * @param message the destination
 	 * @throws JMSException
 	 */
+	@SuppressWarnings("unchecked")
 	public static void copyEventToMessage(Event event, Message message) throws JMSException{
 		for (String name : event.getPropertyNames()) {
 			Object obj = event.getProperty(name);
@@ -177,19 +198,25 @@ public class GrouperJMSMessageProducer implements EventHandler {
 			// HACK HACK HACK
 			// Convert Object[] -> List<Object>
 			if (obj instanceof Map){
-				@SuppressWarnings("unchecked")
-				Map<String,Object> m = (Map<String,Object>)obj; 
+				// m is a writable copy
+				Map<String,Object> m = new HashMap<String,Object>();
+				m.putAll((Map<String,Object>)obj);
 				for(String key: m.keySet()){
 					Object val = m.get(key);
-					if (val instanceof Object[]){
-						m.put(key, Arrays.asList(val));
+					if (val instanceof String[]){
+						List<String>list = new ArrayList<String>();
+						Collections.addAll(list, (String[])val);
+						m.put(key, list);
 					}
 				}
+				obj = m;
 			}
 
 			// Convert Object[] -> List<Object>
 			if (obj instanceof Object[]){
-				obj = Arrays.asList(obj);
+				List<String>list = new ArrayList<String>();
+				Collections.addAll(list, (String[])obj);
+				obj = list;
 			}
 
 			// "Only objectified primitive objects, String, Map and List types are
