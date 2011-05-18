@@ -261,6 +261,11 @@ public class GrouperManagerImpl implements GrouperManager {
 					log.error("Adding groups as members is not supported yet.");
 					continue;
 				}
+				// Don't bother adding the admin user as a member. 
+				// It probably doesn't exist in grouper.
+				if (subjectId.equals("admin")){
+					continue;
+				}
 				cleanedMembersToAdd.add(subjectId);
 			}
 
