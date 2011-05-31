@@ -17,10 +17,6 @@
  */
 package org.sakaiproject.nakamura.grouper.event;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -47,6 +43,7 @@ import org.sakaiproject.nakamura.api.activemq.ConnectionFactoryService;
 import org.sakaiproject.nakamura.api.lite.StoreListener;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
+import org.sakaiproject.nakamura.util.osgi.EventUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,46 +187,11 @@ public class GrouperJMSMessageProducer implements EventHandler {
 	 * @param message the destination
 	 * @throws JMSException
 	 */
-	@SuppressWarnings("unchecked")
 	public static void copyEventToMessage(Event event, Message message) throws JMSException{
 		for (String name : event.getPropertyNames()) {
-			Object obj = event.getProperty(name);
-
-			// HACK HACK HACK
-			// Convert Object[] -> List<Object>
-			if (obj instanceof Map){
-				// m is a writable copy
-				Map<String,Object> m = new HashMap<String,Object>();
-				m.putAll((Map<String,Object>)obj);
-				for(String key: m.keySet()){
-					Object val = m.get(key);
-					if (val instanceof String[]){
-						List<String>list = new ArrayList<String>();
-						Collections.addAll(list, (String[])val);
-						m.put(key, list);
-					}
-				}
-				obj = m;
-			}
-
-			// Convert Object[] -> List<Object>
-			if (obj instanceof Object[]){
-				List<String>list = new ArrayList<String>();
-				Collections.addAll(list, (String[])obj);
-				obj = list;
-			}
-
-			// "Only objectified primitive objects, String, Map and List types are
-			// allowed" as stated by an exception when putting something into the
-			// message that was not of one of these types.
-			if (obj instanceof Byte 
-				|| obj instanceof Boolean 
-				|| obj instanceof Character
-				|| obj instanceof Number 
-				|| obj instanceof Map 
-				|| obj instanceof String
-				|| obj instanceof List) {
-				message.setObjectProperty(name, obj);
+			Object val = event.getProperty(name);
+			if (val != null){
+				message.setObjectProperty(name, EventUtils.cleanProperty(val));
 			}
 		}
 	}
