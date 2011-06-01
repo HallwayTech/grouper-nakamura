@@ -69,7 +69,7 @@ public class AggregateGroupsGrouperIdHelperImpl implements GrouperIdHelper {
 	
 	private AuthorizableManager authorizableManager;
 	
-	public static String[] SPECIAL_GROUP_SUFFIXES = new String[] {"-managers", "-ta"};
+	public static String[] SPECIAL_GROUP_SUFFIXES = new String[] {"-managers", "-ta", "-lecturer"};
 
 	@Activate
 	public void activate(Map<?,?> props) throws ClientPoolException, StorageClientException, AccessDeniedException{
