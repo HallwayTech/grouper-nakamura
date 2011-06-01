@@ -24,7 +24,7 @@ package org.sakaiproject.nakamura.grouper.api;
  * groupId is the authorizableId if of the form some_thing_name1
  * baseStem is of the form edu:apps:sakai3
  */
-public interface GrouperIdHelper {
+public interface GrouperIdManager {
 
 	/**
 	 * @param baseStem the folder in Grouper for sakai3

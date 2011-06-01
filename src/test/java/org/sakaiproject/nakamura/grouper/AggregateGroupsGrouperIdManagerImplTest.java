@@ -24,14 +24,11 @@ import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import org.sakaiproject.nakamura.grouper.AggregateGroupsGrouperIdHelperImpl;
-import org.sakaiproject.nakamura.grouper.GrouperConfigurationImpl;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
-public class AggregateGroupsGrouperIdHelperImplTest extends TestCase {
+public class AggregateGroupsGrouperIdManagerImplTest extends TestCase {
 
-	private AggregateGroupsGrouperIdHelperImpl idHelper;
+	private AggregateGroupsGrouperIdManagerImpl idManager;
 	private static final String BASE_STEM = "some:base:stem";
 	
 	@Before
@@ -42,47 +39,47 @@ public class AggregateGroupsGrouperIdHelperImplTest extends TestCase {
 		GrouperConfigurationImpl gconfig = new GrouperConfigurationImpl();
 		gconfig.updated(m);
 		
-		idHelper = new AggregateGroupsGrouperIdHelperImpl();
-		idHelper.bindGrouperConfiguration((GrouperConfiguration)gconfig);
+		idManager = new AggregateGroupsGrouperIdManagerImpl();
+		idManager.bindGrouperConfiguration((GrouperConfiguration)gconfig);
 	}
 	
 	@Test
 	public void testGetGrouperName(){
-		assertEquals(null, idHelper.getGrouperName(null));
+		assertEquals(null, idManager.getGrouperName(null));
 		assertEquals(BASE_STEM + ":group1:members_sakaioae",
-					idHelper.getGrouperName("group1"));
+					idManager.getGrouperName("group1"));
 		assertEquals(BASE_STEM + ":group1:managers_sakaioae",
-					idHelper.getGrouperName("group1-managers"));
+					idManager.getGrouperName("group1-managers"));
 		
 		assertEquals(BASE_STEM + ":gstem1:gstem2:gext:members_sakaioae",
-					idHelper.getGrouperName("gstem1_gstem2_gext"));
+					idManager.getGrouperName("gstem1_gstem2_gext"));
 		assertEquals(BASE_STEM + ":gstem1:gstem2:gext:managers_sakaioae",
-					idHelper.getGrouperName("gstem1_gstem2_gext-managers"));
+					idManager.getGrouperName("gstem1_gstem2_gext-managers"));
 		assertEquals(BASE_STEM + ":gstem1:gstem2:gext:ta_sakaioae",
-				idHelper.getGrouperName("gstem1_gstem2_gext-ta"));
+				idManager.getGrouperName("gstem1_gstem2_gext-ta"));
 	}
 	
 	@Test
 	public void testGetGrouperExtension(){
-		assertNull(idHelper.getGrouperExtension(null));
+		assertNull(idManager.getGrouperExtension(null));
 		assertEquals("members_sakaioae",
-				idHelper.getGrouperExtension("group1"));
+				idManager.getGrouperExtension("group1"));
 		assertEquals("managers_sakaioae",
-				idHelper.getGrouperExtension("group1-managers"));
+				idManager.getGrouperExtension("group1-managers"));
 		assertEquals("ta_sakaioae",
-				idHelper.getGrouperExtension("group1-ta"));
+				idManager.getGrouperExtension("group1-ta"));
 	}
 	
 	@Test
 	public void testGetFullStem(){
-		assertEquals(null, idHelper.getFullStem(null));
+		assertEquals(null, idManager.getFullStem(null));
 		
-		assertEquals(BASE_STEM + ":group1", idHelper.getFullStem("group1"));
-		assertEquals(BASE_STEM + ":group1", idHelper.getFullStem("group1-managers"));
+		assertEquals(BASE_STEM + ":group1", idManager.getFullStem("group1"));
+		assertEquals(BASE_STEM + ":group1", idManager.getFullStem("group1-managers"));
 		
-		assertEquals(BASE_STEM + ":stem1:group1", idHelper.getFullStem("stem1_group1"));
-		assertEquals(BASE_STEM + ":stem1:group1", idHelper.getFullStem("stem1_group1-managers"));
-		assertEquals(BASE_STEM + ":stem1:group1", idHelper.getFullStem("stem1_group1-ta"));
+		assertEquals(BASE_STEM + ":stem1:group1", idManager.getFullStem("stem1_group1"));
+		assertEquals(BASE_STEM + ":stem1:group1", idManager.getFullStem("stem1_group1-managers"));
+		assertEquals(BASE_STEM + ":stem1:group1", idManager.getFullStem("stem1_group1-ta"));
 	}
 	
 }

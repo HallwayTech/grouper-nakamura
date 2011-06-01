@@ -30,11 +30,10 @@ import org.sakaiproject.nakamura.api.lite.accesscontrol.AccessDeniedException;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 import org.sakaiproject.nakamura.api.lite.authorizable.AuthorizableManager;
 import org.sakaiproject.nakamura.api.lite.authorizable.Group;
+import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
+import org.sakaiproject.nakamura.grouper.api.GrouperIdManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
-import org.sakaiproject.nakamura.grouper.api.GrouperIdHelper;
 
 /**
  * 
@@ -57,9 +56,9 @@ import org.sakaiproject.nakamura.grouper.api.GrouperIdHelper;
  */
 @Service
 @Component
-public class AggregateGroupsGrouperIdHelperImpl implements GrouperIdHelper {
+public class AggregateGroupsGrouperIdManagerImpl implements GrouperIdManager{
 	
-	private static final Logger log = LoggerFactory.getLogger(AggregateGroupsGrouperIdHelperImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(AggregateGroupsGrouperIdManagerImpl.class);
 	
 	@Reference
 	protected GrouperConfiguration grouperConfiguration;
