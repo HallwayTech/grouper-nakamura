@@ -39,7 +39,7 @@ import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	private static final Logger log = LoggerFactory
-			.getLogger(GrouperConfigurationImpl.class);
+	.getLogger(GrouperConfigurationImpl.class);
 
 	// Configurable via the ConfigAdmin services.
 	private static final String DEFAULT_URL = "http://localhost:9090/grouper-ws/servicesRest";
@@ -81,15 +81,22 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	private static final String[] DEFAULT_SPECIAL_GROUP_SUFFIXES = {"-managers", "-ta", "-lecturer"};
 	@Property(value = { "-managers", "-ta", "-lecturer" }, cardinality = 9999999)
-	protected static final String PROP_SPECIAL_GROUP_SUFFIXES = "grouper.specialGroupsSuffixes"; 
+	protected static final String PROP_SPECIAL_GROUP_SUFFIXES = "grouper.specialGroupsSuffixes";
+
+	private static final String DEFAULT_BASESTEM = "edu:apps:sakaioae";
+	@Property(value = DEFAULT_BASESTEM)
+	protected static final String PROP_BASESTEM = "grouper.basestem";
 
 	// Grouper configuration.
 	private URL url;
-	private String wsVersion;
 	private String username;
 	private String password;
+	private String baseStem;
+
+	// GrouperWS
+	private String wsVersion;
 	private int httpTimeout;
-	
+
 	// Ignore events caused by this user
 	private String ignoredUser;
 	// Ignore groups that match these regexs
@@ -118,40 +125,43 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	public void updated(Map<?, ?> props) throws ConfigurationException {
 		try {
 			url = new URL(OsgiUtil.toString(props.get(PROP_URL), DEFAULT_URL));
-			wsVersion = OsgiUtil.toString(props.get(PROP_WS_VERSION), DEFAULT_WS_VERSION);
-			username  = OsgiUtil.toString(props.get(PROP_USERNAME), DEFAULT_USERNAME);
-			password  = OsgiUtil.toString(props.get(PROP_PASSWORD), DEFAULT_PASSWORD);
-			ignoredUser = OsgiUtil.toString(props.get(PROP_IGNORED_USER),DEFAULT_IGNORED_USER);
-			httpTimeout = OsgiUtil.toInteger(props.get(PROP_TIMEOUT), Integer.parseInt(DEFAULT_TIMEOUT));
-			groupIdPatternString = OsgiUtil.toString(props.get(PROP_GROUPID_PATTERN),DEFAULT_GROUPID_PATTERN);
-			grouperNameTemplate = OsgiUtil.toString(props.get(PROP_GROUPERNAME_TEMPLATE),DEFAULT_GROUPERNAME_TEMPLATE);
-
-			Object ig = OsgiUtil.toStringArray(props.get(PROP_IGNORED_GROUP_PATTERN), DEFAULT_IGNORED_GROUP_PATTERN);
-			if (ig == null){
-				ignoredGroupPatterns = DEFAULT_IGNORED_GROUP_PATTERN;
-			}
-			else if (ig instanceof String){
-				ignoredGroupPatterns = new String[] { (String)ig };
-			}
-			else {
-				ignoredGroupPatterns = (String[])ig;
-			}
-
-			Object sgs = OsgiUtil.toStringArray(props.get(PROP_SPECIAL_GROUP_SUFFIXES), DEFAULT_SPECIAL_GROUP_SUFFIXES);
-			if (sgs == null){
-				specialGroupSuffixes = DEFAULT_SPECIAL_GROUP_SUFFIXES;
-			}
-			else if (sgs instanceof String){
-				specialGroupSuffixes = new String[] { (String)sgs };
-			}
-			else {
-				specialGroupSuffixes = (String[])sgs;
-			}
-			
-			groupIdPattern = Pattern.compile(groupIdPatternString);
 		} catch (MalformedURLException mfe) {
 			throw new ConfigurationException(PROP_URL, mfe.getMessage(), mfe);
 		}
+		username  = OsgiUtil.toString(props.get(PROP_USERNAME), DEFAULT_USERNAME);
+		password  = OsgiUtil.toString(props.get(PROP_PASSWORD), DEFAULT_PASSWORD);
+		baseStem = OsgiUtil.toString(props.get(PROP_BASESTEM),DEFAULT_BASESTEM);
+
+		wsVersion = OsgiUtil.toString(props.get(PROP_WS_VERSION), DEFAULT_WS_VERSION);
+		httpTimeout = OsgiUtil.toInteger(props.get(PROP_TIMEOUT), Integer.parseInt(DEFAULT_TIMEOUT));
+
+		ignoredUser = OsgiUtil.toString(props.get(PROP_IGNORED_USER),DEFAULT_IGNORED_USER);
+		groupIdPatternString = OsgiUtil.toString(props.get(PROP_GROUPID_PATTERN),DEFAULT_GROUPID_PATTERN);
+		grouperNameTemplate = OsgiUtil.toString(props.get(PROP_GROUPERNAME_TEMPLATE),DEFAULT_GROUPERNAME_TEMPLATE);
+
+		Object ig = OsgiUtil.toStringArray(props.get(PROP_IGNORED_GROUP_PATTERN), DEFAULT_IGNORED_GROUP_PATTERN);
+		if (ig == null){
+			ignoredGroupPatterns = DEFAULT_IGNORED_GROUP_PATTERN;
+		}
+		else if (ig instanceof String){
+			ignoredGroupPatterns = new String[] { (String)ig };
+		}
+		else {
+			ignoredGroupPatterns = (String[])ig;
+		}
+
+		Object sgs = OsgiUtil.toStringArray(props.get(PROP_SPECIAL_GROUP_SUFFIXES), DEFAULT_SPECIAL_GROUP_SUFFIXES);
+		if (sgs == null){
+			specialGroupSuffixes = DEFAULT_SPECIAL_GROUP_SUFFIXES;
+		}
+		else if (sgs instanceof String){
+			specialGroupSuffixes = new String[] { (String)sgs };
+		}
+		else {
+			specialGroupSuffixes = (String[])sgs;
+		}
+
+		groupIdPattern = Pattern.compile(groupIdPatternString);
 		log.debug("Configured!");
 	}
 
@@ -194,8 +204,23 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	public String getGrouperNameTemplate() {
 		return grouperNameTemplate;
 	}
-	
+
 	public String[] getSpecialGroupSuffixes(){
 		return specialGroupSuffixes;
+	}
+
+	@Override
+	public String getBaseStem(String groupType) {
+		String stem = this.baseStem;
+		if ("provisioned".equals(groupType)){
+			stem += ":groups";
+		}
+		else if ("adhoc".equals(groupType)){
+			stem += ":adhoc";
+		}
+		else if ("contact".equals(groupType)){
+			stem += ":contacts";
+		}
+		return stem;
 	}
 }

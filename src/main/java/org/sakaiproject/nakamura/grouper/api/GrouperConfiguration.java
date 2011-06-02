@@ -85,7 +85,14 @@ public interface GrouperConfiguration {
 	
 	/**
 	 * Groups in nakamura that have some special meaning.
+	 * These are usually the -managers, -ta, and -lecturers.
 	 * @return
 	 */
 	public abstract String[] getSpecialGroupSuffixes();
+
+	/**
+	 * @param groupType
+	 * @return the base stem to write to for this type of group.
+	 */
+	public abstract String getBaseStem(String groupType);
 }
