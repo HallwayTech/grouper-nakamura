@@ -26,9 +26,9 @@ import org.junit.Test;
 import org.osgi.service.cm.ConfigurationException;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
-public class TemplateGrouperIdManagerImplTest extends TestCase {
+public class TemplateGrouperIdProviderImplTest extends TestCase {
 
-	private TemplateGroupIdManagerImpl idManager;
+	private TemplateGroupIdProviderImpl idManager;
 	
 	@Test
 	public void testGetGrouperName() throws ConfigurationException{
@@ -39,7 +39,7 @@ public class TemplateGrouperIdManagerImplTest extends TestCase {
 		GrouperConfigurationImpl gconfig = new GrouperConfigurationImpl();
 		gconfig.updated(m);
 		
-		idManager = new TemplateGroupIdManagerImpl();
+		idManager = new TemplateGroupIdProviderImpl();
 		idManager.bindGrouperConfiguration((GrouperConfiguration)gconfig);
 		
 		assertEquals(null, idManager.getGrouperName(null));

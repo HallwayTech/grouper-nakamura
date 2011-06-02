@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.osgi.service.cm.ConfigurationException;
 
-public class BaseGrouperIdManagerTest extends TestCase {
+public class BaseGrouperIdProviderImplTest extends TestCase {
 	
 	private GrouperConfigurationImpl config;
 	
@@ -24,11 +24,11 @@ public class BaseGrouperIdManagerTest extends TestCase {
 
 	@Test
 	public void testGetGrouperExtension(){
-		assertNull(BaseGrouperIdManager.getGrouperExtension(null, config));
-		assertEquals("members", BaseGrouperIdManager.getGrouperExtension("group1", config));
-		assertEquals("members", BaseGrouperIdManager.getGrouperExtension("some-thing", config));
+		assertNull(BaseGrouperIdProvider.getGrouperExtension(null, config));
+		assertEquals("members", BaseGrouperIdProvider.getGrouperExtension("group1", config));
+		assertEquals("members", BaseGrouperIdProvider.getGrouperExtension("some-thing", config));
 		
-		assertEquals("managers", BaseGrouperIdManager.getGrouperExtension("group1-managers", config));
-		assertEquals("ta", BaseGrouperIdManager.getGrouperExtension("group1-ta", config));		
+		assertEquals("managers", BaseGrouperIdProvider.getGrouperExtension("group1-managers", config));
+		assertEquals("ta", BaseGrouperIdProvider.getGrouperExtension("group1-ta", config));		
 	}
 }
