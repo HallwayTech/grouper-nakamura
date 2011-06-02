@@ -31,4 +31,17 @@ public class BaseGrouperIdProviderImplTest extends TestCase {
 		assertEquals("managers", BaseGrouperIdProvider.getGrouperExtension("group1-managers", config));
 		assertEquals("ta", BaseGrouperIdProvider.getGrouperExtension("group1-ta", config));		
 	}
+	
+	@Test
+	public void testGetGrouperLastStem(){
+		assertNull(BaseGrouperIdProvider.getGrouperLastStem(null, config));
+		assertEquals("group1", BaseGrouperIdProvider.getGrouperLastStem("group1", config));
+		assertEquals("group1", BaseGrouperIdProvider.getGrouperLastStem("group1-managers", config));
+		assertEquals("group1", BaseGrouperIdProvider.getGrouperLastStem("group1-ta", config));
+
+		assertEquals("some-thing", BaseGrouperIdProvider.getGrouperLastStem("some-thing", config));
+		assertEquals("some-thing", BaseGrouperIdProvider.getGrouperLastStem("some-thing-ta", config));
+		assertEquals("some-thing", BaseGrouperIdProvider.getGrouperLastStem("some-thing-managers", config));
+		assertEquals("some-thing-98y8og", BaseGrouperIdProvider.getGrouperLastStem("some-thing-98y8og", config));
+	}
 }
