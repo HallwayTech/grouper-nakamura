@@ -24,7 +24,6 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
-import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -42,27 +41,30 @@ import org.sakaiproject.nakamura.api.lite.ClientPoolException;
 import org.sakaiproject.nakamura.api.lite.Repository;
 import org.sakaiproject.nakamura.api.lite.Session;
 import org.sakaiproject.nakamura.api.lite.StorageClientException;
-import org.sakaiproject.nakamura.api.lite.StoreListener;
 import org.sakaiproject.nakamura.api.lite.accesscontrol.AccessDeniedException;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 import org.sakaiproject.nakamura.api.lite.authorizable.AuthorizableManager;
 import org.sakaiproject.nakamura.api.lite.authorizable.Group;
+import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
+import org.sakaiproject.nakamura.grouper.api.GrouperIdManager;
+import org.sakaiproject.nakamura.grouper.api.GrouperManager;
+import org.sakaiproject.nakamura.grouper.util.GrouperHttpUtil;
+import org.sakaiproject.nakamura.grouper.util.GrouperJsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.internet2.middleware.grouperClient.ws.beans.WsAddMemberResults;
+import edu.internet2.middleware.grouperClient.ws.beans.WsDeleteMemberResults;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroup;
+import edu.internet2.middleware.grouperClient.ws.beans.WsGroupDeleteResults;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupLookup;
+import edu.internet2.middleware.grouperClient.ws.beans.WsGroupSaveResults;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupToSave;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestAddMemberRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestDeleteMemberRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupDeleteRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsRestGroupSaveRequest;
 import edu.internet2.middleware.grouperClient.ws.beans.WsSubjectLookup;
-import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
-import org.sakaiproject.nakamura.grouper.api.GrouperIdHelper;
-import org.sakaiproject.nakamura.grouper.api.GrouperManager;
-import org.sakaiproject.nakamura.grouper.util.GrouperHttpUtil;
-import org.sakaiproject.nakamura.grouper.util.GrouperJsonUtil;
 
 @Service
 @Component
@@ -74,7 +76,7 @@ public class GrouperManagerImpl implements GrouperManager {
 	protected GrouperConfiguration grouperConfiguration;
 
 	@Reference
-	protected GrouperIdHelper groupIdHelper;
+	protected GrouperIdManager groupIdManager;
 	
 	@Reference
 	protected Repository repository;
@@ -124,8 +126,9 @@ public class GrouperManagerImpl implements GrouperManager {
 				return;
 			}
 
-			String grouperName = groupIdHelper.getGrouperName(groupId);
-			String grouperExtension = groupIdHelper.getGrouperExtension(groupId);
+			String grouperName = groupIdManager.getGrouperName(groupId);
+			String[] split = StringUtils.split(grouperName, ':');
+			String grouperExtension = StringUtils.join(split, ':', 0, split.length - 1);
 
 			log.debug("Creating a new Grouper Group = {} for sakai authorizableId = {}", 
 					grouperName, groupId);
@@ -144,6 +147,10 @@ public class GrouperManagerImpl implements GrouperManager {
 			groupSave.setWsGroupToSaves(new WsGroupToSave[]{ wsGroupToSave });
 
 			JSONObject response = post("/groups", groupSave);
+			WsGroupSaveResults results = (WsGroupSaveResults)JSONObject.toBean(response, WsGroupSaveResults.class);
+			if (!"T".equals(results.getResultMetadata().getSuccess())) {
+					throw new GrouperWSException(results);
+			}
 
 			authorizable.setProperty(GROUPER_NAME_PROP, grouperName);
 			authorizableManager.updateAuthorizable(authorizable);
@@ -181,7 +188,7 @@ public class GrouperManagerImpl implements GrouperManager {
 				grouperName = (String)group.getProperty(GROUPER_NAME_PROP);
 			}
 			if (grouperName == null){
-				grouperName = groupIdHelper.getGrouperName(groupId);
+				grouperName = groupIdManager.getGrouperName(groupId);
 			}
 
 			log.debug("Deleting Grouper Group = {} for sakai authorizableId = {}",
@@ -225,7 +232,12 @@ public class GrouperManagerImpl implements GrouperManager {
 			WsRestGroupDeleteRequest groupDelete = new WsRestGroupDeleteRequest();
 			groupDelete.setWsGroupLookups(new WsGroupLookup[]{ new WsGroupLookup(groupIdentifier, null) });
 
+			// Send the request and parse the result, throwing an exception on failure.
 			JSONObject response = post("/groups", groupDelete);
+			WsGroupDeleteResults results = (WsGroupDeleteResults)JSONObject.toBean(response, WsGroupDeleteResults.class);
+			if (!"T".equals(results.getResultMetadata().getSuccess())) {
+					throw new GrouperWSException(results);
+			}
 		}
 		catch (Exception e) {
 			throw new GrouperException(e.getMessage());
@@ -244,7 +256,7 @@ public class GrouperManagerImpl implements GrouperManager {
 				return;
 			}
 
-			String grouperName = groupIdHelper.getGrouperName(groupId);
+			String grouperName = groupIdManager.getGrouperName(groupId);
 			String membersString = StringUtils.join(membersToAdd, ',');
 			log.debug("Adding members: Group = {} members = {}", 
 						grouperName, membersString);
@@ -285,8 +297,13 @@ public class GrouperManagerImpl implements GrouperManager {
 				addMembers.setSubjectLookups(subjectLookups);
 
 				String urlPath = "/groups/" + grouperName + "/members";
-				urlPath = urlPath.replace(":", "%3A");
+				urlPath = urlPath.replace(":", "%3A");				
+				// Send the request and parse the result, throwing an exception on failure.
 				JSONObject response = post(urlPath, addMembers);
+				WsAddMemberResults results = (WsAddMemberResults)JSONObject.toBean(response, WsAddMemberResults.class);
+				if (!"T".equals(results.getResultMetadata().getSuccess())) {
+						throw new GrouperWSException(results);
+				}
 	
 				log.debug("Success! Added members: Group = {} members = {}", 
 						grouperName, membersString);
@@ -315,7 +332,7 @@ public class GrouperManagerImpl implements GrouperManager {
 				return;
 			}
 
-			String grouperName = groupIdHelper.getGrouperName(groupId);
+			String grouperName = groupIdManager.getGrouperName(groupId);
 			String membersString = StringUtils.join(membersToRemove, ',');
 			log.debug("Removing members: Group = {} members = {}", 
 						grouperName, membersString);
@@ -332,6 +349,11 @@ public class GrouperManagerImpl implements GrouperManager {
 			String urlPath = "/groups/" + grouperName + "/members";
 			urlPath = urlPath.replace(":", "%3A");
 			JSONObject response = post(urlPath, deleteMembers);
+
+			WsDeleteMemberResults results = (WsDeleteMemberResults)JSONObject.toBean(response, WsDeleteMemberResults.class);
+			if (!"T".equals(results.getResultMetadata().getSuccess())) {
+					throw new GrouperWSException(results);
+			}
 
 			log.debug("Success! Added members: Group = {} members = {}", 
 					grouperName, membersString);
@@ -367,7 +389,6 @@ public class GrouperManagerImpl implements GrouperManager {
 	 */
 	private JSONObject post(String urlPath, Object grouperRequestBean) throws GrouperException  {
 		try {
-
 			// URL e.g. http://localhost:9090/grouper-ws/servicesRest/v1_6_003/...
 			HttpClient client = GrouperHttpUtil.getHttpClient(grouperConfiguration);		            
 			String grouperWsRestUrl = grouperConfiguration.getRestWsUrlString() + urlPath;
@@ -379,23 +400,8 @@ public class GrouperManagerImpl implements GrouperManager {
 		    method.setRequestEntity(new StringRequestEntity(requestDocument, "text/x-json", "UTF-8"));
 
 		    int responseCode = client.executeMethod(method);
-		    log.debug("POST to {} : {}", grouperWsRestUrl, responseCode);
-
-		    // Check the response
-		    Header successHeader = method.getResponseHeader("X-Grouper-success");
-		    String successString = successHeader == null ? null : successHeader.getValue();
-
-		    Header resultCodeHeader = method.getResponseHeader("X-Grouper-resultCode");
-		    String resultCode = resultCodeHeader == null ? null : resultCodeHeader.getValue();
-
+		    log.info("POST to {} : {}", grouperWsRestUrl, responseCode);
 		    String responseString = IOUtils.toString(method.getResponseBodyAsStream());
-
-		    if (!"T".equals(successString)) {
-		    	throw new GrouperException("Bad response from web service, http code: " + responseCode 
-		    			+ ", successString: " + successString + ", resultCode: " + resultCode
-		    			+ ", response: " + responseString);
-		    }
-
 		    return JSONObject.fromObject(responseString);
 		}
 		catch (Exception e) {
