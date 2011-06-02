@@ -2,7 +2,7 @@ package org.sakaiproject.nakamura.grouper;
 
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
-public abstract class BaseGrouperIdManager {
+public abstract class BaseGrouperIdProvider {
 
 	/**
 	 * Return the extension for this group in grouper.

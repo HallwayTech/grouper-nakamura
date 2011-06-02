@@ -6,11 +6,12 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.sakaiproject.nakamura.grouper.api.GrouperIdManager;
+import org.sakaiproject.nakamura.grouper.api.GrouperIdProvider;
 
 public class GrouperIdManagerImpl implements GrouperIdManager { 
 	
 	@Reference(cardinality = ReferenceCardinality.MANDATORY_MULTIPLE)
-	protected List<GrouperIdManager> idManagers;
+	protected List<GrouperIdProvider> idProviders;
 
 	@Reference
 	protected GrouperConfiguration config;
@@ -18,8 +19,8 @@ public class GrouperIdManagerImpl implements GrouperIdManager {
 	@Override
 	public String getGrouperName(String groupId) {
 		String gn = null;
-		for (GrouperIdManager mgr: idManagers){
-			gn = mgr.getGrouperName(groupId);
+		for (GrouperIdProvider gip: idProviders){
+			gn = gip.getGrouperName(groupId);
 			if (gn != null){
 				return gn;
 			}

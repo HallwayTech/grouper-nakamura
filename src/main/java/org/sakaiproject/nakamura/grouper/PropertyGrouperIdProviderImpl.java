@@ -14,9 +14,9 @@ import org.sakaiproject.nakamura.grouper.api.GrouperManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PropertyGrouperIdManagerImpl implements GrouperIdManager {
+public class PropertyGrouperIdProviderImpl implements GrouperIdManager {
 
-	private static final Logger log = LoggerFactory.getLogger(PropertyGrouperIdManagerImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(PropertyGrouperIdProviderImpl.class);
 	
 	@Reference
 	protected GrouperConfiguration grouperConfiguration;

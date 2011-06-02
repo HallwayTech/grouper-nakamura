@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
  * 2. An output template to create a string for the grouper name. (grouper.name.template)
  * 
  */
-public class TemplateGroupIdManagerImpl implements GrouperIdManager {
+public class TemplateGroupIdProviderImpl implements GrouperIdManager {
 	
-	private static final Logger log = LoggerFactory.getLogger(TemplateGroupIdManagerImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(TemplateGroupIdProviderImpl.class);
 
 	@Reference
 	protected GrouperConfiguration config;
@@ -80,7 +80,7 @@ public class TemplateGroupIdManagerImpl implements GrouperIdManager {
 		}
 		VelocityContext context = new VelocityContext();
 		context.put("g", g);
-		context.put("extension", BaseGrouperIdManager.getGrouperExtension(groupId, config));
+		context.put("extension", BaseGrouperIdProvider.getGrouperExtension(groupId, config));
 
 		StringWriter sw = new StringWriter();
 		template.merge(context, sw);
