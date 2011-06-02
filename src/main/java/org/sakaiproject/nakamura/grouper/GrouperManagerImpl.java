@@ -46,8 +46,8 @@ import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 import org.sakaiproject.nakamura.api.lite.authorizable.AuthorizableManager;
 import org.sakaiproject.nakamura.api.lite.authorizable.Group;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
-import org.sakaiproject.nakamura.grouper.api.GrouperIdManager;
 import org.sakaiproject.nakamura.grouper.api.GrouperManager;
+import org.sakaiproject.nakamura.grouper.api.GrouperNameProvider;
 import org.sakaiproject.nakamura.grouper.util.GrouperHttpUtil;
 import org.sakaiproject.nakamura.grouper.util.GrouperJsonUtil;
 import org.slf4j.Logger;
@@ -76,7 +76,7 @@ public class GrouperManagerImpl implements GrouperManager {
 	protected GrouperConfiguration grouperConfiguration;
 
 	@Reference
-	protected GrouperIdManager groupIdManager;
+	protected GrouperNameProvider grouperNameProvider;
 	
 	@Reference
 	protected Repository repository;
@@ -126,7 +126,7 @@ public class GrouperManagerImpl implements GrouperManager {
 				return;
 			}
 
-			String grouperName = groupIdManager.getGrouperName(groupId);
+			String grouperName = grouperNameProvider.getGrouperName(groupId);
 			String[] split = StringUtils.split(grouperName, ':');
 			String grouperExtension = StringUtils.join(split, ':', 0, split.length - 1);
 
@@ -188,7 +188,7 @@ public class GrouperManagerImpl implements GrouperManager {
 				grouperName = (String)group.getProperty(GROUPER_NAME_PROP);
 			}
 			if (grouperName == null){
-				grouperName = groupIdManager.getGrouperName(groupId);
+				grouperName = grouperNameProvider.getGrouperName(groupId);
 			}
 
 			log.debug("Deleting Grouper Group = {} for sakai authorizableId = {}",
@@ -256,7 +256,7 @@ public class GrouperManagerImpl implements GrouperManager {
 				return;
 			}
 
-			String grouperName = groupIdManager.getGrouperName(groupId);
+			String grouperName = grouperNameProvider.getGrouperName(groupId);
 			String membersString = StringUtils.join(membersToAdd, ',');
 			log.debug("Adding members: Group = {} members = {}", 
 						grouperName, membersString);
@@ -332,7 +332,7 @@ public class GrouperManagerImpl implements GrouperManager {
 				return;
 			}
 
-			String grouperName = groupIdManager.getGrouperName(groupId);
+			String grouperName = grouperNameProvider.getGrouperName(groupId);
 			String membersString = StringUtils.join(membersToRemove, ',');
 			log.debug("Removing members: Group = {} members = {}", 
 						grouperName, membersString);

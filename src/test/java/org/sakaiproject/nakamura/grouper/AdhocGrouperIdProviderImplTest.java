@@ -37,7 +37,7 @@ import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 @RunWith(MockitoJUnitRunner.class)
 public class AdhocGrouperIdProviderImplTest {
 
-	private AdhocGrouperIdProviderImpl provider;
+	private AdhocGrouperNameProviderImpl provider;
 	
 	@Mock
 	private Repository repository;
@@ -64,7 +64,7 @@ public class AdhocGrouperIdProviderImplTest {
 		when(authorizableManager.findAuthorizable(isA(String.class))).thenReturn(authorizable);
 		when(authorizable.getProperty(isA(String.class))).thenReturn(null);
 		
-		provider = new AdhocGrouperIdProviderImpl();
+		provider = new AdhocGrouperNameProviderImpl();
 		provider.bindGrouperConfiguration((GrouperConfiguration)gconfig);
 		provider.repository = repository;
 		

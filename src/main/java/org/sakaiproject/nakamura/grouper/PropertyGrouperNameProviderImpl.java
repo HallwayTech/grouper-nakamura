@@ -26,51 +26,26 @@ import org.sakaiproject.nakamura.api.lite.accesscontrol.AccessDeniedException;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 import org.sakaiproject.nakamura.api.lite.authorizable.AuthorizableManager;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
-import org.sakaiproject.nakamura.grouper.api.GrouperIdManager;
 import org.sakaiproject.nakamura.grouper.api.GrouperManager;
+import org.sakaiproject.nakamura.grouper.api.GrouperNameProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * 
- *
- */
-public class AdhocGrouperIdProviderImpl implements GrouperIdManager {
+public class PropertyGrouperNameProviderImpl implements GrouperNameProvider {
 
-	private static final Logger log = LoggerFactory.getLogger(AdhocGrouperIdProviderImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(PropertyGrouperNameProviderImpl.class);
 
 	@Reference
-	protected GrouperConfiguration config;
+	protected GrouperConfiguration grouperConfiguration;
 
 	@Reference
 	protected Repository repository;
 
 	@Override
 	public String getGrouperName(String groupId) {
-		
-		if (groupId == null){
-			return null;
-		}
-		
-		// This group has already been assigned a group in grouper.
-		String grouperName = getProperty(groupId, GrouperManager.GROUPER_NAME_PROP);
-		if (grouperName != null){
-			return null;
-		}
-		
-		StringBuilder gn = new StringBuilder(config.getBaseStem("group"));
-		gn.append(":");
-		gn.append(groupId.charAt(0));
-		gn.append(":");
-		gn.append(groupId.substring(0,2));
-		gn.append(":");
-		gn.append(BaseGrouperIdProvider.getGrouperLastStem(groupId, config));
-		gn.append(":");
-		gn.append(BaseGrouperIdProvider.getGrouperExtension(groupId, config));
-		grouperName = gn.toString();
-		return grouperName;
+		return getProperty(groupId, GrouperManager.GROUPER_NAME_PROP);
 	}
-	
+
 	private String getProperty(String groupId, String propertyName){
 		String propValue = null;
 		Authorizable authorizable = null;
@@ -110,9 +85,5 @@ public class AdhocGrouperIdProviderImpl implements GrouperIdManager {
 			}
 		}
 		return propValue;
-	}
-
-	public void bindGrouperConfiguration(GrouperConfiguration gconfig) {
-		this.config = gconfig;
 	}
 }

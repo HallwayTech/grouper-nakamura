@@ -36,7 +36,7 @@ import org.apache.velocity.runtime.parser.ParseException;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
 import org.sakaiproject.nakamura.api.lite.authorizable.Group;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
-import org.sakaiproject.nakamura.grouper.api.GrouperIdManager;
+import org.sakaiproject.nakamura.grouper.api.GrouperNameManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +49,9 @@ import org.slf4j.LoggerFactory;
  * 2. An output template to create a string for the grouper name. (grouper.name.template)
  * 
  */
-public class TemplateGroupIdProviderImpl implements GrouperIdManager {
+public class TemplateGrouperNameProviderImpl implements GrouperNameManager {
 	
-	private static final Logger log = LoggerFactory.getLogger(TemplateGroupIdProviderImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(TemplateGrouperNameProviderImpl.class);
 
 	@Reference
 	protected GrouperConfiguration config;
@@ -97,7 +97,7 @@ public class TemplateGroupIdProviderImpl implements GrouperIdManager {
 		}
 		VelocityContext context = new VelocityContext();
 		context.put("g", g);
-		context.put("extension", BaseGrouperIdProvider.getGrouperExtension(groupId, config));
+		context.put("extension", BaseGrouperNameProvider.getGrouperExtension(groupId, config));
 
 		StringWriter sw = new StringWriter();
 		template.merge(context, sw);

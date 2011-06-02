@@ -22,13 +22,13 @@ import java.util.List;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
-import org.sakaiproject.nakamura.grouper.api.GrouperIdManager;
-import org.sakaiproject.nakamura.grouper.api.GrouperIdProvider;
+import org.sakaiproject.nakamura.grouper.api.GrouperNameManager;
+import org.sakaiproject.nakamura.grouper.api.GrouperNameProvider;
 
-public class GrouperIdManagerImpl implements GrouperIdManager { 
+public class GrouperNameManagerImpl implements GrouperNameManager { 
 	
 	@Reference(cardinality = ReferenceCardinality.MANDATORY_MULTIPLE)
-	protected List<GrouperIdProvider> idProviders;
+	protected List<GrouperNameProvider> idProviders;
 
 	@Reference
 	protected GrouperConfiguration config;
@@ -36,8 +36,8 @@ public class GrouperIdManagerImpl implements GrouperIdManager {
 	@Override
 	public String getGrouperName(String groupId) {
 		String gn = null;
-		for (GrouperIdProvider gip: idProviders){
-			gn = gip.getGrouperName(groupId);
+		for (GrouperNameProvider gnp: idProviders){
+			gn = gnp.getGrouperName(groupId);
 			if (gn != null){
 				return gn;
 			}

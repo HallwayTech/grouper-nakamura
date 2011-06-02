@@ -28,7 +28,7 @@ import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
 public class TemplateGrouperIdProviderImplTest extends TestCase {
 
-	private TemplateGroupIdProviderImpl idManager;
+	private TemplateGrouperNameProviderImpl provider;
 	
 	@Test
 	public void testGetGrouperName() throws ConfigurationException{
@@ -39,12 +39,12 @@ public class TemplateGrouperIdProviderImplTest extends TestCase {
 		GrouperConfigurationImpl gconfig = new GrouperConfigurationImpl();
 		gconfig.updated(m);
 		
-		idManager = new TemplateGroupIdProviderImpl();
-		idManager.bindGrouperConfiguration((GrouperConfiguration)gconfig);
+		provider = new TemplateGrouperNameProviderImpl();
+		provider.bindGrouperConfiguration((GrouperConfiguration)gconfig);
 		
-		assertEquals(null, idManager.getGrouperName(null));
-		assertEquals("some:base:stem:some:group:members", idManager.getGrouperName("some_group"));
-		assertEquals("some:base:stem:some:group:managers", idManager.getGrouperName("some_group-managers"));
-		assertEquals("some:base:stem:some:group:ta", idManager.getGrouperName("some_group-ta"));
+		assertEquals(null, provider.getGrouperName(null));
+		assertEquals("some:base:stem:some:group:members", provider.getGrouperName("some_group"));
+		assertEquals("some:base:stem:some:group:managers", provider.getGrouperName("some_group-managers"));
+		assertEquals("some:base:stem:some:group:ta", provider.getGrouperName("some_group-ta"));
 	}
 }

@@ -101,6 +101,7 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void onMessage(Message message){
 		log.debug("Receiving a message on {} : {}", GrouperJMSMessageProducer.QUEUE_NAME, message);
 		try {
