@@ -38,11 +38,6 @@ public interface GrouperConfiguration {
 	 * @return the username's password in Grouper
 	 */
 	public abstract String getPassword();
-
-	/**
-	 * @return the stem where nakamura can write to
-	 */
-	public abstract String getBaseStem();
 	
 	/**
 	 * http://localhost:9090/grouper-ws
@@ -56,13 +51,6 @@ public interface GrouperConfiguration {
 	 * @return a {@link String} representation of the url to the Grouper WS REST services.
 	 */
 	public abstract String getRestWsUrlString();
-
-	/**
-	 * When using Aggregate groups to manage institutional and nakamura ad-hoc data,
-	 * append this string to the nakmura ad-hoc group names
-	 * @return
-	 */
-	public abstract String getSuffix();
 
 	/**
 	 * How long to wait for an {@link HttpClient} request to fail.
@@ -82,4 +70,22 @@ public interface GrouperConfiguration {
 	 * @return the {@link Pattern}s to ignore.
 	 */
 	public abstract String[] getIgnoredGroups();
+
+	/**
+	 * A regex used to parse a SakaiOAE groupId
+	 * @return
+	 */
+	public abstract Pattern getGroupIdPattern();
+
+	/**
+	 * A template used to create a grouperName for a sakaiOAE groupId
+	 * @return
+	 */
+	public abstract String getGrouperNameTemplate();
+	
+	/**
+	 * Groups in nakamura that have some special meaning.
+	 * @return
+	 */
+	public abstract String[] getSpecialGroupSuffixes();
 }
