@@ -212,11 +212,8 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Override
 	public String getBaseStem(String groupType) {
 		String stem = this.baseStem;
-		if ("provisioned".equals(groupType)){
+		if ("group".equals(groupType)){
 			stem += ":groups";
-		}
-		else if ("adhoc".equals(groupType)){
-			stem += ":adhoc";
 		}
 		else if ("contact".equals(groupType)){
 			stem += ":contacts";

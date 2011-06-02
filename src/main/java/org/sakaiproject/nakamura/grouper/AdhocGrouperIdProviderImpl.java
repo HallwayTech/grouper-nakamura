@@ -31,6 +31,10 @@ import org.sakaiproject.nakamura.grouper.api.GrouperManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ *
+ */
 public class AdhocGrouperIdProviderImpl implements GrouperIdManager {
 
 	private static final Logger log = LoggerFactory.getLogger(AdhocGrouperIdProviderImpl.class);
@@ -48,12 +52,13 @@ public class AdhocGrouperIdProviderImpl implements GrouperIdManager {
 			return null;
 		}
 		
+		// This group has already been assigned a group in grouper.
 		String grouperName = getProperty(groupId, GrouperManager.GROUPER_NAME_PROP);
 		if (grouperName != null){
 			return null;
 		}
 		
-		StringBuilder gn = new StringBuilder(config.getBaseStem("adhoc"));
+		StringBuilder gn = new StringBuilder(config.getBaseStem("group"));
 		gn.append(":");
 		gn.append(groupId.charAt(0));
 		gn.append(":");
