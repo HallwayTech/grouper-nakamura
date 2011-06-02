@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.osgi.service.cm.ConfigurationException;
 
-public class BaseGrouperIdProviderImplTest extends TestCase {
+public class BaseGrouperNameProviderImplTest extends TestCase {
 	
 	private GrouperConfigurationImpl config;
 	

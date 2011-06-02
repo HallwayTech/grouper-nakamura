@@ -35,7 +35,7 @@ import org.sakaiproject.nakamura.api.lite.authorizable.AuthorizableManager;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AdhocGrouperIdProviderImplTest {
+public class AdhocGrouperNameProviderImplTest {
 
 	private AdhocGrouperNameProviderImpl provider;
 	

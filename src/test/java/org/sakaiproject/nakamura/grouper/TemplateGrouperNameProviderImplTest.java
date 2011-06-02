@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.osgi.service.cm.ConfigurationException;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
-public class TemplateGrouperIdProviderImplTest extends TestCase {
+public class TemplateGrouperNameProviderImplTest extends TestCase {
 
 	private TemplateGrouperNameProviderImpl provider;
 	
