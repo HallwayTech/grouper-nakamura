@@ -54,7 +54,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-Category>sakai-nakamura</Bundle-Category>
-						<Embed-Dependency>json-lib,ezmorph</Embed-Dependency>
+						<Embed-Dependency>json-lib,ezmorph,velocity</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
 						<Export-Package>org.sakaiproject.nakamura.grouper.*</Export-Package>
 						<Import-Package>
@@ -63,6 +63,10 @@
 						  javax.mail,
 						  junit.framework.*;resolution:=optional,
 						  org.apache.oro.text.regex;resolution:=optional,
+						  org.apache.tools.ant.*;resolution:=optional,
+						  com.werken.xpath;resolution:=optional,
+						  org.apache.log.*;resolution:=optional,
+						  org.jdom.*;resolution:=optional,
 						  *</Import-Package>
 					</instructions>
 				</configuration>
