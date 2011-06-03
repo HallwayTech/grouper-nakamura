@@ -79,8 +79,8 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Property(value = DEFAULT_GROUPERNAME_TEMPLATE)
 	protected static final String PROP_GROUPERNAME_TEMPLATE = "grouper.name.template"; 
 
-	private static final String[] DEFAULT_SPECIAL_GROUP_SUFFIXES = {"-managers", "-ta", "-lecturer"};
-	@Property(value = { "-managers", "-ta", "-lecturer" }, cardinality = 9999999)
+	private static final String[] DEFAULT_SPECIAL_GROUP_SUFFIXES = {"-manager", "-ta", "-lecturer", "-student"};
+	@Property(value = { "-manager", "-ta", "-lecturer", "-student" }, cardinality = 9999999)
 	protected static final String PROP_SPECIAL_GROUP_SUFFIXES = "grouper.specialGroupsSuffixes";
 
 	private static final String DEFAULT_BASESTEM = "edu:apps:sakaioae";
