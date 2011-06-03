@@ -81,36 +81,13 @@ public class GrouperManagerImpl implements GrouperManager {
 	@Reference
 	protected Repository repository;
 
-	private Session session;
-	// Fetched via the Repository Session.
-	private AuthorizableManager authorizableManager;
-
-	@Activate
-	public void activate(Map<?, ?> props) 
-		throws ConfigurationException, ClientPoolException, StorageClientException, AccessDeniedException{
-
-		session = repository.loginAdministrative(grouperConfiguration.getIgnoredUserId());
-		authorizableManager = session.getAuthorizableManager();
-		log.debug("Activated!");
-	}
-
-	@Deactivate
-	public void deactivate(){
-		if (session != null) {
-	        try {
-	        	session.logout();
-	        } catch (ClientPoolException e) {
-	        	log.error(e.getLocalizedMessage(), e);
-	        	throw new IllegalStateException(e);
-	        }
-		}
-	}
-
 	/** 
 	 * @{inheritDoc}
 	 */
 	public void createGroup(String groupId) throws GrouperException {
 		try {
+			Session session = repository.loginAdministrative(grouperConfiguration.getIgnoredUserId());
+			AuthorizableManager authorizableManager = session.getAuthorizableManager();
 			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
 
 			if (!authorizable.isGroup()){
@@ -127,8 +104,7 @@ public class GrouperManagerImpl implements GrouperManager {
 			}
 
 			String grouperName = grouperNameManager.getGrouperName(groupId);
-			String[] split = StringUtils.split(grouperName, ':');
-			String grouperExtension = StringUtils.join(split, ':', 0, split.length - 1);
+			String grouperExtension = BaseGrouperNameProvider.getGrouperExtension(groupId, grouperConfiguration);
 
 			log.debug("Creating a new Grouper Group = {} for sakai authorizableId = {}", 
 					grouperName, groupId);
@@ -147,13 +123,16 @@ public class GrouperManagerImpl implements GrouperManager {
 			groupSave.setWsGroupToSaves(new WsGroupToSave[]{ wsGroupToSave });
 
 			JSONObject response = post("/groups", groupSave);
-			WsGroupSaveResults results = (WsGroupSaveResults)JSONObject.toBean(response, WsGroupSaveResults.class);
+
+			WsGroupSaveResults results = (WsGroupSaveResults)JSONObject.toBean(
+					response.getJSONObject("WsGroupSaveResults"), WsGroupSaveResults.class);
 			if (!"T".equals(results.getResultMetadata().getSuccess())) {
 					throw new GrouperWSException(results);
 			}
 
 			authorizable.setProperty(GROUPER_NAME_PROP, grouperName);
 			authorizableManager.updateAuthorizable(authorizable);
+			session.logout();
 
 			log.debug("Success! Created a new Grouper Group = {} for sakai authorizableId = {}", 
 					grouperName, groupId);
@@ -163,9 +142,6 @@ public class GrouperManagerImpl implements GrouperManager {
 		}
 		catch (AccessDeniedException ade) {
 			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
-		}
-		catch (Exception e) {
-			throw new GrouperException(e.getMessage());
 		}
 	}
 
@@ -177,6 +153,8 @@ public class GrouperManagerImpl implements GrouperManager {
 		// If its still a group check for the GROUPER_NAME_PROP property
 		// If not use the groupIdHelper
 		try {
+			Session session = repository.loginAdministrative(grouperConfiguration.getIgnoredUserId());
+			AuthorizableManager authorizableManager = session.getAuthorizableManager();
 			String grouperName = null;
 			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
 			if (authorizable != null){
@@ -194,6 +172,7 @@ public class GrouperManagerImpl implements GrouperManager {
 			log.debug("Deleting Grouper Group = {} for sakai authorizableId = {}",
 					grouperName, groupId);
 			internalDeleteGroup(grouperName);
+			session.logout();
 		}
 		catch (StorageClientException sce){
 			throw new GrouperException("Unable to fetch authorizable for " + groupId);
@@ -227,14 +206,14 @@ public class GrouperManagerImpl implements GrouperManager {
 	 */
 	private void internalDeleteGroup(String groupIdentifier) throws GrouperException{
 		try {
-
 			// Fill out the group delete request beans
 			WsRestGroupDeleteRequest groupDelete = new WsRestGroupDeleteRequest();
 			groupDelete.setWsGroupLookups(new WsGroupLookup[]{ new WsGroupLookup(groupIdentifier, null) });
 
 			// Send the request and parse the result, throwing an exception on failure.
 			JSONObject response = post("/groups", groupDelete);
-			WsGroupDeleteResults results = (WsGroupDeleteResults)JSONObject.toBean(response, WsGroupDeleteResults.class);
+			WsGroupDeleteResults results = (WsGroupDeleteResults)JSONObject.toBean(
+					response.getJSONObject("WsGroupDeleteResults"), WsGroupDeleteResults.class);
 			if (!"T".equals(results.getResultMetadata().getSuccess())) {
 					throw new GrouperWSException(results);
 			}
@@ -249,6 +228,8 @@ public class GrouperManagerImpl implements GrouperManager {
 	 */
 	public void addMemberships(String groupId, Collection<String> membersToAdd) throws GrouperException{
 		try {
+			Session session = repository.loginAdministrative(grouperConfiguration.getIgnoredUserId());
+			AuthorizableManager authorizableManager = session.getAuthorizableManager();
 			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
 
 			if (!authorizable.isGroup()){
@@ -300,11 +281,12 @@ public class GrouperManagerImpl implements GrouperManager {
 				urlPath = urlPath.replace(":", "%3A");				
 				// Send the request and parse the result, throwing an exception on failure.
 				JSONObject response = post(urlPath, addMembers);
-				WsAddMemberResults results = (WsAddMemberResults)JSONObject.toBean(response, WsAddMemberResults.class);
+				WsAddMemberResults results = (WsAddMemberResults)JSONObject.toBean(
+						response.getJSONObject("WsAddMemberResults"), WsAddMemberResults.class);
 				if (!"T".equals(results.getResultMetadata().getSuccess())) {
 						throw new GrouperWSException(results);
 				}
-	
+				session.logout();
 				log.debug("Success! Added members: Group = {} members = {}", 
 						grouperName, membersString);
 			}
@@ -315,9 +297,6 @@ public class GrouperManagerImpl implements GrouperManager {
 		catch (AccessDeniedException ade) {
 			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
 		}
-		catch (Exception e) {
-			throw new GrouperException(e.getMessage());
-		}
 	}
 
 	/**
@@ -325,6 +304,8 @@ public class GrouperManagerImpl implements GrouperManager {
 	 */
 	public void removeMemberships(String groupId, Collection<String> membersToRemove) throws GrouperException {
 		try {
+			Session session = repository.loginAdministrative(grouperConfiguration.getIgnoredUserId());
+			AuthorizableManager authorizableManager = session.getAuthorizableManager();
 			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
 
 			if (!authorizable.isGroup()){
@@ -350,7 +331,8 @@ public class GrouperManagerImpl implements GrouperManager {
 			urlPath = urlPath.replace(":", "%3A");
 			JSONObject response = post(urlPath, deleteMembers);
 
-			WsDeleteMemberResults results = (WsDeleteMemberResults)JSONObject.toBean(response, WsDeleteMemberResults.class);
+			WsDeleteMemberResults results = (WsDeleteMemberResults)JSONObject.toBean(
+					response.getJSONObject("WsDeleteMemberResults"), WsDeleteMemberResults.class);
 			if (!"T".equals(results.getResultMetadata().getSuccess())) {
 					throw new GrouperWSException(results);
 			}
@@ -363,9 +345,6 @@ public class GrouperManagerImpl implements GrouperManager {
 		} 
 		catch (AccessDeniedException ade) {
 			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
-		}
-		catch (Exception e) {
-			throw new GrouperException(e.getMessage());
 		}
 	}
 	
