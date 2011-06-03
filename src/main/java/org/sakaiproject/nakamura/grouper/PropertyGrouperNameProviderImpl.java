@@ -17,7 +17,11 @@
  */
 package org.sakaiproject.nakamura.grouper;
 
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.sakaiproject.nakamura.api.lite.ClientPoolException;
 import org.sakaiproject.nakamura.api.lite.Repository;
 import org.sakaiproject.nakamura.api.lite.Session;
@@ -31,6 +35,11 @@ import org.sakaiproject.nakamura.grouper.api.GrouperNameProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Service
+@Component(metatype = true)
+@Properties(value = {
+		@Property(name = "service.ranking", value = "-1")
+})
 public class PropertyGrouperNameProviderImpl implements GrouperNameProvider {
 
 	private static final Logger log = LoggerFactory.getLogger(PropertyGrouperNameProviderImpl.class);

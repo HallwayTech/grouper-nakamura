@@ -17,18 +17,24 @@
  */
 package org.sakaiproject.nakamura.grouper;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
+import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.commons.osgi.OsgiUtil;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.sakaiproject.nakamura.grouper.api.GrouperNameManager;
 import org.sakaiproject.nakamura.grouper.api.GrouperNameProvider;
+import org.sakaiproject.nakamura.util.osgi.AbstractOrderedService;
 
-public class GrouperNameManagerImpl implements GrouperNameManager { 
-	
-	@Reference(cardinality = ReferenceCardinality.MANDATORY_MULTIPLE)
-	protected List<GrouperNameProvider> idProviders;
+@Service
+@Component
+public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNameProvider> implements GrouperNameManager { 
+
+	protected GrouperNameProvider[] orderedServices = new GrouperNameProvider[0];
 
 	@Reference
 	protected GrouperConfiguration config;
@@ -36,7 +42,7 @@ public class GrouperNameManagerImpl implements GrouperNameManager {
 	@Override
 	public String getGrouperName(String groupId) {
 		String gn = null;
-		for (GrouperNameProvider gnp: idProviders){
+		for (GrouperNameProvider gnp: orderedServices){
 			gn = gnp.getGrouperName(groupId);
 			if (gn != null){
 				return gn;
@@ -61,6 +67,31 @@ public class GrouperNameManagerImpl implements GrouperNameManager {
 			}
 		}
 		return extension;
+	}
+
+	protected void bindAuthorizablePostProcessor(GrouperNameProvider service, Map<String, Object> properties) {
+		addService(service, properties);
+	}
+
+	protected void unbindAuthorizablePostProcessor(GrouperNameProvider service, Map<String, Object> properties) {
+		removeService(service, properties);
+	}
+
+	protected void saveArray(List<GrouperNameProvider> serviceList) {
+		orderedServices = serviceList.toArray(new GrouperNameProvider[serviceList.size()]);
+	}
+
+	@Override
+	protected Comparator<? super GrouperNameProvider> getComparator(
+			final Map<GrouperNameProvider, Map<String, Object>> propertiesMap) {
+		return new Comparator<GrouperNameProvider>() {
+			public int compare(GrouperNameProvider o1, GrouperNameProvider o2) {
+				Map<String, Object> props1 = propertiesMap.get(o1);
+				Map<String, Object> props2 = propertiesMap.get(o2);
+
+				return OsgiUtil.getComparableForServiceRanking(props1).compareTo(props2);
+			}
+		};
 	}
 
 }
