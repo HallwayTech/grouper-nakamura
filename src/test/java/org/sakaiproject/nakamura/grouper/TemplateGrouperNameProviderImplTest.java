@@ -44,7 +44,7 @@ public class TemplateGrouperNameProviderImplTest extends TestCase {
 		
 		assertEquals(null, provider.getGrouperName(null));
 		assertEquals("some:base:stem:some:group:members", provider.getGrouperName("some_group"));
-		assertEquals("some:base:stem:some:group:managers", provider.getGrouperName("some_group-managers"));
+		assertEquals("some:base:stem:some:group:manager", provider.getGrouperName("some_group-manager"));
 		assertEquals("some:base:stem:some:group:ta", provider.getGrouperName("some_group-ta"));
 	}
 }
