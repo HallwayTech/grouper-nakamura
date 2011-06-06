@@ -40,7 +40,7 @@ public abstract class BaseGrouperNameProvider {
 			return null;
 		}
 		String extension = "member";
-		for (String suffix: config.getSpecialGroupSuffixes()){
+		for (String suffix: config.getPseudoGroupSuffixes()){
 			if (groupId.endsWith(suffix)){
 				extension = suffix.substring(1);
 			}
@@ -53,7 +53,7 @@ public abstract class BaseGrouperNameProvider {
 			return null;
 		}
 		String stem = groupId;
-		for (String suffix: config.getSpecialGroupSuffixes()){
+		for (String suffix: config.getPseudoGroupSuffixes()){
 			if (groupId.endsWith(suffix)){
 				stem = groupId.substring(0, groupId.lastIndexOf(suffix));
 			}

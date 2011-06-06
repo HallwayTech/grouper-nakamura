@@ -105,7 +105,7 @@ public class TemplateGrouperNameProviderImpl implements GrouperNameManager {
 		// 
 		String grouperName = sw.toString();
 		String[] split = StringUtils.split(grouperName, ':');
-		for (String suffix: config.getSpecialGroupSuffixes()){
+		for (String suffix: config.getPseudoGroupSuffixes()){
 			if (split[split.length - 2].endsWith(suffix)){
 				split[split.length - 2] = split[split.length - 2].substring(0, split[split.length - 2].indexOf(suffix)); 
 			}

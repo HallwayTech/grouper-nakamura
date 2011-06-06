@@ -88,7 +88,7 @@ public interface GrouperConfiguration {
 	 * These are usually the -managers, -ta, and -lecturers.
 	 * @return
 	 */
-	public abstract String[] getSpecialGroupSuffixes();
+	public abstract String[] getPseudoGroupSuffixes();
 
 	/**
 	 * @param groupType

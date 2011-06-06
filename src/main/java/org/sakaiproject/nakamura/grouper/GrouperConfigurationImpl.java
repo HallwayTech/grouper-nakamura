@@ -83,10 +83,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	protected static final String PROP_GROUPERNAME_TEMPLATE = "grouper.name.template"; 
 
 	// TODO: A better way to generate the default list.
-	private static final String[] DEFAULT_SPECIAL_GROUP_SUFFIXES = 
+	private static final String[] DEFAULT_PSEUDO_GROUP_SUFFIXES = 
 		{"-manager", "-ta", "-lecturer", "-student", "-member"};
 	@Property(value = {"-manager", "-ta", "-lecturer", "-student", "-member"}, cardinality = 1)
-	protected static final String PROP_SPECIAL_GROUP_SUFFIXES = "grouper.specialGroupsSuffixes";
+	protected static final String PROP_PSEUDO_GROUP_SUFFIXES = "grouper.specialGroupsSuffixes";
 
 	private static final String DEFAULT_BASESTEM = "edu:apps:sakaioae";
 	@Property(value = DEFAULT_BASESTEM)
@@ -115,7 +115,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	private String grouperNameTemplate;
 
 	// Suffixes that indicate these are sakai internal groups
-	private String[] specialGroupSuffixes;
+	private String[] pseudoGroupSuffixes;
 
 
 	// -------------------------- Configuration Admin --------------------------
@@ -157,15 +157,15 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 			ignoredGroupPatterns = (String[])ig;
 		}
 
-		Object sgs = OsgiUtil.toStringArray(props.get(PROP_SPECIAL_GROUP_SUFFIXES), DEFAULT_SPECIAL_GROUP_SUFFIXES);
-		if (sgs == null){
-			specialGroupSuffixes = DEFAULT_SPECIAL_GROUP_SUFFIXES;
+		Object pgs = OsgiUtil.toStringArray(props.get(PROP_PSEUDO_GROUP_SUFFIXES), DEFAULT_PSEUDO_GROUP_SUFFIXES);
+		if (pgs == null){
+			pseudoGroupSuffixes = DEFAULT_PSEUDO_GROUP_SUFFIXES;
 		}
-		else if (sgs instanceof String){
-			specialGroupSuffixes = new String[] { (String)sgs };
+		else if (pgs instanceof String){
+			pseudoGroupSuffixes = new String[] { (String)pgs };
 		}
 		else {
-			specialGroupSuffixes = (String[])sgs;
+			pseudoGroupSuffixes = (String[])pgs;
 		}
 
 		groupIdPattern = Pattern.compile(groupIdPatternString);
@@ -212,8 +212,8 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		return grouperNameTemplate;
 	}
 
-	public String[] getSpecialGroupSuffixes(){
-		return specialGroupSuffixes;
+	public String[] getPseudoGroupSuffixes(){
+		return pseudoGroupSuffixes;
 	}
 
 	@Override

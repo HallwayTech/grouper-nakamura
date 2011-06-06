@@ -60,7 +60,7 @@ public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNamePr
 			return null;
 		}
 		String extension = "members";
-		for (String suffix: config.getSpecialGroupSuffixes() ) {
+		for (String suffix: config.getPseudoGroupSuffixes() ) {
 			int indexOfSuffix= groupId.indexOf(suffix);
 			if (indexOfSuffix != -1){
 				extension = groupId.substring(indexOfSuffix + 1);
