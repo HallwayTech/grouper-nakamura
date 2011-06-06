@@ -25,10 +25,10 @@ public abstract class BaseGrouperNameProvider {
 	 * Return the extension for this group in grouper.
 	 * 
 	 * examples:
-	 * group0 => members
-	 * group0-managers => managers
+	 * group0 => member
+	 * group0-managers => manager
 	 * 
-	 * course0 => members
+	 * course0 => member
 	 * course0-ta => ta
 	 * 
 	 * @param groupId the id of this group in sakaiOAE.
@@ -39,7 +39,7 @@ public abstract class BaseGrouperNameProvider {
 		if (groupId == null){
 			return null;
 		}
-		String extension = "members";
+		String extension = "member";
 		for (String suffix: config.getSpecialGroupSuffixes()){
 			if (groupId.endsWith(suffix)){
 				extension = suffix.substring(1);

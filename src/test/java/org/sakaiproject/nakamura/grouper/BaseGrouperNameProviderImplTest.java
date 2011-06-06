@@ -25,10 +25,14 @@ public class BaseGrouperNameProviderImplTest extends TestCase {
 	@Test
 	public void testGetGrouperExtension(){
 		assertNull(BaseGrouperNameProvider.getGrouperExtension(null, config));
-		assertEquals("members", BaseGrouperNameProvider.getGrouperExtension("group1", config));
-		assertEquals("members", BaseGrouperNameProvider.getGrouperExtension("some-thing", config));
+		assertEquals("member", BaseGrouperNameProvider.getGrouperExtension("group1", config));
+		assertEquals("member", BaseGrouperNameProvider.getGrouperExtension("some-thing", config));
+		assertEquals("member", BaseGrouperNameProvider.getGrouperExtension("some-thing-member", config));
+		assertEquals("member", BaseGrouperNameProvider.getGrouperExtension("some-thing_member", config));
 		
 		assertEquals("manager", BaseGrouperNameProvider.getGrouperExtension("group1-manager", config));
+		assertEquals("manager", BaseGrouperNameProvider.getGrouperExtension("group1-meh-manager", config));
+		assertEquals("manager", BaseGrouperNameProvider.getGrouperExtension("group1_meh-manager", config));
 		assertEquals("ta", BaseGrouperNameProvider.getGrouperExtension("group1-ta", config));		
 	}
 	
@@ -36,8 +40,13 @@ public class BaseGrouperNameProviderImplTest extends TestCase {
 	public void testGetGrouperLastStem(){
 		assertNull(BaseGrouperNameProvider.getGrouperLastStem(null, config));
 		assertEquals("group1", BaseGrouperNameProvider.getGrouperLastStem("group1", config));
-		assertEquals("group1", BaseGrouperNameProvider.getGrouperLastStem("group1-manager", config));
+		assertEquals("group1", BaseGrouperNameProvider.getGrouperLastStem("group1-member", config));
 		assertEquals("group1", BaseGrouperNameProvider.getGrouperLastStem("group1-ta", config));
+		assertEquals("group1", BaseGrouperNameProvider.getGrouperLastStem("group1-manager", config));
+
+		assertEquals("group1_member", BaseGrouperNameProvider.getGrouperLastStem("group1_member", config));
+		assertEquals("group1_manager", BaseGrouperNameProvider.getGrouperLastStem("group1_manager", config));
+		assertEquals("group1_ta", BaseGrouperNameProvider.getGrouperLastStem("group1_ta", config));
 
 		assertEquals("some-thing", BaseGrouperNameProvider.getGrouperLastStem("some-thing", config));
 		assertEquals("some-thing", BaseGrouperNameProvider.getGrouperLastStem("some-thing-ta", config));

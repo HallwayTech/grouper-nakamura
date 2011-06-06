@@ -27,8 +27,6 @@ import org.osgi.service.cm.ConfigurationException;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
 public class TemplateGrouperNameProviderImplTest extends TestCase {
-
-	private TemplateGrouperNameProviderImpl provider;
 	
 	@Test
 	public void testGetGrouperName() throws ConfigurationException{
@@ -39,11 +37,11 @@ public class TemplateGrouperNameProviderImplTest extends TestCase {
 		GrouperConfigurationImpl gconfig = new GrouperConfigurationImpl();
 		gconfig.updated(m);
 		
-		provider = new TemplateGrouperNameProviderImpl();
+		TemplateGrouperNameProviderImpl provider = new TemplateGrouperNameProviderImpl();
 		provider.bindGrouperConfiguration((GrouperConfiguration)gconfig);
 		
 		assertEquals(null, provider.getGrouperName(null));
-		assertEquals("some:base:stem:some:group:members", provider.getGrouperName("some_group"));
+		assertEquals("some:base:stem:some:group:member", provider.getGrouperName("some_group"));
 		assertEquals("some:base:stem:some:group:manager", provider.getGrouperName("some_group-manager"));
 		assertEquals("some:base:stem:some:group:ta", provider.getGrouperName("some_group-ta"));
 	}
