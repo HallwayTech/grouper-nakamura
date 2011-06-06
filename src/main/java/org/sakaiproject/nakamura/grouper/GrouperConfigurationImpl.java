@@ -36,6 +36,9 @@ import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
 @Service
 @Component(metatype = true)
+/**
+ * @inheritDoc
+ */
 public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	private static final Logger log = LoggerFactory
@@ -68,7 +71,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	protected static final String PROP_IGNORED_USER = "grouper.ignoredUser";
 
 	private static final String[] DEFAULT_IGNORED_GROUP_PATTERN = {"administrators"};
-	@Property(value = { "administrators" }, cardinality=1)
+	@Property(value = { "administrators" }, cardinality = 1)
 	protected static final String PROP_IGNORED_GROUP_PATTERN = "grouper.ignoredGroupsPatterns"; 
 
 	private static final String DEFAULT_GROUPID_PATTERN = "";
@@ -79,8 +82,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Property(value = DEFAULT_GROUPERNAME_TEMPLATE)
 	protected static final String PROP_GROUPERNAME_TEMPLATE = "grouper.name.template"; 
 
-	private static final String[] DEFAULT_SPECIAL_GROUP_SUFFIXES = {"-manager", "-ta", "-lecturer", "-student"};
-	@Property(value = { "-manager", "-ta", "-lecturer", "-student" }, cardinality = 9999999)
+	// TODO: A better way to generate the default list.
+	private static final String[] DEFAULT_SPECIAL_GROUP_SUFFIXES = 
+		{"-manager", "-ta", "-lecturer", "-student", "-member"};
+	@Property(value = {"-manager", "-ta", "-lecturer", "-student", "-member"}, cardinality = 1)
 	protected static final String PROP_SPECIAL_GROUP_SUFFIXES = "grouper.specialGroupsSuffixes";
 
 	private static final String DEFAULT_BASESTEM = "edu:apps:sakaioae";
@@ -115,8 +120,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	// -------------------------- Configuration Admin --------------------------
 	/**
+	 * Copy in the configuration from the config admin service.
+	 *
 	 * Called by the Configuration Admin service when a new configuration is
-	 * detected.
+	 * detected in the web console or a config file.
 	 * 
 	 * @see org.osgi.service.cm.ManagedService#updated
 	 */
