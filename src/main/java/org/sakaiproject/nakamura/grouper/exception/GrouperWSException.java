@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.nakamura.grouper;
+package org.sakaiproject.nakamura.grouper.exception;
 
 import edu.internet2.middleware.grouperClient.ws.beans.WsResponseBean;
 

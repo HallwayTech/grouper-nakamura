@@ -44,6 +44,8 @@ import org.sakaiproject.nakamura.api.lite.authorizable.Group;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.sakaiproject.nakamura.grouper.api.GrouperManager;
 import org.sakaiproject.nakamura.grouper.api.GrouperNameManager;
+import org.sakaiproject.nakamura.grouper.exception.GrouperException;
+import org.sakaiproject.nakamura.grouper.exception.GrouperWSException;
 import org.sakaiproject.nakamura.grouper.util.GrouperHttpUtil;
 import org.sakaiproject.nakamura.grouper.util.GrouperJsonUtil;
 import org.slf4j.Logger;

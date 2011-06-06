@@ -22,8 +22,7 @@ import java.util.Map;
 
 import org.osgi.service.event.Event;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
-
-import org.sakaiproject.nakamura.grouper.GrouperException;
+import org.sakaiproject.nakamura.grouper.exception.GrouperException;
 
 /**
  * Manage the interaction with a Grouper WS server.
