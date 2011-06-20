@@ -90,6 +90,12 @@ public class BatchJMSMessageProducer {
 		}
 	}
 
+	/**
+	 * Query for all groups in the system and post events to the batch queue.
+	 * 
+	 * @throws SolrServerException
+	 * @throws JMSException
+	 */
 	private void doGroups() throws SolrServerException, JMSException{
 		int start = 0;
 		int items = 25;
@@ -99,7 +105,6 @@ public class BatchJMSMessageProducer {
 		query.setQuery(allGroupsQuery);
 		query.setStart(start);
 		query.setRows(items);
-		// query.addSortField("sakai:group-id", SolrQuery.ORDER.asc );
 
 		QueryResponse response = server.query(query);
 	    long totalResults = response.getResults().getNumFound();
@@ -115,8 +120,8 @@ public class BatchJMSMessageProducer {
 	        }
  	       	sendGroupMessages(groupIds);
 
-	        start += items;
-	        log.debug("Found {} groups.", items);
+	        start += resultDocs.size();
+	        log.debug("Found {} groups.", resultDocs.size());
 	    }
 	}
 
