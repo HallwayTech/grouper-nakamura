@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @Service
 @Component
 @Properties(value = { 
-		@Property(name = "service.ranking", value = "0") 
+		@Property(name = "service.ranking", value = "10") 
 })
 public class AdhocGrouperNameProviderImpl implements GrouperNameManager {
 
@@ -52,9 +52,6 @@ public class AdhocGrouperNameProviderImpl implements GrouperNameManager {
 
 	@Reference
 	protected GrouperConfiguration config;
-
-	@Reference
-	protected Repository repository;
 
 	@Override
 	public String getGrouperName(String groupId) {
@@ -64,11 +61,6 @@ public class AdhocGrouperNameProviderImpl implements GrouperNameManager {
 		}
 		
 		// This group has already been assigned a group in grouper.
-		String grouperName = getProperty(groupId, GrouperManager.GROUPER_NAME_PROP);
-		if (grouperName != null){
-			return null;
-		}
-		
 		StringBuilder gn = new StringBuilder(config.getBaseStem("group"));
 		gn.append(":");
 		gn.append(groupId.charAt(0));
@@ -78,49 +70,7 @@ public class AdhocGrouperNameProviderImpl implements GrouperNameManager {
 		gn.append(BaseGrouperNameProvider.getGrouperLastStem(groupId, config));
 		gn.append(":");
 		gn.append(BaseGrouperNameProvider.getGrouperExtension(groupId, config));
-		grouperName = gn.toString();
-		return grouperName;
-	}
-	
-	private String getProperty(String groupId, String propertyName){
-		String propValue = null;
-		Authorizable authorizable = null;
-		AuthorizableManager authorizableManager = null;
-		Session session = null;
-		try {
-			session = repository.loginAdministrative();
-			authorizableManager = session.getAuthorizableManager();
-			authorizable = authorizableManager.findAuthorizable(groupId);
-			
-			if (authorizable != null){
-				propValue = (String)authorizable.getProperty(propertyName);
-			}
-			session.logout();
-		} 
-		catch (AccessDeniedException e) {
-			if (log.isErrorEnabled()){
-				log.error("Error finding authorizable for {}. Access denied", groupId, e.getMessage());
-			}
-		} 
-		catch (StorageClientException e) {
-			if (log.isErrorEnabled()){
-				log.error("Error finding authorizable for {}. StorageClientException", groupId, e.getMessage());
-			}
-			
-		}
-		finally {
-			try {
-				if (session != null){
-					session.logout();
-				}
-			} catch (ClientPoolException e) {
-				log.error("Error closing repository session.", e.getMessage());
-			}
-			finally {
-				session = null;
-			}
-		}
-		return propValue;
+		return gn.toString();
 	}
 
 	public void bindGrouperConfiguration(GrouperConfiguration gconfig) {
