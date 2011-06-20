@@ -39,6 +39,11 @@ public abstract class BaseGrouperNameProvider {
 		if (groupId == null){
 			return null;
 		}
+
+		if (groupId.startsWith("g-contacts")){
+			return "contacts";
+		}
+
 		String extension = "member";
 		for (String suffix: config.getPseudoGroupSuffixes()){
 			if (groupId.endsWith(suffix)){
@@ -52,6 +57,12 @@ public abstract class BaseGrouperNameProvider {
 		if (groupId == null){
 			return null;
 		}
+
+		int contactGroupIndex = groupId.indexOf("g-contacts"); 
+		if (contactGroupIndex != -1){
+			return groupId.substring(contactGroupIndex + 11);
+		}
+
 		String stem = groupId;
 		for (String suffix: config.getPseudoGroupSuffixes()){
 			if (groupId.endsWith(suffix)){

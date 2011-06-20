@@ -222,8 +222,8 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		if ("group".equals(groupType)){
 			stem += ":groups";
 		}
-		else if ("contact".equals(groupType)){
-			stem += ":contacts";
+		else if ("contacts".equals(groupType)){
+			stem += ":users";
 		}
 		return stem;
 	}

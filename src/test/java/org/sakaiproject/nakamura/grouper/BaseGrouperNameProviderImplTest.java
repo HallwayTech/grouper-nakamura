@@ -29,11 +29,13 @@ public class BaseGrouperNameProviderImplTest extends TestCase {
 		assertEquals("member", BaseGrouperNameProvider.getGrouperExtension("some-thing", config));
 		assertEquals("member", BaseGrouperNameProvider.getGrouperExtension("some-thing-member", config));
 		assertEquals("member", BaseGrouperNameProvider.getGrouperExtension("some-thing_member", config));
-		
+
 		assertEquals("manager", BaseGrouperNameProvider.getGrouperExtension("group1-manager", config));
 		assertEquals("manager", BaseGrouperNameProvider.getGrouperExtension("group1-meh-manager", config));
 		assertEquals("manager", BaseGrouperNameProvider.getGrouperExtension("group1_meh-manager", config));
 		assertEquals("ta", BaseGrouperNameProvider.getGrouperExtension("group1-ta", config));		
+
+		assertEquals("contacts", BaseGrouperNameProvider.getGrouperExtension("g-contacts-user1", config));
 	}
 	
 	@Test
@@ -52,5 +54,7 @@ public class BaseGrouperNameProviderImplTest extends TestCase {
 		assertEquals("some-thing", BaseGrouperNameProvider.getGrouperLastStem("some-thing-ta", config));
 		assertEquals("some-thing", BaseGrouperNameProvider.getGrouperLastStem("some-thing-manager", config));
 		assertEquals("some-thing-98y8og", BaseGrouperNameProvider.getGrouperLastStem("some-thing-98y8og", config));
+
+		assertEquals("user1", BaseGrouperNameProvider.getGrouperLastStem("g-contacts-user1", config));
 	}
 }
