@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.nakamura.grouper;
+package org.sakaiproject.nakamura.grouper.event;
 
 import java.util.List;
 import java.util.Map;
@@ -50,9 +50,9 @@ import org.slf4j.LoggerFactory;
  * courses, and contacts are sent to Grouper.
  */
 @Component(immediate = true, metatype=true)
-public class GrouperBatchMessageProducer {
+public class BatchJMSMessageProducer {
 
-	private static Logger log = LoggerFactory.getLogger(GrouperBatchMessageProducer.class);
+	private static Logger log = LoggerFactory.getLogger(BatchJMSMessageProducer.class);
 
 	protected static final String QUEUE_NAME = "org/sakaiproject/nakamura/grouper/batch";
 
@@ -90,7 +90,7 @@ public class GrouperBatchMessageProducer {
 		
 		SolrServer server = solrServerService.getServer();
 		SolrQuery query = new SolrQuery();
-		query.setQuery("*");
+		query.setQuery("(resourceType:authorizable AND fq=type:g)");
 		query.setStart(start);
 		// query.addSortField("sakai:group-id", SolrQuery.ORDER.asc );
 
