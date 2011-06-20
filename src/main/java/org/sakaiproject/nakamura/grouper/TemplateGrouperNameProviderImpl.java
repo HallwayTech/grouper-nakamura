@@ -25,8 +25,12 @@ import java.util.regex.Matcher;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Activate;
+import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Modified;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -49,6 +53,11 @@ import org.slf4j.LoggerFactory;
  * 2. An output template to create a string for the grouper name. (grouper.name.template)
  * 
  */
+@Component
+@Service
+@Properties(value = {
+		@Property(name = "service.ranking", value = "20")
+})
 public class TemplateGrouperNameProviderImpl implements GrouperNameManager {
 	
 	private static final Logger log = LoggerFactory.getLogger(TemplateGrouperNameProviderImpl.class);
