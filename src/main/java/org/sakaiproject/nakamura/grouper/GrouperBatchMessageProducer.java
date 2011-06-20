@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.nakamura.grouper.api;
+package org.sakaiproject.nakamura.grouper;
 
 import java.util.List;
 import java.util.Map;
@@ -40,6 +40,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.sakaiproject.nakamura.api.activemq.ConnectionFactoryService;
 import org.sakaiproject.nakamura.api.lite.authorizable.Group;
 import org.sakaiproject.nakamura.api.solr.SolrServerService;
+import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.sakaiproject.nakamura.util.osgi.EventUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +66,7 @@ public class GrouperBatchMessageProducer {
 	protected SolrServerService solrServerService;
 
 	@Property(boolValue=false)
-	protected static final String TRANSACTED_NAME = "grouper.batch.transacted";
+	protected static final String PROP_TRANSACTED = "grouper.batch.transacted";
 	protected boolean transacted;
 	
 	@Property(boolValue=false)
@@ -74,8 +75,8 @@ public class GrouperBatchMessageProducer {
 	
 	@Modified
 	public void updated(Map<String,Object> props) throws SolrServerException, JMSException{
-		transacted = OsgiUtil.toBoolean(TRANSACTED_NAME, false);
-		doBatch = OsgiUtil.toBoolean(PROP_DO_BATCH, false);
+		transacted = OsgiUtil.toBoolean(props.get(PROP_TRANSACTED), false);
+		doBatch = OsgiUtil.toBoolean(props.get(PROP_DO_BATCH), false);
 
 		if (doBatch){
 			doGroups();
@@ -91,7 +92,7 @@ public class GrouperBatchMessageProducer {
 		SolrQuery query = new SolrQuery();
 		query.setQuery("*");
 		query.setStart(start);
-		query.addSortField("sakai:group-id", SolrQuery.ORDER.asc );
+		// query.addSortField("sakai:group-id", SolrQuery.ORDER.asc );
 
 		QueryResponse response = server.query(query);
 	    long totalResults = response.getResults().getNumFound();
