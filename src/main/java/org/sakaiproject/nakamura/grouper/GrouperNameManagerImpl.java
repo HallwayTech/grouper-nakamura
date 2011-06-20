@@ -30,6 +30,15 @@ import org.sakaiproject.nakamura.grouper.api.GrouperNameManager;
 import org.sakaiproject.nakamura.grouper.api.GrouperNameProvider;
 import org.sakaiproject.nakamura.util.osgi.AbstractOrderedService;
 
+/**
+ * Generate a namne for a group in grouper based on the groupId of a Group in nakamura.
+ *
+ * Holds an ordered {@link List} of {@link GrouperNameProvider}s. The first one to return
+ * an answer for the group will be used.
+ *
+ * @author froese
+ *
+ */
 @Service
 @Component
 public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNameProvider> implements GrouperNameManager { 
@@ -56,17 +65,7 @@ public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNamePr
 	 * The extension is the last component in a Grouper name
 	 */
 	public String getGrouperExtension(String groupId) {
-		if (groupId == null){
-			return null;
-		}
-		String extension = "members";
-		for (String suffix: config.getPseudoGroupSuffixes() ) {
-			int indexOfSuffix= groupId.indexOf(suffix);
-			if (indexOfSuffix != -1){
-				extension = groupId.substring(indexOfSuffix + 1);
-			}
-		}
-		return extension;
+		return BaseGrouperNameProvider.getGrouperExtension(groupId, config);
 	}
 
 	protected void bindAuthorizablePostProcessor(GrouperNameProvider service, Map<String, Object> properties) {
