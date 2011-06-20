@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.nakamura.grouper.event;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,16 +38,15 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
 import org.sakaiproject.nakamura.api.activemq.ConnectionFactoryService;
-import org.sakaiproject.nakamura.api.lite.authorizable.Group;
 import org.sakaiproject.nakamura.api.solr.SolrServerService;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
-import org.sakaiproject.nakamura.util.osgi.EventUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Post {@link Message}s to a {@link Queue} that cause the current groups, 
+ * Post {@link Message}s to a {@link Queue} that cause the current groups,
  * courses, and contacts are sent to Grouper.
  */
 @Component(immediate = true, metatype=true)
@@ -61,22 +61,28 @@ public class BatchJMSMessageProducer {
 
 	@Reference
 	protected GrouperConfiguration grouperConfiguration;
-	
+
 	@Reference
 	protected SolrServerService solrServerService;
 
 	@Property(boolValue=false)
 	protected static final String PROP_TRANSACTED = "grouper.batch.transacted";
 	protected boolean transacted;
-	
+
 	@Property(boolValue=false)
 	protected static final String PROP_DO_BATCH = "grouper.batch.dobatch";
 	protected boolean doBatch;
-	
+
+	protected static final String DEFAULT_ALL_GROUPS_QUERY = "(resourceType:authorizable AND type:g)";
+	@Property(value=DEFAULT_ALL_GROUPS_QUERY)
+	protected static final String PROP_ALL_GROUPS_QUERY = "grouper.allgroups.query";
+	protected String allGroupsQuery;
+
 	@Modified
 	public void updated(Map<String,Object> props) throws SolrServerException, JMSException{
 		transacted = OsgiUtil.toBoolean(props.get(PROP_TRANSACTED), false);
 		doBatch = OsgiUtil.toBoolean(props.get(PROP_DO_BATCH), false);
+		allGroupsQuery = OsgiUtil.toString(props.get(PROP_ALL_GROUPS_QUERY), DEFAULT_ALL_GROUPS_QUERY);
 
 		if (doBatch){
 			doGroups();
@@ -87,28 +93,35 @@ public class BatchJMSMessageProducer {
 	private void doGroups() throws SolrServerException, JMSException{
 		int start = 0;
 		int items = 25;
-		
+
 		SolrServer server = solrServerService.getServer();
 		SolrQuery query = new SolrQuery();
-		query.setQuery("(resourceType:authorizable AND fq=type:g)");
+		query.setQuery(allGroupsQuery);
 		query.setStart(start);
+		query.setRows(items);
 		// query.addSortField("sakai:group-id", SolrQuery.ORDER.asc );
 
 		QueryResponse response = server.query(query);
 	    long totalResults = response.getResults().getNumFound();
 
+	    List<String> groupIds = new ArrayList<String>();
 	    while (start < totalResults){
 	        query.setStart(start);
-	        query.setRows(items);
-	        List<Group> groups = response.getBeans(Group.class);
-	        sendGroupMessages(groups);
+
+	        groupIds.clear();
+	        List<SolrDocument> resultDocs = response.getResults();
+	        for (SolrDocument doc : resultDocs){
+	        	groupIds.add((String)doc.get("id"));
+	        }
+ 	       	sendGroupMessages(groupIds);
+
 	        start += items;
 	        log.debug("Found {} groups.", items);
 	    }
 	}
 
 	private void doContacts(){
-		// TODO 
+		// TODO
 	}
 
 	/**
@@ -116,22 +129,20 @@ public class BatchJMSMessageProducer {
 	 * @param groups
 	 * @throws JMSException
 	 */
-	private void sendGroupMessages(List<Group> groups) throws JMSException {
+	private void sendGroupMessages(List<String> groupIds) throws JMSException {
 		Connection senderConnection = connFactoryService.getDefaultPooledConnectionFactory().createConnection();
 		Session senderSession = senderConnection.createSession(transacted, Session.CLIENT_ACKNOWLEDGE);
 		Queue squeue = senderSession.createQueue(QUEUE_NAME);
 		MessageProducer producer = senderSession.createProducer(squeue);
 
-		for (Group group : groups){
+		for (String groupId : groupIds){
 			Message msg = senderSession.createMessage();
 			msg.setJMSDeliveryMode(DeliveryMode.PERSISTENT);
 			msg.setJMSType(QUEUE_NAME);
-			for (String name: group.getPropertiesForUpdate().keySet()){
-				msg.setObjectProperty(name, EventUtils.cleanProperty(group.getProperty(name)));
-			}
+			msg.setStringProperty("groupId", groupId);
 			msg.setBooleanProperty("grouper:batch", true);
 			producer.send(msg);
-			log.info("Sent: {} {} : messageId {}", new Object[] { QUEUE_NAME, group.getId(), msg.getJMSMessageID()});
+			log.info("Sent: {} {} : messageId {}", new Object[] { QUEUE_NAME, groupId, msg.getJMSMessageID()});
 			log.debug("{} : {}", msg.getJMSMessageID(), msg);
 		}
 
