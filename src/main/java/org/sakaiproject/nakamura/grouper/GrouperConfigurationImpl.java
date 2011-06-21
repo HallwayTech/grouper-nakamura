@@ -139,6 +139,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		password  = OsgiUtil.toString(props.get(PROP_PASSWORD), DEFAULT_PASSWORD);
 		baseStem = OsgiUtil.toString(props.get(PROP_BASESTEM),DEFAULT_BASESTEM);
 
+		if (baseStem.endsWith(":")){
+			baseStem = baseStem.substring(0, baseStem.length() - 1);
+		}
+
 		wsVersion = OsgiUtil.toString(props.get(PROP_WS_VERSION), DEFAULT_WS_VERSION);
 		httpTimeout = OsgiUtil.toInteger(props.get(PROP_TIMEOUT), Integer.parseInt(DEFAULT_TIMEOUT));
 
