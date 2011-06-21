@@ -136,10 +136,10 @@ public class GrouperManagerImpl implements GrouperManager {
 					grouperName, groupId);
 		}
 		catch (StorageClientException sce) {
-			throw new GrouperException("Unable to fetch authorizable for " + groupId);
+			throw new GrouperException("Unable to fetch authorizable for " + groupId, sce);
 		}
 		catch (AccessDeniedException ade) {
-			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
+			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.", ade);
 		}
 	}
 

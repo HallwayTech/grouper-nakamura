@@ -17,10 +17,15 @@
  */
 package org.sakaiproject.nakamura.grouper.exception;
 
+
 public class GrouperException extends Exception {
 
 	public GrouperException(String message) {
 		super(message);
+	}
+
+	public GrouperException(String msg, Exception e) {
+		super(msg, e);
 	}
 
 	private static final long serialVersionUID = 8890097157050389546L;
