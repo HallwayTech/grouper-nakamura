@@ -61,7 +61,10 @@ public class ContactsGrouperNameProviderImpl implements GrouperNameManager {
 		gn.append(BaseGrouperNameProvider.getGrouperLastStem(groupId, config));
 		gn.append(":");
 		gn.append(BaseGrouperNameProvider.getGrouperExtension(groupId, config));
-		return gn.toString();
+		String grouperName = gn.toString(); 
+
+		log.info("Converted sakai groupId: {} to grouper name: {}", groupId, grouperName);
+		return grouperName;
 	}
 	
 
