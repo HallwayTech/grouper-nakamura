@@ -108,14 +108,17 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 
 			String topic = message.getJMSType();
 			String groupId = (String) message.getStringProperty("path");
+
 			String operation = "UNKNOWN";
 
+			// A group was DELETED
 			if ("org/sakaiproject/nakamura/lite/authorizables/DELETE".equals(topic)){
 				Map<String, Object> attributes = (Map<String,Object>)message.getObjectProperty(StoreListener.BEFORE_EVENT_PROPERTY);
 				grouperManager.deleteGroup(groupId, attributes);
 				operation = "DELETED";
 			}
 
+			// A new group was ADDED or an existing group was UPDATED
 			if ("org/sakaiproject/nakamura/lite/authorizables/ADDED".equals(topic)
 					|| "org/sakaiproject/nakamura/lite/authorizables/UPDATED".equals(topic) ){
 
@@ -142,13 +145,19 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 					operation = "CREATE";
 				}
 			}
+
+			// The message was processed successfully. No exceptions were thrown.
+			// We acknowledge the message and its removed from the queue
 			message.acknowledge();
+
+			// We got a message that we didn't know what to do with.
 			if (operation.equals("UNKNOWN")){
 				log.error("I don't know what to do with this topic: {}. Turn on debug logs to see the message.", topic);
 				log.debug(message.toString());
 			} else {
 				log.info("Successfully processed and acknowledged. {}, {}", operation, groupId);
 			}
+
 		}
 		catch (JMSException jmse){
 			log.error("JMSException while processing message.", jmse);
