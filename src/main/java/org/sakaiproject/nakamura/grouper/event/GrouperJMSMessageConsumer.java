@@ -34,11 +34,13 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Reference;
 import org.sakaiproject.nakamura.api.activemq.ConnectionFactoryService;
+import org.sakaiproject.nakamura.api.lite.Repository;
 import org.sakaiproject.nakamura.api.lite.StoreListener;
+import org.sakaiproject.nakamura.api.lite.authorizable.AuthorizableManager;
+import org.sakaiproject.nakamura.api.lite.authorizable.Group;
+import org.sakaiproject.nakamura.grouper.api.GrouperManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.sakaiproject.nakamura.grouper.api.GrouperManager;
 
 @Component
 public class GrouperJMSMessageConsumer implements MessageListener {
@@ -50,7 +52,10 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 
 	@Reference
 	protected GrouperManager grouperManager;
-	
+
+	@Reference
+	protected Repository repository;
+
 	private Connection connection;
 	private Session session;
 	private MessageConsumer consumer;
@@ -121,7 +126,6 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 			// A new group was ADDED or an existing group was UPDATED
 			if ("org/sakaiproject/nakamura/lite/authorizables/ADDED".equals(topic)
 					|| "org/sakaiproject/nakamura/lite/authorizables/UPDATED".equals(topic) ){
-
 				// These events should be under org/sakaiproject/nakamura/lite/authorizables/UPDATED
 				// http://jira.sakaiproject.org/browse/KERN-1795
 				String membersAdded = (String)message.getStringProperty(GrouperEventUtils.MEMBERS_ADDED_PROP);
@@ -141,7 +145,11 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 				}
 
 				if (membersAdded == null && membersRemoved == null) {
+					org.sakaiproject.nakamura.api.lite.Session repositorySession = repository.loginAdministrative();
+					AuthorizableManager am = repositorySession.getAuthorizableManager();
+					Group group = (Group) am.findAuthorizable(groupId);
 					grouperManager.createGroup(groupId);
+					grouperManager.addMemberships(groupId, Arrays.asList(group.getMembers()));
 					operation = "CREATE";
 				}
 			}
