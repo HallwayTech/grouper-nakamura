@@ -33,7 +33,8 @@ public class BaseGrouperNameProviderImplTest extends TestCase {
 		assertEquals("manager", BaseGrouperNameProvider.getGrouperExtension("group1-manager", config));
 		assertEquals("manager", BaseGrouperNameProvider.getGrouperExtension("group1-meh-manager", config));
 		assertEquals("manager", BaseGrouperNameProvider.getGrouperExtension("group1_meh-manager", config));
-		assertEquals("ta", BaseGrouperNameProvider.getGrouperExtension("group1-ta", config));		
+		assertEquals("ta", BaseGrouperNameProvider.getGrouperExtension("group1-ta", config));
+		assertEquals("student", BaseGrouperNameProvider.getGrouperExtension("group1-student", config));
 
 		assertEquals("contacts", BaseGrouperNameProvider.getGrouperExtension("g-contacts-user1", config));
 	}
