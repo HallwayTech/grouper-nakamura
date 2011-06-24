@@ -53,6 +53,17 @@ public abstract class BaseGrouperNameProvider {
 		return extension;
 	}
 	
+	/**
+	 * The name of this function is terrible. 
+	 * 
+	 * For a nakamura group represented in grouper we'll have a path of folders/stems
+	 * that leads to a role group. Its necessary to figure out what the last stem 
+	 * will be when constructing a full grouper name. 
+	 *
+	 * @param groupId the id of the authorizable in nakamura
+	 * @param config the Grouper configuration
+	 * @return the last stem in the path to the grouper group corresponding to this groupId
+	 */
 	public static String getGrouperLastStem(String groupId, GrouperConfiguration config) {
 		if (groupId == null){
 			return null;
@@ -67,6 +78,7 @@ public abstract class BaseGrouperNameProvider {
 		for (String suffix: config.getPseudoGroupSuffixes()){
 			if (groupId.endsWith(suffix)){
 				stem = groupId.substring(0, groupId.lastIndexOf(suffix));
+				break;
 			}
 		}
 		return stem;

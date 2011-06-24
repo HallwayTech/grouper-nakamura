@@ -51,22 +51,21 @@ public class ContactsGrouperNameProviderImpl implements GrouperNameManager {
 
 	@Override
 	public String getGrouperName(String groupId) {
-		
+
 		if (groupId == null || !groupId.startsWith(CONTACTS_GROUPID_PREFIX)){
 			return null;
 		}
-		
+
 		StringBuilder gn = new StringBuilder(config.getBaseStem("contacts"));
 		gn.append(":");
 		gn.append(BaseGrouperNameProvider.getGrouperLastStem(groupId, config));
 		gn.append(":");
 		gn.append(BaseGrouperNameProvider.getGrouperExtension(groupId, config));
-		String grouperName = gn.toString(); 
 
-		log.info("Converted sakai groupId: {} to grouper name: {}", groupId, grouperName);
+		String grouperName = gn.toString();
+		log.info("groupId: {} => grouperName: {}", groupId, grouperName);
 		return grouperName;
 	}
-	
 
 	public void bindGrouperConfiguration(GrouperConfiguration gconfig) {
 		this.config = gconfig;

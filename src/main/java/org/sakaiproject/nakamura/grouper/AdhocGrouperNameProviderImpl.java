@@ -22,15 +22,7 @@ import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.sakaiproject.nakamura.api.lite.ClientPoolException;
-import org.sakaiproject.nakamura.api.lite.Repository;
-import org.sakaiproject.nakamura.api.lite.Session;
-import org.sakaiproject.nakamura.api.lite.StorageClientException;
-import org.sakaiproject.nakamura.api.lite.accesscontrol.AccessDeniedException;
-import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
-import org.sakaiproject.nakamura.api.lite.authorizable.AuthorizableManager;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
-import org.sakaiproject.nakamura.grouper.api.GrouperManager;
 import org.sakaiproject.nakamura.grouper.api.GrouperNameManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +51,7 @@ public class AdhocGrouperNameProviderImpl implements GrouperNameManager {
 		if (groupId == null){
 			return null;
 		}
-		
-		// This group has already been assigned a group in grouper.
+
 		StringBuilder gn = new StringBuilder(config.getBaseStem("group"));
 		gn.append(":");
 		gn.append(groupId.charAt(0));
@@ -70,7 +61,10 @@ public class AdhocGrouperNameProviderImpl implements GrouperNameManager {
 		gn.append(BaseGrouperNameProvider.getGrouperLastStem(groupId, config));
 		gn.append(":");
 		gn.append(BaseGrouperNameProvider.getGrouperExtension(groupId, config));
-		return gn.toString();
+
+		String grouperName = gn.toString(); 
+		log.info("groupId: {} => grouperName: {}", groupId, grouperName);
+		return grouperName;
 	}
 
 	public void bindGrouperConfiguration(GrouperConfiguration gconfig) {
