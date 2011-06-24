@@ -145,12 +145,13 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 				}
 
 				if (membersAdded == null && membersRemoved == null) {
+					grouperManager.createGroup(groupId);
 					org.sakaiproject.nakamura.api.lite.Session repositorySession = repository.loginAdministrative();
 					AuthorizableManager am = repositorySession.getAuthorizableManager();
 					Group group = (Group) am.findAuthorizable(groupId);
-					grouperManager.createGroup(groupId);
 					grouperManager.addMemberships(groupId, Arrays.asList(group.getMembers()));
 					operation = "CREATE";
+					repositorySession.logout();
 				}
 			}
 
