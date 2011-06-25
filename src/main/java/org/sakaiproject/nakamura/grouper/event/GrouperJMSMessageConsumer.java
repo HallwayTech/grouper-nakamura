@@ -57,7 +57,7 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 	protected Repository repository;
 
 	private Connection connection;
-	private Session session;
+	private Session jmsSession;
 	private MessageConsumer consumer;
 
 	@Activate
@@ -65,9 +65,9 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 		try {
  			if (connection == null){
 				connection = connFactoryService.getDefaultPooledConnectionFactory().createConnection();
-				session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-				Destination destination = session.createQueue(GrouperJMSMessageProducer.QUEUE_NAME);
-				consumer = session.createConsumer(destination);
+				jmsSession = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+				Destination destination = jmsSession.createQueue(GrouperJMSMessageProducer.QUEUE_NAME);
+				consumer = jmsSession.createConsumer(destination);
 				consumer.setMessageListener(this);
 				connection.start();
 			}
@@ -86,13 +86,13 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 			log.error("Problem clearing the MessageListener.");
 		}
 		try {
-			session.close();
+			jmsSession.close();
 		}
 		catch (JMSException jmse){
 			log.error("Problem closing JMS Session.");
 		}
 		finally {
-			session = null;
+			jmsSession = null;
 		}
 		
 		try {
@@ -131,7 +131,7 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 				String membersAdded = (String)message.getStringProperty(GrouperEventUtils.MEMBERS_ADDED_PROP);
 				if (membersAdded != null){
 					// membership adds can be attached to the same event for the group add.
-					grouperManager.createGroup(groupId);
+					grouperManager.createGroup(groupId, new String[] { "includeExcludeGroup" });
 					grouperManager.addMemberships(groupId,
 							Arrays.asList(StringUtils.split(membersAdded, ",")));
 					operation = "ADD_MEMBERS";
@@ -145,12 +145,25 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 				}
 
 				if (membersAdded == null && membersRemoved == null) {
-					grouperManager.createGroup(groupId);
 					org.sakaiproject.nakamura.api.lite.Session repositorySession = repository.loginAdministrative();
 					AuthorizableManager am = repositorySession.getAuthorizableManager();
 					Group group = (Group) am.findAuthorizable(groupId);
-					grouperManager.addMemberships(groupId, Arrays.asList(group.getMembers()));
-					operation = "CREATE";
+
+					// New group. No name, no additions or removals.
+					String grouperName = (String)group.getProperty(GrouperManager.GROUPER_NAME_PROP);
+					if (grouperName == null  && ! groupId.startsWith("g-contacts")){
+						grouperManager.createGroup(groupId, new String[] { "includeExcludeGroup" });
+						grouperManager.addMemberships(groupId, Arrays.asList(group.getMembers()));
+						operation = "CREATE";
+					}
+
+					if (grouperName == null  && groupId.startsWith("g-contacts")){
+						// TODO Why are we not getting added and removed properties on the Message
+						grouperManager.createGroup(groupId, null);
+						grouperManager.addMemberships(groupId, Arrays.asList(group.getMembers()));
+						operation = "UPDATE CONTACTS";
+					}
+
 					repositorySession.logout();
 				}
 			}
@@ -165,6 +178,7 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 				log.debug(message.toString());
 			} else {
 				log.info("Successfully processed and acknowledged. {}, {}", operation, groupId);
+				log.debug(message.toString());
 			}
 
 		}

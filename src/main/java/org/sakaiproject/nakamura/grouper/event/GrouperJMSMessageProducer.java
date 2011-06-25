@@ -157,9 +157,10 @@ public class GrouperJMSMessageProducer implements EventHandler {
 		}
 
 		// Ignore non-group events
+		// type must be g or group
 		String type = (String)event.getProperty("type");
-		if ("group".equals(type) || "g".equals(type)){
-			return false;
+		if (! "group".equals(type) || ! "g".equals(type)){
+			return true;
 		}
 
 		// Ignore op=acl events
