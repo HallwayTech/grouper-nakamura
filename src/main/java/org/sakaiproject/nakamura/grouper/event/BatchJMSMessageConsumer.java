@@ -34,6 +34,7 @@ import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Reference;
 import org.sakaiproject.nakamura.api.activemq.ConnectionFactoryService;
 import org.sakaiproject.nakamura.api.lite.Repository;
+import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 import org.sakaiproject.nakamura.api.lite.authorizable.Group;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.sakaiproject.nakamura.grouper.api.GrouperManager;
@@ -50,10 +51,10 @@ public class BatchJMSMessageConsumer implements MessageListener {
 
 	@Reference
 	protected GrouperManager grouperManager;
-	
+
 	@Reference
 	protected GrouperConfiguration config;
-	
+
 	@Reference
 	protected Repository repository;
 
@@ -110,16 +111,20 @@ public class BatchJMSMessageConsumer implements MessageListener {
 	public void onMessage(Message message){
 		log.debug("Receiving a message on {} : {}", BatchJMSMessageProducer.QUEUE_NAME, message);
 		try {
-
-			String groupId = (String) message.getStringProperty("path");
+			String groupId = message.getStringProperty(Authorizable.ID_FIELD);
 			String operation = "BATCH_UPDATE";
-			
+
 			org.sakaiproject.nakamura.api.lite.Session repositorySession = repository.loginAdministrative(config.getIgnoredUserId());
+			Authorizable group = repositorySession.getAuthorizableManager().findAuthorizable(groupId);
 			
-			Group group = (Group)repositorySession.getAuthorizableManager().findAuthorizable(groupId);
-			if (group != null) {
-				grouperManager.createGroup(groupId);
-				grouperManager.addMemberships(groupId, Arrays.asList(group.getMembers()));
+			if (group != null && group.isGroup()) {
+				if (groupId.startsWith("g-contacts")){
+					grouperManager.createGroup(groupId, null);
+				}
+				else {
+					grouperManager.createGroup(groupId, new String[] { "includeExcludeGroup" });
+				}
+				grouperManager.addMemberships(groupId, Arrays.asList(((Group)group).getMembers()));
 			}
 			message.acknowledge();
 
