@@ -36,7 +36,7 @@ public interface GrouperManager {
 	 * @param groupId the id of the {@link Authorizable} for this group.
 	 * @return true if the group was created in Grouper.
 	 */
-	public void createGroup(String groupId) throws GrouperException;
+	public void createGroup(String groupId, String[] groupTypes) throws GrouperException;
 
 	/**
 	 * Delete a Grouper group because this group is being deleted by nakmura.

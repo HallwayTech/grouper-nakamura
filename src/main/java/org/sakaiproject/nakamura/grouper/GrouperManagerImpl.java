@@ -55,6 +55,7 @@ import edu.internet2.middleware.grouperClient.ws.beans.WsAddMemberResults;
 import edu.internet2.middleware.grouperClient.ws.beans.WsDeleteMemberResults;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroup;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupDeleteResults;
+import edu.internet2.middleware.grouperClient.ws.beans.WsGroupDetail;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupLookup;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupSaveResults;
 import edu.internet2.middleware.grouperClient.ws.beans.WsGroupToSave;
@@ -82,7 +83,7 @@ public class GrouperManagerImpl implements GrouperManager {
 	/** 
 	 * @{inheritDoc}
 	 */
-	public void createGroup(String groupId) throws GrouperException {
+	public void createGroup(String groupId, String[] groupTypes) throws GrouperException {
 		try {
 			Session session = repository.loginAdministrative(grouperConfiguration.getIgnoredUserId());
 			AuthorizableManager authorizableManager = session.getAuthorizableManager();
@@ -90,14 +91,6 @@ public class GrouperManagerImpl implements GrouperManager {
 
 			if (!authorizable.isGroup()){
 				log.error("{} is not a group", authorizable.getId());
-				return;
-			}
-			
-			String grouperNameProperty = (String)authorizable.getProperty("grouper:name");
-			if (grouperNameProperty != null){
-				if (log.isDebugEnabled()){
-					log.debug("{}, already has grouper group: {}.", groupId, grouperNameProperty);
-				}
 				return;
 			}
 
@@ -116,6 +109,13 @@ public class GrouperManagerImpl implements GrouperManager {
 			wsGroup.setDisplayExtension(grouperExtension);
 			wsGroup.setExtension(grouperExtension);
 			wsGroup.setName(grouperName);
+
+			// More detailed group info
+			WsGroupDetail groupDetail = new WsGroupDetail();
+			groupDetail.setTypeNames(groupTypes);
+			wsGroup.setDetail(groupDetail);
+
+			// Package up the request
 			wsGroupToSave.setWsGroup(wsGroup);
 			wsGroupToSave.setCreateParentStemsIfNotExist("T");
 			groupSave.setWsGroupToSaves(new WsGroupToSave[]{ wsGroupToSave });
@@ -125,7 +125,7 @@ public class GrouperManagerImpl implements GrouperManager {
 			WsGroupSaveResults results = (WsGroupSaveResults)JSONObject.toBean(
 					response.getJSONObject("WsGroupSaveResults"), WsGroupSaveResults.class);
 			if (!"T".equals(results.getResultMetadata().getSuccess())) {
-					throw new GrouperWSException(results);
+				throw new GrouperWSException(results);
 			}
 
 			authorizable.setProperty(GROUPER_NAME_PROP, grouperName);
