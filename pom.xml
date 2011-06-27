@@ -68,6 +68,7 @@
 						  org.apache.log.*;resolution:=optional,
 						  org.jdom.*;resolution:=optional,
 						  *</Import-Package>
+						  <Sling-Initial-Content>SLING-INF/content;overwriteProperties:=true;uninstall:=false</Sling-Initial-Content>
 					</instructions>
 				</configuration>
 			</plugin>
@@ -251,6 +252,12 @@
 			<artifactId>org.apache.felix.webconsole</artifactId>
 			<version>3.1.8</version>
 			<type>bundle</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.jcr</groupId>
+			<artifactId>jcr</artifactId>
+			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
