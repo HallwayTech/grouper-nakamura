@@ -40,7 +40,7 @@ import org.apache.velocity.runtime.parser.ParseException;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
 import org.sakaiproject.nakamura.api.lite.authorizable.Group;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
-import org.sakaiproject.nakamura.grouper.api.GrouperNameManager;
+import org.sakaiproject.nakamura.grouper.api.GrouperNameProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 @Properties(value = {
 		@Property(name = "service.ranking", value = "20")
 })
-public class TemplateGrouperNameProviderImpl implements GrouperNameManager {
+public class TemplateGrouperNameProviderImpl implements GrouperNameProvider {
 	
 	private static final Logger log = LoggerFactory.getLogger(TemplateGrouperNameProviderImpl.class);
 

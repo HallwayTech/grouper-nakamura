@@ -23,7 +23,7 @@ import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
-import org.sakaiproject.nakamura.grouper.api.GrouperNameManager;
+import org.sakaiproject.nakamura.grouper.api.GrouperNameProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 @Properties(value = { 
 		@Property(name = "service.ranking", value = "10") 
 })
-public class ContactsGrouperNameProviderImpl implements GrouperNameManager {
+public class ContactsGrouperNameProviderImpl implements GrouperNameProvider {
 
 	private static final Logger log = LoggerFactory.getLogger(ContactsGrouperNameProviderImpl.class);
 
