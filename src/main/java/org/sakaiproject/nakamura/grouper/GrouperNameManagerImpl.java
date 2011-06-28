@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.commons.osgi.OsgiUtil;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
@@ -43,6 +44,7 @@ import org.sakaiproject.nakamura.util.osgi.AbstractOrderedService;
 @Component
 public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNameProvider> implements GrouperNameManager { 
 
+	@Reference(cardinality=ReferenceCardinality.MANDATORY_MULTIPLE)
 	protected GrouperNameProvider[] orderedServices = new GrouperNameProvider[0];
 
 	@Reference
@@ -68,16 +70,16 @@ public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNamePr
 		return BaseGrouperNameProvider.getGrouperExtension(groupId, config);
 	}
 
-	protected void bindAuthorizablePostProcessor(GrouperNameProvider service, Map<String, Object> properties) {
-		addService(service, properties);
+	protected void bindGrouperNameProvider(GrouperNameProvider gnp, Map<String, Object> properties) {
+		addService(gnp, properties);
 	}
 
-	protected void unbindAuthorizablePostProcessor(GrouperNameProvider service, Map<String, Object> properties) {
-		removeService(service, properties);
+	protected void unbindGrouperNameProvider(GrouperNameProvider gnp, Map<String, Object> properties) {
+		removeService(gnp, properties);
 	}
 
-	protected void saveArray(List<GrouperNameProvider> serviceList) {
-		orderedServices = serviceList.toArray(new GrouperNameProvider[serviceList.size()]);
+	protected void saveArray(List<GrouperNameProvider> gnpList) {
+		orderedServices = gnpList.toArray(new GrouperNameProvider[gnpList.size()]);
 	}
 
 	@Override
