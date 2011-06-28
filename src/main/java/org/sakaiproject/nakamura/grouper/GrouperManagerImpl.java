@@ -69,7 +69,7 @@ import edu.internet2.middleware.grouperClient.ws.beans.WsSubjectLookup;
 @Component
 public class GrouperManagerImpl implements GrouperManager {
 
-	private static final Logger log = LoggerFactory.getLogger(GrouperManager.class);
+	private static final Logger log = LoggerFactory.getLogger(GrouperManagerImpl.class);
 
 	@Reference
 	protected GrouperConfiguration grouperConfiguration;
