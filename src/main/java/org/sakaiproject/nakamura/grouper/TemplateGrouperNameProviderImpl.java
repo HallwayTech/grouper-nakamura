@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 		@Property(name = "service.ranking", value = "20")
 })
 public class TemplateGrouperNameProviderImpl implements GrouperNameProvider {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(TemplateGrouperNameProviderImpl.class);
 
 	@Reference
@@ -67,24 +67,29 @@ public class TemplateGrouperNameProviderImpl implements GrouperNameProvider {
 
 	private Template template;
 
+	private boolean templateReady = false;
+
 	@Activate
-	@Modified
 	public void activate(Map<?,?> props) {
 		assert config.getGroupIdPattern() != null;
 		assert config.getGrouperNameTemplate() != null;
 		modified(props);
 	}
 
+	@Modified
 	public void modified(Map<?,?> props) {
 		try {
-			Velocity.init();
-			RuntimeServices runtimeServices = RuntimeSingleton.getRuntimeServices();            
-			StringReader reader = new StringReader(config.getGrouperNameTemplate());
-			SimpleNode node = runtimeServices.parse(reader, "Grouper name template");
-			template = new Template();
-			template.setRuntimeServices(runtimeServices);
-			template.setData(node);
-			template.initDocument();
+			String templateString = config.getGrouperNameTemplate();
+			if (templateString != null && templateString.length() > 5){
+				Velocity.init();
+				RuntimeServices runtimeServices = RuntimeSingleton.getRuntimeServices();
+				SimpleNode node = runtimeServices.parse(new StringReader(templateString), "Grouper name template");
+				template = new Template();
+				template.setRuntimeServices(runtimeServices);
+				template.setData(node);
+				template.initDocument();
+				templateReady = true;
+			}
 		}
 		catch (ParseException pe) {
 			log.error("Could not parse the velocity template, {}", pe.getMessage());
@@ -93,7 +98,7 @@ public class TemplateGrouperNameProviderImpl implements GrouperNameProvider {
 
 	@Override
 	public String getGrouperName(String groupId) {
-		if (groupId == null){
+		if (groupId == null || templateReady == false){
 			return null;
 		}
 		Matcher m = config.getGroupIdPattern().matcher(groupId);
@@ -110,7 +115,7 @@ public class TemplateGrouperNameProviderImpl implements GrouperNameProvider {
 
 		StringWriter sw = new StringWriter();
 		template.merge(context, sw);
-		
+
 		// 
 		String grouperName = sw.toString();
 		String[] split = StringUtils.split(grouperName, ':');
