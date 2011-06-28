@@ -29,10 +29,12 @@ import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 
+import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Modified;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.commons.osgi.OsgiUtil;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
@@ -50,8 +52,9 @@ import org.slf4j.LoggerFactory;
  * Post {@link Message}s to a {@link Queue} that cause the current groups,
  * courses, and contacts are sent to Grouper.
  */
+@Service
 @Component(immediate = true, metatype=true)
-public class BatchJMSMessageProducer {
+public class BatchJMSMessageProducer implements BatchOperationsManager {
 
 	private static Logger log = LoggerFactory.getLogger(BatchJMSMessageProducer.class);
 
@@ -84,10 +87,11 @@ public class BatchJMSMessageProducer {
 	protected String allGroupsQuery;
 
 	protected static final String DEFAULT_ALL_USERS_QUERY = "(resourceType:authorizable AND type:u)";
-	@Property(value=DEFAULT_ALL_GROUPS_QUERY)
+	@Property(value=DEFAULT_ALL_USERS_QUERY)
 	protected static final String PROP_ALL_USERS_QUERY = "grouper.query.users.all";
 	protected String allUsersQuery;
 
+	@Activate
 	@Modified
 	public void updated(Map<String,Object> props) throws SolrServerException, JMSException{
 		transacted = OsgiUtil.toBoolean(props.get(PROP_TRANSACTED), false);
@@ -104,13 +108,11 @@ public class BatchJMSMessageProducer {
 		}
 	}
 
-	/**
-	 * Query for all groups in the system and post events to the batch queue.
-	 * 
-	 * @throws SolrServerException
-	 * @throws JMSException
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.nakamura.grouper.event.BatchOperationsManager#doGroups()
 	 */
-	private void doGroups() throws SolrServerException, JMSException{
+	@Override
+	public void doGroups() throws SolrServerException, JMSException{
 		int start = 0;
 		int items = 25;
 
@@ -139,7 +141,11 @@ public class BatchJMSMessageProducer {
 	    }
 	}
 
-	private void doContacts() throws SolrServerException, JMSException {
+	/* (non-Javadoc)
+	 * @see org.sakaiproject.nakamura.grouper.event.BatchOperationsManager#doContacts()
+	 */
+	@Override
+	public void doContacts() throws SolrServerException, JMSException {
 		int start = 0;
 		int items = 25;
 
@@ -155,7 +161,6 @@ public class BatchJMSMessageProducer {
 	    List<String> groupIds = new ArrayList<String>();
 	    while (start < totalResults){
 	        query.setStart(start);
-
 	        groupIds.clear();
 	        List<SolrDocument> resultDocs = response.getResults();
 	        for (SolrDocument doc : resultDocs){
