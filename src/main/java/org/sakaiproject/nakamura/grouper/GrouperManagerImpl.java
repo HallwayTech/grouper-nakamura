@@ -76,7 +76,7 @@ public class GrouperManagerImpl implements GrouperManager {
 
 	@Reference
 	protected GrouperNameManager grouperNameManager;
-	
+
 	@Reference
 	protected Repository repository;
 
@@ -111,9 +111,19 @@ public class GrouperManagerImpl implements GrouperManager {
 			wsGroup.setName(grouperName);
 
 			// More detailed group info
-			WsGroupDetail groupDetail = new WsGroupDetail();
-			groupDetail.setTypeNames(groupTypes);
-			wsGroup.setDetail(groupDetail);
+			if (groupTypes != null && groupTypes.length > 0 ) {
+				ArrayList<String> cleanTypes = new ArrayList<String>();
+				for (String type : groupTypes){
+					if (!type.trim().equals("")){
+						cleanTypes.add(type);
+					}
+				}
+				if (cleanTypes.size() > 0){
+					WsGroupDetail groupDetail = new WsGroupDetail();
+					groupDetail.setTypeNames(groupTypes);
+					wsGroup.setDetail(groupDetail);
+				}
+			}
 
 			// Package up the request
 			wsGroupToSave.setWsGroup(wsGroup);

@@ -18,6 +18,7 @@
 package org.sakaiproject.nakamura.grouper.event;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.jms.Connection;
@@ -122,9 +123,12 @@ public class BatchJMSMessageConsumer implements MessageListener {
 					grouperManager.createGroup(groupId, null);
 				}
 				else {
-					grouperManager.createGroup(groupId, new String[] { "includeExcludeGroup" });
+					grouperManager.createGroup(groupId, config.getGroupTypes());
 				}
-				grouperManager.addMemberships(groupId, Arrays.asList(((Group)group).getMembers()));
+				List<String> members = Arrays.asList(((Group)group).getMembers());
+				if (members.size() > 0){
+					grouperManager.addMemberships(groupId, members);
+				}
 			}
 			message.acknowledge();
 

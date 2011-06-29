@@ -38,6 +38,7 @@ import org.sakaiproject.nakamura.api.lite.Repository;
 import org.sakaiproject.nakamura.api.lite.StoreListener;
 import org.sakaiproject.nakamura.api.lite.authorizable.AuthorizableManager;
 import org.sakaiproject.nakamura.api.lite.authorizable.Group;
+import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.sakaiproject.nakamura.grouper.api.GrouperManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,9 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 
 	@Reference
 	protected GrouperManager grouperManager;
+
+	@Reference
+	protected GrouperConfiguration config;
 
 	@Reference
 	protected Repository repository;
@@ -131,7 +135,7 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 				String membersAdded = (String)message.getStringProperty(GrouperEventUtils.MEMBERS_ADDED_PROP);
 				if (membersAdded != null){
 					// membership adds can be attached to the same event for the group add.
-					grouperManager.createGroup(groupId, new String[] { "includeExcludeGroup" });
+					grouperManager.createGroup(groupId, config.getGroupTypes());
 					grouperManager.addMemberships(groupId,
 							Arrays.asList(StringUtils.split(membersAdded, ",")));
 					operation = "ADD_MEMBERS";
