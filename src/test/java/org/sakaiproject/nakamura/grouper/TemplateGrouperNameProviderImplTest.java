@@ -30,14 +30,15 @@ public class TemplateGrouperNameProviderImplTest extends TestCase {
 	
 	@Test
 	public void testGetGrouperName() throws ConfigurationException{
-		
+
 		Map<String,String> m = new HashMap<String,String>();
-		m.put(GrouperConfigurationImpl.PROP_GROUPID_PATTERN, "([^:]+)_([^:]+)");
-		m.put(GrouperConfigurationImpl.PROP_GROUPERNAME_TEMPLATE, "some:base:stem:$g[1]:$g[2]:$extension");
 		GrouperConfigurationImpl gconfig = new GrouperConfigurationImpl();
-		gconfig.updated(m);
+		gconfig.updated(new HashMap<String,Object>());
 		
 		TemplateGrouperNameProviderImpl provider = new TemplateGrouperNameProviderImpl();
+		m.put(TemplateGrouperNameProviderImpl.PROP_GROUPID_PATTERN, "([^:]+)_([^:]+)");
+		m.put(TemplateGrouperNameProviderImpl.PROP_GROUPERNAME_TEMPLATE, "some:base:stem:$g[1]:$g[2]:$extension");
+		provider.modified(m);
 		provider.bindGrouperConfiguration((GrouperConfiguration)gconfig);
 		
 		assertEquals(null, provider.getGrouperName(null));

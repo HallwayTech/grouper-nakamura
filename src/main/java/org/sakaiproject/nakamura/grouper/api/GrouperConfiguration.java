@@ -70,18 +70,6 @@ public interface GrouperConfiguration {
 	 * @return the {@link Pattern}s to ignore.
 	 */
 	public abstract String[] getIgnoredGroups();
-
-	/**
-	 * A regex used to parse a SakaiOAE groupId
-	 * @return
-	 */
-	public abstract Pattern getGroupIdPattern();
-
-	/**
-	 * A template used to create a grouperName for a sakaiOAE groupId
-	 * @return
-	 */
-	public abstract String getGrouperNameTemplate();
 	
 	/**
 	 * Groups in nakamura that have some special meaning.

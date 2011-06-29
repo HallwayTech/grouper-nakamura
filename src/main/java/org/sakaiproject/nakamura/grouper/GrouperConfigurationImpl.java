@@ -20,7 +20,6 @@ package org.sakaiproject.nakamura.grouper;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
@@ -29,10 +28,9 @@ import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.commons.osgi.OsgiUtil;
 import org.osgi.service.cm.ConfigurationException;
+import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
 @Service
 @Component(metatype = true)
@@ -74,14 +72,6 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Property(value = { "administrators" }, cardinality = 1)
 	protected static final String PROP_IGNORED_GROUP_PATTERN = "grouper.ignoredGroupsPatterns"; 
 
-	private static final String DEFAULT_GROUPID_PATTERN = "";
-	@Property(value = DEFAULT_GROUPID_PATTERN)
-	protected static final String PROP_GROUPID_PATTERN = "grouper.groupIdPattern"; 
-
-	private static final String DEFAULT_GROUPERNAME_TEMPLATE = "";
-	@Property(value = DEFAULT_GROUPERNAME_TEMPLATE)
-	protected static final String PROP_GROUPERNAME_TEMPLATE = "grouper.name.template"; 
-
 	// TODO: A better way to generate the default list.
 	private static final String[] DEFAULT_PSEUDO_GROUP_SUFFIXES = 
 		{"-manager", "-ta", "-lecturer", "-student", "-member"};
@@ -110,13 +100,6 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	private String ignoredUser;
 	// Ignore groups that match these regexs
 	private String[] ignoredGroupPatterns;
-
-	// Pattern used to parse sakaiOAE group id's
-	private String groupIdPatternString;
-	private Pattern groupIdPattern;
-
-	// Template used to render the grouper name
-	private String grouperNameTemplate;
 
 	// Suffixes that indicate these are sakai internal groups
 	private String[] pseudoGroupSuffixes;
@@ -154,14 +137,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		httpTimeout = OsgiUtil.toInteger(props.get(PROP_TIMEOUT), Integer.parseInt(DEFAULT_TIMEOUT));
 
 		ignoredUser = OsgiUtil.toString(props.get(PROP_IGNORED_USER),DEFAULT_IGNORED_USER);
-		groupIdPatternString = OsgiUtil.toString(props.get(PROP_GROUPID_PATTERN),DEFAULT_GROUPID_PATTERN);
-		grouperNameTemplate = OsgiUtil.toString(props.get(PROP_GROUPERNAME_TEMPLATE),DEFAULT_GROUPERNAME_TEMPLATE);
-
 		ignoredGroupPatterns = getStringArrayProp(props.get(PROP_IGNORED_GROUP_PATTERN), DEFAULT_IGNORED_GROUP_PATTERN);
 		pseudoGroupSuffixes = getStringArrayProp(props.get(PROP_PSEUDO_GROUP_SUFFIXES), DEFAULT_PSEUDO_GROUP_SUFFIXES);
 		groupTypes = getStringArrayProp(props.get(PROP_GROUPER_GROUP_TYPES), DEFAULT_GROUPER_GROUP_TYPES);
 
-		groupIdPattern = Pattern.compile(groupIdPatternString);
 		log.debug("Configured!");
 	}
 
@@ -197,19 +176,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		return ignoredGroupPatterns;
 	}
 
-	public Pattern getGroupIdPattern() {
-		return groupIdPattern;
-	}
-
-	public String getGrouperNameTemplate() {
-		return grouperNameTemplate;
-	}
-
 	public String[] getPseudoGroupSuffixes(){
 		return pseudoGroupSuffixes;
 	}
 
-	@Override
 	public String getBaseStem(String groupType) {
 		String stem = this.baseStem;
 		if ("group".equals(groupType)){
