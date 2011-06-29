@@ -95,4 +95,9 @@ public interface GrouperConfiguration {
 	 * @return the base stem to write to for this type of group.
 	 */
 	public abstract String getBaseStem(String groupType);
+
+	/**
+	 * @return The group types for creating course groups in grouper.
+	 */
+	public abstract String[] getGroupTypes();
 }

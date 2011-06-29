@@ -92,6 +92,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Property(value = DEFAULT_BASESTEM)
 	protected static final String PROP_BASESTEM = "grouper.basestem";
 
+	private static final String[] DEFAULT_GROUPER_GROUP_TYPES = {"includeExcludeGroup"};
+	@Property(value = {"includeExcludeGroup"}, cardinality = 1)
+	protected static final String PROP_GROUPER_GROUP_TYPES = "grouper.groupTypes";
+
 	// Grouper configuration.
 	private URL url;
 	private String username;
@@ -116,6 +120,9 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	// Suffixes that indicate these are sakai internal groups
 	private String[] pseudoGroupSuffixes;
+
+	// Grouper group types for newly created groups.
+	private String[] groupTypes;
 
 
 	// -------------------------- Configuration Admin --------------------------
@@ -150,27 +157,9 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		groupIdPatternString = OsgiUtil.toString(props.get(PROP_GROUPID_PATTERN),DEFAULT_GROUPID_PATTERN);
 		grouperNameTemplate = OsgiUtil.toString(props.get(PROP_GROUPERNAME_TEMPLATE),DEFAULT_GROUPERNAME_TEMPLATE);
 
-		Object ig = OsgiUtil.toStringArray(props.get(PROP_IGNORED_GROUP_PATTERN), DEFAULT_IGNORED_GROUP_PATTERN);
-		if (ig == null){
-			ignoredGroupPatterns = DEFAULT_IGNORED_GROUP_PATTERN;
-		}
-		else if (ig instanceof String){
-			ignoredGroupPatterns = new String[] { (String)ig };
-		}
-		else {
-			ignoredGroupPatterns = (String[])ig;
-		}
-
-		Object pgs = OsgiUtil.toStringArray(props.get(PROP_PSEUDO_GROUP_SUFFIXES), DEFAULT_PSEUDO_GROUP_SUFFIXES);
-		if (pgs == null){
-			pseudoGroupSuffixes = DEFAULT_PSEUDO_GROUP_SUFFIXES;
-		}
-		else if (pgs instanceof String){
-			pseudoGroupSuffixes = new String[] { (String)pgs };
-		}
-		else {
-			pseudoGroupSuffixes = (String[])pgs;
-		}
+		ignoredGroupPatterns = getStringArrayProp(props.get(PROP_IGNORED_GROUP_PATTERN), DEFAULT_IGNORED_GROUP_PATTERN);
+		pseudoGroupSuffixes = getStringArrayProp(props.get(PROP_PSEUDO_GROUP_SUFFIXES), DEFAULT_PSEUDO_GROUP_SUFFIXES);
+		groupTypes = getStringArrayProp(props.get(PROP_GROUPER_GROUP_TYPES), DEFAULT_GROUPER_GROUP_TYPES);
 
 		groupIdPattern = Pattern.compile(groupIdPatternString);
 		log.debug("Configured!");
@@ -230,5 +219,28 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 			stem += ":users";
 		}
 		return stem;
+	}
+
+	public String[] getGroupTypes(){
+		return groupTypes;
+	}
+
+	/**
+	 * @param value the value of the the property
+	 * @param defaultValue the default value
+	 * @return a String[] of values for that property or the defaultValue if null
+	 */
+	private static String[] getStringArrayProp(Object value, String[] defaultValue){
+		String[] result = null;
+		if (value == null){
+			result = defaultValue;
+		}
+		else if (value instanceof String){
+			result = new String[] { (String)value };
+		}
+		else {
+			result = (String[])value;
+		}
+		return result;
 	}
 }
