@@ -34,14 +34,24 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Reference;
 import org.sakaiproject.nakamura.api.activemq.ConnectionFactoryService;
+import org.sakaiproject.nakamura.api.lite.ClientPoolException;
 import org.sakaiproject.nakamura.api.lite.Repository;
+import org.sakaiproject.nakamura.api.lite.StorageClientException;
+import org.sakaiproject.nakamura.api.lite.accesscontrol.AccessDeniedException;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 import org.sakaiproject.nakamura.api.lite.authorizable.Group;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.sakaiproject.nakamura.grouper.api.GrouperManager;
+import org.sakaiproject.nakamura.grouper.exception.GrouperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The batch process sends all of the current group information in SakaiOAE to
+ * Grouper. The {@link BatchJMSMessageProducer} posts a {@link Message} for each
+ * group its able to find. This class uses a {@link GrouperManager} to do the 
+ * work.
+ */
 @Component
 public class BatchJMSMessageConsumer implements MessageListener {
 
@@ -113,16 +123,13 @@ public class BatchJMSMessageConsumer implements MessageListener {
 		log.debug("Receiving a message on {} : {}", BatchJMSMessageProducer.QUEUE_NAME, message);
 		try {
 			String groupId = message.getStringProperty(Authorizable.ID_FIELD);
-			String operation = "BATCH_UPDATE";
-
 			org.sakaiproject.nakamura.api.lite.Session repositorySession = repository.loginAdministrative(config.getIgnoredUserId());
 			Authorizable group = repositorySession.getAuthorizableManager().findAuthorizable(groupId);
 			
 			if (group != null && group.isGroup()) {
 				if (groupId.startsWith("g-contacts")){
 					grouperManager.createGroup(groupId, null);
-				}
-				else {
+				} else {
 					grouperManager.createGroup(groupId, config.getGroupTypes());
 				}
 				List<String> members = Arrays.asList(((Group)group).getMembers());
@@ -131,16 +138,18 @@ public class BatchJMSMessageConsumer implements MessageListener {
 				}
 			}
 			message.acknowledge();
-
-			log.info("Successfully processed and acknowledged. {}, {}", operation, groupId);
-			
+			log.info("Successfully processed and acknowledged. {}, {}", message.getJMSMessageID(), groupId);
 			repositorySession.logout();
-		}
-		catch (JMSException jmse){
+		} catch (JMSException jmse){
 			log.error("JMSException while processing message.", jmse);
-		}
-		catch (Exception e){
-			log.error("Exception while processing message.", e);
+		} catch (ClientPoolException e) {
+			log.error("Error communicating with sparsemap storage.", e);
+		} catch (AccessDeniedException e) {
+			log.error("{} is not an administrator. Permission denied", config.getIgnoredUserId(), e);
+		} catch (StorageClientException e) {
+			log.error("Error communicating with sparsemap storage.", e);
+		} catch (GrouperException e) {
+			log.error("Error communicating with the grouper web services.", e);
 		}
 	}
 }
