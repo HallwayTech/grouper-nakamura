@@ -18,9 +18,8 @@
 package org.sakaiproject.nakamura.grouper.api;
 
 /**
- * This API exists to separate the services providing ids from the one 
- * @author froese
- *
+ * A {@link GrouperNameManager} will hold an ordered List of 
+ * {@link GrouperNameProvider}s that it delegates to to resolve a grouper name. 
  */
 public interface GrouperNameProvider {
 	/**

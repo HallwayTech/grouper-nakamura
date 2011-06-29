@@ -22,6 +22,10 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.HttpClient;
 
+/**
+ * A central place to hold configuration about a remote Grouper installation.
+ * This is used during the sync and batch event processing.
+ */
 public interface GrouperConfiguration {
 
 	/**
@@ -38,7 +42,7 @@ public interface GrouperConfiguration {
 	 * @return the username's password in Grouper
 	 */
 	public abstract String getPassword();
-	
+
 	/**
 	 * http://localhost:9090/grouper-ws
 	 * @return the {@link URL} of the Grouper WS
@@ -64,13 +68,13 @@ public interface GrouperConfiguration {
 	 * @return the userId to ignore.
 	 */
 	public abstract String getIgnoredUserId();
-	
+
 	/** 
 	 * Ignore groups that one match these patterns.
 	 * @return the {@link Pattern}s to ignore.
 	 */
 	public abstract String[] getIgnoredGroups();
-	
+
 	/**
 	 * Groups in nakamura that have some special meaning.
 	 * These are usually the -managers, -ta, and -lecturers.

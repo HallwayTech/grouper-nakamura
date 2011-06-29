@@ -18,8 +18,9 @@
 package org.sakaiproject.nakamura.grouper.api;
 
 /**
- * Utility class to translate ids to Grouper ids
+ * Service class to translate ids to Grouper ids.
+ * The GrouperNameManager will hold an ordered list of GrouperNameProvider so
+ * it can delegate the grouper name resolution.
  */
 public interface GrouperNameManager extends GrouperNameProvider {
-
 }
