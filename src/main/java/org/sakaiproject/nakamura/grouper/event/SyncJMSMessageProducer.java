@@ -66,9 +66,9 @@ import org.slf4j.LoggerFactory;
 				"org/sakaiproject/nakamura/lite/authorizables/DELETE"
 		})
 })
-public class GrouperJMSMessageProducer implements EventHandler {
+public class SyncJMSMessageProducer implements EventHandler {
 
-	private static Logger log = LoggerFactory.getLogger(GrouperJMSMessageProducer.class);
+	private static Logger log = LoggerFactory.getLogger(SyncJMSMessageProducer.class);
 
 	protected static final String QUEUE_NAME = "org/sakaiproject/nakamura/grouper/sync";
 

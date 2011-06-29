@@ -44,9 +44,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component
-public class GrouperJMSMessageConsumer implements MessageListener {
+public class SyncJMSMessageConsumer implements MessageListener {
 
-	private static Logger log = LoggerFactory.getLogger(GrouperJMSMessageConsumer.class);
+	private static Logger log = LoggerFactory.getLogger(SyncJMSMessageConsumer.class);
 
 	@Reference
 	protected ConnectionFactoryService connFactoryService;
@@ -70,7 +70,7 @@ public class GrouperJMSMessageConsumer implements MessageListener {
  			if (connection == null){
 				connection = connFactoryService.getDefaultPooledConnectionFactory().createConnection();
 				jmsSession = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-				Destination destination = jmsSession.createQueue(GrouperJMSMessageProducer.QUEUE_NAME);
+				Destination destination = jmsSession.createQueue(SyncJMSMessageProducer.QUEUE_NAME);
 				consumer = jmsSession.createConsumer(destination);
 				consumer.setMessageListener(this);
 				connection.start();
@@ -112,7 +112,7 @@ public class GrouperJMSMessageConsumer implements MessageListener {
 
 	@SuppressWarnings("unchecked")
 	public void onMessage(Message message){
-		log.debug("Receiving a message on {} : {}", GrouperJMSMessageProducer.QUEUE_NAME, message);
+		log.debug("Receiving a message on {} : {}", SyncJMSMessageProducer.QUEUE_NAME, message);
 		try {
 
 			String topic = message.getJMSType();
