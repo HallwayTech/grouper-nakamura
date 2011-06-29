@@ -44,7 +44,7 @@ public class ContactsGrouperNameProviderImpl implements GrouperNameProvider {
 
 	private static final Logger log = LoggerFactory.getLogger(ContactsGrouperNameProviderImpl.class);
 
-	private static final String CONTACTS_GROUPID_PREFIX = "g-contacts";
+	public static final String CONTACTS_GROUPID_PREFIX = "g-contacts";
 
 	@Reference
 	protected GrouperConfiguration config;

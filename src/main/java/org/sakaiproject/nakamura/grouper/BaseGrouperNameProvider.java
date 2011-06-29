@@ -40,7 +40,7 @@ public abstract class BaseGrouperNameProvider {
 			return null;
 		}
 
-		if (groupId.startsWith("g-contacts")){
+		if (groupId.startsWith(ContactsGrouperNameProviderImpl.CONTACTS_GROUPID_PREFIX)){
 			return "contacts";
 		}
 
@@ -69,7 +69,7 @@ public abstract class BaseGrouperNameProvider {
 			return null;
 		}
 
-		int contactGroupIndex = groupId.indexOf("g-contacts"); 
+		int contactGroupIndex = groupId.indexOf(ContactsGrouperNameProviderImpl.CONTACTS_GROUPID_PREFIX); 
 		if (contactGroupIndex != -1){
 			return groupId.substring(contactGroupIndex + 11);
 		}

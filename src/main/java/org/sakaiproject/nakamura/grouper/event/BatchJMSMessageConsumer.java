@@ -40,6 +40,7 @@ import org.sakaiproject.nakamura.api.lite.StorageClientException;
 import org.sakaiproject.nakamura.api.lite.accesscontrol.AccessDeniedException;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 import org.sakaiproject.nakamura.api.lite.authorizable.Group;
+import org.sakaiproject.nakamura.grouper.ContactsGrouperNameProviderImpl;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.sakaiproject.nakamura.grouper.api.GrouperManager;
 import org.sakaiproject.nakamura.grouper.exception.GrouperException;
@@ -127,7 +128,7 @@ public class BatchJMSMessageConsumer implements MessageListener {
 			Authorizable group = repositorySession.getAuthorizableManager().findAuthorizable(groupId);
 			
 			if (group != null && group.isGroup()) {
-				if (groupId.startsWith("g-contacts")){
+				if (groupId.startsWith(ContactsGrouperNameProviderImpl.CONTACTS_GROUPID_PREFIX)){
 					grouperManager.createGroup(groupId, null);
 				} else {
 					grouperManager.createGroup(groupId, config.getGroupTypes());

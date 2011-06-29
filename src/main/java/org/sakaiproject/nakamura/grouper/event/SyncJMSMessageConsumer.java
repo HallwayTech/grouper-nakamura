@@ -38,6 +38,7 @@ import org.sakaiproject.nakamura.api.lite.Repository;
 import org.sakaiproject.nakamura.api.lite.StoreListener;
 import org.sakaiproject.nakamura.api.lite.authorizable.AuthorizableManager;
 import org.sakaiproject.nakamura.api.lite.authorizable.Group;
+import org.sakaiproject.nakamura.grouper.ContactsGrouperNameProviderImpl;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.sakaiproject.nakamura.grouper.api.GrouperManager;
 import org.slf4j.Logger;
@@ -155,13 +156,13 @@ public class SyncJMSMessageConsumer implements MessageListener {
 
 					// New group. No name, no additions or removals.
 					String grouperName = (String)group.getProperty(GrouperManager.GROUPER_NAME_PROP);
-					if (grouperName == null  && ! groupId.startsWith("g-contacts")){
+					if (grouperName == null  && ! groupId.startsWith(ContactsGrouperNameProviderImpl.CONTACTS_GROUPID_PREFIX)){
 						grouperManager.createGroup(groupId, new String[] { "includeExcludeGroup" });
 						grouperManager.addMemberships(groupId, Arrays.asList(group.getMembers()));
 						operation = "CREATE";
 					}
 
-					if (grouperName == null  && groupId.startsWith("g-contacts")){
+					if (grouperName == null  && groupId.startsWith(ContactsGrouperNameProviderImpl.CONTACTS_GROUPID_PREFIX)){
 						// TODO Why are we not getting added and removed properties on the Message
 						grouperManager.createGroup(groupId, null);
 						grouperManager.addMemberships(groupId, Arrays.asList(group.getMembers()));
