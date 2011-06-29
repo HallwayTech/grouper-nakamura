@@ -76,7 +76,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	private static final String[] DEFAULT_PSEUDO_GROUP_SUFFIXES = 
 		{"-manager", "-ta", "-lecturer", "-student", "-member"};
 	@Property(value = {"-manager", "-ta", "-lecturer", "-student", "-member"}, cardinality = 1)
-	protected static final String PROP_PSEUDO_GROUP_SUFFIXES = "grouper.specialGroupsSuffixes";
+	protected static final String PROP_PSEUDO_GROUP_SUFFIXES = "grouper.psuedoGroup.suffixes";
 
 	private static final String DEFAULT_BASESTEM = "edu:apps:sakaioae";
 	@Property(value = DEFAULT_BASESTEM)
