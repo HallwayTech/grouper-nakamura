@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * 2. An output template to create a string for the grouper name. (grouper.name.template)
  * 
  */
-@Component
+@Component(metatype = true)
 @Service
 @Properties(value = {
 		@Property(name = "service.ranking", value = "20")
@@ -69,11 +69,11 @@ public class TemplateGrouperNameProviderImpl implements GrouperNameProvider {
 
 	private static final String DEFAULT_GROUPID_PATTERN = "";
 	@Property(value = DEFAULT_GROUPID_PATTERN)
-	protected static final String PROP_GROUPID_PATTERN = "grouper.groupIdPattern"; 
+	protected static final String PROP_GROUPID_PATTERN = "grouper.nameprovider.template.groupIdPattern";
 
 	private static final String DEFAULT_GROUPERNAME_TEMPLATE = "";
 	@Property(value = DEFAULT_GROUPERNAME_TEMPLATE)
-	protected static final String PROP_GROUPERNAME_TEMPLATE = "grouper.name.template"; 
+	protected static final String PROP_GROUPERNAME_TEMPLATE = "grouper.nameprovider.template.template";
 
 	// Pattern used to parse sakaiOAE group id's
 	private String groupIdPatternString;
