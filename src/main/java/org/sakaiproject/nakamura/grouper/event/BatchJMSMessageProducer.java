@@ -132,7 +132,12 @@ public class BatchJMSMessageProducer implements BatchOperationsManager {
 	        groupIds.clear();
 	        List<SolrDocument> resultDocs = response.getResults();
 	        for (SolrDocument doc : resultDocs){
-	        	groupIds.add((String)doc.get("id"));
+	            String id = (String)doc.get("id");
+	            groupIds.add(id);
+	            // This is a HACK since I haven't figured out how to ask solr for the pseudo groups yet.
+	            for (String suffix : grouperConfiguration.getPseudoGroupSuffixes()){
+		            groupIds.add(id + suffix);
+		        }
 	        }
  	       	sendGroupMessages(groupIds);
 
