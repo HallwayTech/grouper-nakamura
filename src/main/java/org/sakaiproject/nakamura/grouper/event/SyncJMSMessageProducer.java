@@ -18,6 +18,7 @@
 package org.sakaiproject.nakamura.grouper.event;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.jms.Connection;
@@ -161,7 +162,7 @@ public class SyncJMSMessageProducer implements EventHandler {
 		// Ignore non-group events
 		// type must be g or group
 		String type = (String)event.getProperty("type");
-		if (! ImmutableSet.of("g", "group").contains(type)){
+		if (! "g".equals(type) && ! "group".equals(type)){
 			return true;
 		}
 
