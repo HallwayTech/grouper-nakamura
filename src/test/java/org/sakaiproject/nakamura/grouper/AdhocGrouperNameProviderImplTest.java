@@ -47,6 +47,13 @@ public class AdhocGrouperNameProviderImplTest {
 		assertEquals("some:base:stem:groups:s:so:some:member", provider.getGrouperName("some"));
 		assertEquals("some:base:stem:groups:s:so:some:member", provider.getGrouperName("some-member"));
 		assertEquals("some:base:stem:groups:s:so:some_group:manager", provider.getGrouperName("some_group-manager"));
+
+		assertEquals("some:base:stem:groups:s:so:some_group:student", provider.getGrouperName("some_group-student"));
 		assertEquals("some:base:stem:groups:s:so:some_group:ta", provider.getGrouperName("some_group-ta"));
+		assertEquals("some:base:stem:groups:s:so:some_group:lecturer", provider.getGrouperName("some_group-lecturer"));
+
+		assertEquals("some:base:stem:groups:n:ne:newcourse0:student", provider.getGrouperName("newcourse0-student"));
+		assertEquals("some:base:stem:groups:n:ne:newcourse0:ta", provider.getGrouperName("newcourse0-ta"));
+		assertEquals("some:base:stem:groups:n:ne:newcourse0:lecturer", provider.getGrouperName("newcourse0-lecturer"));
 	}
 }
