@@ -47,6 +47,8 @@ import org.sakaiproject.nakamura.util.osgi.EventUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableSet;
+
 /**
  * Capture {@link Authorizable} events and put them on a special Queue to be processed.
  * 
@@ -159,7 +161,7 @@ public class SyncJMSMessageProducer implements EventHandler {
 		// Ignore non-group events
 		// type must be g or group
 		String type = (String)event.getProperty("type");
-		if (! "group".equals(type) || ! "g".equals(type)){
+		if (! ImmutableSet.of("g", "group").contains(type)){
 			return true;
 		}
 
