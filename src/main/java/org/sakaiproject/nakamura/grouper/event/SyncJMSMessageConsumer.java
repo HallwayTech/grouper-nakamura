@@ -157,7 +157,7 @@ public class SyncJMSMessageConsumer implements MessageListener {
 					// New group. No name, no additions or removals.
 					String grouperName = (String)group.getProperty(GrouperManager.GROUPER_NAME_PROP);
 					if (grouperName == null  && ! groupId.startsWith(ContactsGrouperNameProviderImpl.CONTACTS_GROUPID_PREFIX)){
-						grouperManager.createGroup(groupId, new String[] { "includeExcludeGroup" });
+						grouperManager.createGroup(groupId, config.getGroupTypes());
 						grouperManager.addMemberships(groupId, Arrays.asList(group.getMembers()));
 						operation = "CREATE";
 					}
