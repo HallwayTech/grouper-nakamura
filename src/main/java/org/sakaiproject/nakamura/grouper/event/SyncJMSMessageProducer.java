@@ -18,7 +18,6 @@
 package org.sakaiproject.nakamura.grouper.event;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.jms.Connection;
@@ -47,8 +46,6 @@ import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.sakaiproject.nakamura.util.osgi.EventUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Capture {@link Authorizable} events and put them on a special Queue to be processed.
