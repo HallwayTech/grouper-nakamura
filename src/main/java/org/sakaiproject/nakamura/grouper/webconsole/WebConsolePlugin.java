@@ -78,13 +78,12 @@ public class WebConsolePlugin extends AbstractWebConsolePlugin {
 			if (request.getParameter("doContacts") != null){
 				batchProducer.doContacts();
 			}
-
 			jcrSession = jcrRepository.login();
 			Node node = jcrSession.getNode("/var/grouper/webconsole/plugin.html");
 			InputStream content = node.getNode("jcr:content").getProperty("jcr:data").getBinary().getStream();
 			IOUtils.copy(content, response.getWriter());
-
 			jcrSession.logout();
+
 		} catch (LoginException e) {
 			log.error("Error logging in.", e);
 		} catch (NoSuchWorkspaceException e) {
