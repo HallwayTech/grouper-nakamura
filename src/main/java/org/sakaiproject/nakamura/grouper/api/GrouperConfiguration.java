@@ -18,6 +18,7 @@
 package org.sakaiproject.nakamura.grouper.api;
 
 import java.net.URL;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -91,5 +92,5 @@ public interface GrouperConfiguration {
 	/**
 	 * @return The group types for creating course groups in grouper.
 	 */
-	public abstract String[] getGroupTypes();
+	public abstract Set<String> getGroupTypes();
 }

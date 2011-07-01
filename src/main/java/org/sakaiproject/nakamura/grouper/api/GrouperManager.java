@@ -19,6 +19,7 @@ package org.sakaiproject.nakamura.grouper.api;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.osgi.service.event.Event;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
@@ -36,16 +37,16 @@ public interface GrouperManager {
 	 * @param groupId the id of the {@link Authorizable} for this group.
 	 * @return true if the group was created in Grouper.
 	 */
-	public void createGroup(String groupId, String[] groupTypes) throws GrouperException;
+	public void createGroup(String groupId, Set<String> groupTypes) throws GrouperException;
 
 	/**
 	 * Delete a Grouper group because this group is being deleted by nakmura.
 	 * @param groupId the id of the {@link Authorizable} for this group
 	 */
 	public void deleteGroup(String groupId) throws GrouperException;
-	
+
 	/**
-	 * 
+	 * Delete a group from Grouper.
 	 * @param groupId the id of the {@link Authorizable} for this group
 	 * @param attributes the properties of this group.
 	 * @throws GrouperException
@@ -58,7 +59,7 @@ public interface GrouperManager {
 	 * @param membersToAdd the member id's to add to this group.
 	 */
 	public void addMemberships(String groupId, Collection<String> membersToAdd) throws GrouperException;
-	
+
 	/**
 	 * Add members to a Grouper group.
 	 * @param groupId the id of the {@link Authorizable} for this group.

@@ -20,6 +20,7 @@ package org.sakaiproject.nakamura.grouper;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
@@ -105,7 +106,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	private String[] pseudoGroupSuffixes;
 
 	// Grouper group types for newly created groups.
-	private String[] groupTypes;
+	private Set<String> groupTypes;
 
 
 	// -------------------------- Configuration Admin --------------------------
@@ -139,7 +140,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		ignoredUser = OsgiUtil.toString(props.get(PROP_IGNORED_USER),DEFAULT_IGNORED_USER);
 		ignoredGroupPatterns = getStringArrayProp(props.get(PROP_IGNORED_GROUP_PATTERN), DEFAULT_IGNORED_GROUP_PATTERN);
 		pseudoGroupSuffixes = getStringArrayProp(props.get(PROP_PSEUDO_GROUP_SUFFIXES), DEFAULT_PSEUDO_GROUP_SUFFIXES);
-		groupTypes = getStringArrayProp(props.get(PROP_GROUPER_GROUP_TYPES), DEFAULT_GROUPER_GROUP_TYPES);
+
+		for (String gt: getStringArrayProp(props.get(PROP_GROUPER_GROUP_TYPES), DEFAULT_GROUPER_GROUP_TYPES)){
+			groupTypes.add(gt);
+		}
 
 		log.debug("Configured!");
 	}
@@ -191,7 +195,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		return stem;
 	}
 
-	public String[] getGroupTypes(){
+	public Set<String> getGroupTypes(){
 		return groupTypes;
 	}
 
