@@ -180,7 +180,7 @@ public class BatchJMSMessageProducer implements BatchOperationsManager {
 
 	/**
 	 * Send messages that trigger a batch update
-	 * @param groups
+	 * @param groupIds
 	 * @throws JMSException
 	 */
 	private void sendGroupMessages(List<String> groupIds) throws JMSException {
