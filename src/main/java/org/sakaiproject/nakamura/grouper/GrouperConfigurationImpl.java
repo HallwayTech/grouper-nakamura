@@ -69,13 +69,13 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	protected static final String PROP_IGNORED_USER = "grouper.ignoredUser";
 
 	private static final String[] DEFAULT_IGNORED_GROUP_PATTERN = {"administrators"};
-	@Property(value = { "administrators" }, cardinality = 1)
+	@Property(value = { "administrators" }, cardinality = 9999)
 	protected static final String PROP_IGNORED_GROUP_PATTERN = "grouper.ignoredGroupsPatterns"; 
 
 	// TODO: A better way to generate the default list.
 	private static final String[] DEFAULT_PSEUDO_GROUP_SUFFIXES = 
 		{"-manager", "-ta", "-lecturer", "-student", "-member"};
-	@Property(value = {"-manager", "-ta", "-lecturer", "-student", "-member"}, cardinality = 1)
+	@Property(value = {"-manager", "-ta", "-lecturer", "-student", "-member"}, cardinality = 9999)
 	protected static final String PROP_PSEUDO_GROUP_SUFFIXES = "grouper.psuedoGroup.suffixes";
 
 	private static final String DEFAULT_BASESTEM = "edu:apps:sakaioae";
@@ -83,7 +83,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	protected static final String PROP_BASESTEM = "grouper.basestem";
 
 	private static final String[] DEFAULT_GROUPER_GROUP_TYPES = {"includeExcludeGroup"};
-	@Property(value = {"includeExcludeGroup"}, cardinality = 1)
+	@Property(value = {"includeExcludeGroup"}, cardinality = 9999)
 	protected static final String PROP_GROUPER_GROUP_TYPES = "grouper.groupTypes";
 
 	// Grouper configuration.
