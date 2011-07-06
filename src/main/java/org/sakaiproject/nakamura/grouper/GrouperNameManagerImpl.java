@@ -32,12 +32,10 @@ import org.sakaiproject.nakamura.grouper.api.GrouperNameProvider;
 import org.sakaiproject.nakamura.util.osgi.AbstractOrderedService;
 
 /**
- * Generate a namne for a group in grouper based on the groupId of a Group in nakamura.
+ * Generate a grouper name based on a Sakai OAE groupId
  *
- * Holds an ordered {@link List} of {@link GrouperNameProvider}s. The first one to return
- * an answer for the group will be used.
- *
- * @author froese
+ * This class holds an ordered {@link List} of {@link GrouperNameProvider}s. 
+ * The first one to return an answer for the group will be used.
  *
  */
 @Service
@@ -52,11 +50,11 @@ public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNamePr
 
 	@Override
 	public String getGrouperName(String groupId) {
-		String gn = null;
+		String grouperName = null;
 		for (GrouperNameProvider gnp: orderedServices){
-			gn = gnp.getGrouperName(groupId);
-			if (gn != null){
-				return gn;
+			grouperName = gnp.getGrouperName(groupId);
+			if (grouperName != null){
+				return grouperName;
 			}
 		}
 		return null;
@@ -69,6 +67,11 @@ public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNamePr
 	public String getGrouperExtension(String groupId) {
 		return BaseGrouperNameProvider.getGrouperExtension(groupId, config);
 	}
+
+	/*
+	 * below here is just boilerplate for the ordered list of providers.
+	 * Providers are sorted by their service.ranking property in ascending order. 
+	 */
 
 	protected void bindGrouperNameProvider(GrouperNameProvider gnp, Map<String, Object> properties) {
 		addService(gnp, properties);
@@ -85,14 +88,13 @@ public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNamePr
 	@Override
 	protected Comparator<? super GrouperNameProvider> getComparator(
 			final Map<GrouperNameProvider, Map<String, Object>> propertiesMap) {
+
 		return new Comparator<GrouperNameProvider>() {
 			public int compare(GrouperNameProvider o1, GrouperNameProvider o2) {
 				Map<String, Object> props1 = propertiesMap.get(o1);
 				Map<String, Object> props2 = propertiesMap.get(o2);
-
 				return OsgiUtil.getComparableForServiceRanking(props1).compareTo(props2);
 			}
 		};
 	}
-
 }
