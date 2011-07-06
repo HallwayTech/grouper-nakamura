@@ -84,8 +84,8 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Property(value = DEFAULT_BASESTEM)
 	protected static final String PROP_BASESTEM = "grouper.basestem";
 
-	private static final String[] DEFAULT_GROUPER_GROUP_TYPES = {"includeExcludeGroup"};
-	@Property(value = {"includeExcludeGroup"}, cardinality = 9999)
+	private static final String[] DEFAULT_GROUPER_GROUP_TYPES = {"addIncludeExclude"};
+	@Property(value = {"addIncludeExclude"}, cardinality = 9999)
 	protected static final String PROP_GROUPER_GROUP_TYPES = "grouper.groupTypes";
 
 	// Grouper configuration.
@@ -139,11 +139,11 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		httpTimeout = OsgiUtil.toInteger(props.get(PROP_TIMEOUT), Integer.parseInt(DEFAULT_TIMEOUT));
 
 		ignoredUser = OsgiUtil.toString(props.get(PROP_IGNORED_USER),DEFAULT_IGNORED_USER);
-		ignoredGroupPatterns = getStringArrayProp(props.get(PROP_IGNORED_GROUP_PATTERN), DEFAULT_IGNORED_GROUP_PATTERN);
-		pseudoGroupSuffixes = getStringArrayProp(props.get(PROP_PSEUDO_GROUP_SUFFIXES), DEFAULT_PSEUDO_GROUP_SUFFIXES);
+		ignoredGroupPatterns = OsgiUtil.toStringArray(props.get(PROP_IGNORED_GROUP_PATTERN), DEFAULT_IGNORED_GROUP_PATTERN);
+		pseudoGroupSuffixes = OsgiUtil.toStringArray(props.get(PROP_PSEUDO_GROUP_SUFFIXES), DEFAULT_PSEUDO_GROUP_SUFFIXES);
 
 		groupTypes = new HashSet<String>();
-		for (String gt: getStringArrayProp(props.get(PROP_GROUPER_GROUP_TYPES), DEFAULT_GROUPER_GROUP_TYPES)){
+		for (String gt: OsgiUtil.toStringArray(props.get(PROP_GROUPER_GROUP_TYPES), DEFAULT_GROUPER_GROUP_TYPES)){
 			groupTypes.add(gt);
 		}
 
@@ -199,24 +199,5 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	public Set<String> getGroupTypes(){
 		return groupTypes;
-	}
-
-	/**
-	 * @param value the value of the the property
-	 * @param defaultValue the default value
-	 * @return a String[] of values for that property or the defaultValue if null
-	 */
-	private static String[] getStringArrayProp(Object value, String[] defaultValue){
-		String[] result = null;
-		if (value == null){
-			result = defaultValue;
-		}
-		else if (value instanceof String){
-			result = new String[] { (String)value };
-		}
-		else {
-			result = (String[])value;
-		}
-		return result;
 	}
 }
