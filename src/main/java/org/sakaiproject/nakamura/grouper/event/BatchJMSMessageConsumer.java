@@ -138,6 +138,14 @@ public class BatchJMSMessageConsumer implements MessageListener {
 					grouperManager.addMemberships(groupId, members);
 				}
 			}
+			else {
+				if (group == null){
+					log.error("{} could not be found.", groupId);
+				}
+				else if (group.isGroup() == false){
+					log.error("{} is not a group", groupId);
+				}
+			}
 			message.acknowledge();
 			log.info("Successfully processed and acknowledged. {}, {}", message.getJMSMessageID(), groupId);
 			repositorySession.logout();
