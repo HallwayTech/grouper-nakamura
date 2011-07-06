@@ -55,6 +55,12 @@ public class PropertyGrouperNameProviderImpl implements GrouperNameProvider {
 		return getProperty(groupId, GrouperManager.GROUPER_NAME_PROP);
 	}
 
+	/**
+	 * Get a property from an authorizable by id.
+	 * @param groupId the id of the group
+	 * @param propertyName the property key
+	 * @return the value of the property or null if not found.
+	 */
 	private String getProperty(String groupId, String propertyName){
 		String propValue = null;
 		Authorizable authorizable = null;
