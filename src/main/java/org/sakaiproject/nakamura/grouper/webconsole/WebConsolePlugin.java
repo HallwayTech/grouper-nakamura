@@ -47,7 +47,7 @@ public class WebConsolePlugin extends AbstractWebConsolePlugin {
 	Repository jcrRepository;
 
 	@Reference
-	BatchOperationsManager batchProducer;
+	BatchOperationsManager batchManager;
 	
 	@Activate
 	public void activate(BundleContext bundleContext){
@@ -73,11 +73,15 @@ public class WebConsolePlugin extends AbstractWebConsolePlugin {
 		Session jcrSession = null;
 		try {
 			if (request.getParameter("doGroups") != null){
-				batchProducer.doGroups();
+				batchManager.doGroups();
 			}
 			if (request.getParameter("doContacts") != null){
-				batchProducer.doContacts();
+				batchManager.doContacts();
 			}
+			if (request.getParameter("groupId") != null){
+				batchManager.doOneGroup(request.getParameter("groupId"));
+			}
+
 			jcrSession = jcrRepository.login();
 			Node node = jcrSession.getNode("/var/grouper/webconsole/plugin.html");
 			InputStream content = node.getNode("jcr:content").getProperty("jcr:data").getBinary().getStream();
