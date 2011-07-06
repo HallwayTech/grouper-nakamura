@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 @Service
 @Component
 @Properties(value = { 
-		@Property(name = "service.ranking", value = "10") 
+		@Property(name = "service.ranking", intValue = 10)
 })
 public class AdhocGrouperNameProviderImpl implements GrouperNameProvider {
 

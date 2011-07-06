@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 @Component(metatype = true)
 @Service
 @Properties(value = {
-		@Property(name = "service.ranking", value = "20")
+		@Property(name = "service.ranking", intValue = 100)
 })
 public class TemplateGrouperNameProviderImpl implements GrouperNameProvider {
 
