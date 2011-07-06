@@ -48,6 +48,8 @@ import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
+
 /**
  * Post {@link Message}s to a {@link Queue} that cause the current groups,
  * courses, and contacts are sent to Grouper.
@@ -176,6 +178,10 @@ public class BatchJMSMessageProducer implements BatchOperationsManager {
 	        start += resultDocs.size();
 	        log.debug("Found {} users.", resultDocs.size());
 	    }
+	}
+	
+	public void doOneGroup(String groupId) throws JMSException{
+		sendGroupMessages(ImmutableList.of(groupId));
 	}
 
 	/**

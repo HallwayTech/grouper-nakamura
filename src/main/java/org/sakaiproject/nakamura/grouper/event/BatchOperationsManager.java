@@ -19,5 +19,7 @@ public interface BatchOperationsManager {
 	 * @throws JMSException
 	 */
 	public abstract void doContacts() throws SolrServerException, JMSException;
+	
+	public abstract void doOneGroup(String groupId) throws JMSException;
 
 }
