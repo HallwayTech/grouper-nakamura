@@ -19,6 +19,7 @@ package org.sakaiproject.nakamura.grouper;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -141,6 +142,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		ignoredGroupPatterns = getStringArrayProp(props.get(PROP_IGNORED_GROUP_PATTERN), DEFAULT_IGNORED_GROUP_PATTERN);
 		pseudoGroupSuffixes = getStringArrayProp(props.get(PROP_PSEUDO_GROUP_SUFFIXES), DEFAULT_PSEUDO_GROUP_SUFFIXES);
 
+		groupTypes = new HashSet<String>();
 		for (String gt: getStringArrayProp(props.get(PROP_GROUPER_GROUP_TYPES), DEFAULT_GROUPER_GROUP_TYPES)){
 			groupTypes.add(gt);
 		}
