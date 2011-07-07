@@ -89,6 +89,8 @@ public class GrouperManagerImpl implements GrouperManager {
 	private static final String INCLUDE_SUFFIX = "_includes";
 	private static final String EXCLUDE_SUFFIX = "_excludes";
 
+	private static final String SYSTEM_OF_RECORD_SUFFIX = "_systemOfRecord";
+
 	@Reference
 	protected GrouperConfiguration grouperConfiguration;
 
@@ -136,6 +138,11 @@ public class GrouperManagerImpl implements GrouperManager {
 				WsGroupDetail groupDetail = new WsGroupDetail();
 				groupDetail.setTypeNames(new String[] { groupType });
 				wsGroup.setDetail(groupDetail);
+				if (groupType.equals(INCLUDE_EXCLUDE_GROUP_TYPE)){
+					wsGroup.setName(grouperName + SYSTEM_OF_RECORD_SUFFIX);
+					wsGroup.setDisplayExtension(grouperExtension + SYSTEM_OF_RECORD_SUFFIX);
+					wsGroup.setExtension(grouperExtension + SYSTEM_OF_RECORD_SUFFIX);
+				}
 			}
 
 			// Package up the request
