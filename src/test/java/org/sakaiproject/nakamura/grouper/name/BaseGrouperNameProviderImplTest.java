@@ -1,6 +1,7 @@
 package org.sakaiproject.nakamura.grouper.name;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -18,7 +19,6 @@ public class BaseGrouperNameProviderImplTest extends TestCase {
 		try {
 			config.updated(new HashMap<String,Object>());
 		} catch (ConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -39,6 +39,28 @@ public class BaseGrouperNameProviderImplTest extends TestCase {
 
 		assertEquals("contacts", BaseGrouperNameProvider.getGrouperExtension("g-contacts-user1", config));
 	}
+
+	@Test
+	public void testGetGrouperExtensionOverrides() throws ConfigurationException{
+		Map<String,Object> m = new HashMap<String,Object>();
+		m.put(GrouperConfigurationImpl.PROP_EXTENSION_OVERRIDES, new String[] {"manager:MANAGER", "ta:TAs"});
+		config.updated(m);
+
+		assertNull(BaseGrouperNameProvider.getGrouperExtension(null, config));
+		assertEquals("member", BaseGrouperNameProvider.getGrouperExtension("group1", config));
+		assertEquals("member", BaseGrouperNameProvider.getGrouperExtension("some-meh", config));
+		assertEquals("member", BaseGrouperNameProvider.getGrouperExtension("some-thing-bleep", config));
+		assertEquals("member", BaseGrouperNameProvider.getGrouperExtension("some-thing_member", config));
+
+		assertEquals("MANAGER", BaseGrouperNameProvider.getGrouperExtension("group1-manager", config));
+		assertEquals("MANAGER", BaseGrouperNameProvider.getGrouperExtension("group1-meh-manager", config));
+		assertEquals("MANAGER", BaseGrouperNameProvider.getGrouperExtension("group1_meh-manager", config));
+		assertEquals("TAs", BaseGrouperNameProvider.getGrouperExtension("group1-ta", config));
+		assertEquals("student", BaseGrouperNameProvider.getGrouperExtension("group1-student", config));
+		assertEquals("contacts", BaseGrouperNameProvider.getGrouperExtension("g-contacts-user1", config));
+
+		config.updated(new HashMap<String,Object>());
+	}
 	
 	@Test
 	public void testGetGrouperLastStem(){
@@ -58,5 +80,5 @@ public class BaseGrouperNameProviderImplTest extends TestCase {
 		assertEquals("some-thing-98y8og", BaseGrouperNameProvider.getGrouperLastStem("some-thing-98y8og", config));
 
 		assertEquals("user1", BaseGrouperNameProvider.getGrouperLastStem("g-contacts-user1", config));
-	}
+	}	
 }

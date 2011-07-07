@@ -38,6 +38,7 @@ public class AdhocGrouperNameProviderImplTest {
 		
 		Map<String,String> m = new HashMap<String,String>();
 		m.put(GrouperConfigurationImpl.PROP_BASESTEM, "some:base:stem");
+		m.put(GrouperConfigurationImpl.PROP_EXTENSION_OVERRIDES, "meh:bleh");
 		GrouperConfigurationImpl gconfig = new GrouperConfigurationImpl();
 		gconfig.updated(m);
 

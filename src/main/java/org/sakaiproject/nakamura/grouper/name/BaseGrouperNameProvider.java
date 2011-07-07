@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.nakamura.grouper.name;
 
+import java.util.Map;
+
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
 public abstract class BaseGrouperNameProvider {
@@ -50,9 +52,17 @@ public abstract class BaseGrouperNameProvider {
 				extension = suffix.substring(1);
 			}
 		}
+
+		// Allow for cutom name mangling
+		Map<String,String> overrides = config.getExtensionOverrides();
+		String override = overrides.get(extension);
+		if (override != null){
+			extension = override;
+		}
+
 		return extension;
 	}
-	
+
 	/**
 	 * The name of this function is terrible. 
 	 * 

@@ -18,6 +18,7 @@
 package org.sakaiproject.nakamura.grouper.api;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -93,4 +94,9 @@ public interface GrouperConfiguration {
 	 * @return The group types for creating course groups in grouper.
 	 */
 	public abstract Set<String> getGroupTypes();
+
+	/**
+	 * @return a map of extension names to use to override the poseudogroup extensions
+	 */
+	public abstract Map<String,String> getExtensionOverrides();
 }

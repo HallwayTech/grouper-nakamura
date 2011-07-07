@@ -34,6 +34,9 @@ import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.ImmutableMap;
+
 @Service
 @Component(metatype = true)
 /**
@@ -41,53 +44,55 @@ import org.slf4j.LoggerFactory;
  */
 public class GrouperConfigurationImpl implements GrouperConfiguration {
 
-	private static final Logger log = LoggerFactory
-	.getLogger(GrouperConfigurationImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(GrouperConfigurationImpl.class);
 
 	// Configurable via the ConfigAdmin services.
 	private static final String DEFAULT_URL = "http://localhost:9090/grouper-ws/servicesRest";
 	@Property(value = DEFAULT_URL)
-	protected static final String PROP_URL = "grouper.url";
+	public static final String PROP_URL = "grouper.url";
 
 	private static final String DEFAULT_WS_VERSION = "1_7_000";
 	@Property(value = DEFAULT_WS_VERSION)
-	protected static final String PROP_WS_VERSION = "grouper.ws_version";
+	public static final String PROP_WS_VERSION = "grouper.ws_version";
 
 	private static final String DEFAULT_USERNAME = "GrouperSystem";
 	@Property(value = DEFAULT_USERNAME)
-	protected static final String PROP_USERNAME = "grouper.username";
+	public static final String PROP_USERNAME = "grouper.username";
 
 	private static final String DEFAULT_PASSWORD = "abc123";
 	@Property(value = DEFAULT_PASSWORD)
-	protected static final String PROP_PASSWORD = "grouper.password";
+	public static final String PROP_PASSWORD = "grouper.password";
 
 	// HTTP Timeout in milliseconds
 	private static final String DEFAULT_TIMEOUT = "5000";
 	@Property(value = DEFAULT_TIMEOUT)
-	protected static final String PROP_TIMEOUT = "grouper.httpTimeout";
+	public static final String PROP_TIMEOUT = "grouper.httpTimeout";
 
 	private static final String DEFAULT_IGNORED_USER = "grouper-admin";
 	@Property(value = DEFAULT_IGNORED_USER)
-	protected static final String PROP_IGNORED_USER = "grouper.ignoredUser";
+	public static final String PROP_IGNORED_USER = "grouper.ignoredUser";
 
 	private static final String[] DEFAULT_IGNORED_GROUP_PATTERN = {"administrators"};
 	@Property(value = { "administrators" }, cardinality = 9999)
-	protected static final String PROP_IGNORED_GROUP_PATTERN = "grouper.ignoredGroupsPatterns"; 
+	public static final String PROP_IGNORED_GROUP_PATTERN = "grouper.ignoredGroupsPatterns"; 
 
 	// TODO: A better way to generate the default list.
 	private static final String[] DEFAULT_PSEUDO_GROUP_SUFFIXES = 
 		{"-manager", "-ta", "-lecturer", "-student", "-member"};
 	@Property(value = {"-manager", "-ta", "-lecturer", "-student", "-member"}, cardinality = 9999)
-	protected static final String PROP_PSEUDO_GROUP_SUFFIXES = "grouper.psuedoGroup.suffixes";
+	public static final String PROP_PSEUDO_GROUP_SUFFIXES = "grouper.psuedoGroup.suffixes";
 
 	private static final String DEFAULT_BASESTEM = "edu:apps:sakaioae";
 	@Property(value = DEFAULT_BASESTEM)
-	public
-	static final String PROP_BASESTEM = "grouper.basestem";
+	public static final String PROP_BASESTEM = "grouper.basestem";
 
 	private static final String[] DEFAULT_GROUPER_GROUP_TYPES = {"addIncludeExclude"};
 	@Property(value = {"addIncludeExclude"}, cardinality = 9999)
-	protected static final String PROP_GROUPER_GROUP_TYPES = "grouper.groupTypes";
+	public static final String PROP_GROUPER_GROUP_TYPES = "grouper.groupTypes";
+
+	private static final String[] DEFAULT_EXTENSION_OVERRIDES = new String[0];
+	@Property(value = {}, cardinality = 9999)
+	public static final String PROP_EXTENSION_OVERRIDES = "grouper.extension.overrides";
 
 	// Grouper configuration.
 	private URL url;
@@ -109,6 +114,8 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	// Grouper group types for newly created groups.
 	private Set<String> groupTypes;
+
+	private Map<String, String> extensionOverrides;
 
 
 	// -------------------------- Configuration Admin --------------------------
@@ -147,6 +154,15 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		for (String gt: OsgiUtil.toStringArray(props.get(PROP_GROUPER_GROUP_TYPES), DEFAULT_GROUPER_GROUP_TYPES)){
 			groupTypes.add(gt);
 		}
+
+		Builder<String, String> extentionOverridesBuilder = ImmutableMap.builder();
+		for (String exO: OsgiUtil.toStringArray(props.get(PROP_EXTENSION_OVERRIDES), DEFAULT_EXTENSION_OVERRIDES)){
+			String[] split = exO.split(":");
+			if (split.length == 2){
+				extentionOverridesBuilder.put(split[0], split[1]);
+			}
+		}
+		extensionOverrides = extentionOverridesBuilder.build();
 
 		log.debug("Configured!");
 	}
@@ -200,5 +216,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	public Set<String> getGroupTypes(){
 		return groupTypes;
+	}
+
+	@Override
+	public Map<String, String> getExtensionOverrides() {
+		return extensionOverrides;
 	}
 }
