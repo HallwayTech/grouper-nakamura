@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.nakamura.grouper;
+package org.sakaiproject.nakamura.grouper.name;
 
 import java.util.Comparator;
 import java.util.List;
@@ -27,8 +27,8 @@ import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.commons.osgi.OsgiUtil;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
-import org.sakaiproject.nakamura.grouper.api.GrouperNameManager;
-import org.sakaiproject.nakamura.grouper.api.GrouperNameProvider;
+import org.sakaiproject.nakamura.grouper.name.api.GrouperNameManager;
+import org.sakaiproject.nakamura.grouper.name.api.GrouperNameProvider;
 import org.sakaiproject.nakamura.util.osgi.AbstractOrderedService;
 
 /**

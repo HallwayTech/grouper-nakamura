@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.nakamura.grouper;
+package org.sakaiproject.nakamura.grouper.name;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.osgi.service.cm.ConfigurationException;
+import org.sakaiproject.nakamura.grouper.GrouperConfigurationImpl;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 
 public class TemplateGrouperNameProviderImplTest extends TestCase {

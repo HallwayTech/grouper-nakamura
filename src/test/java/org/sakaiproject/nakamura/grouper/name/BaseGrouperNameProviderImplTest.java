@@ -1,4 +1,4 @@
-package org.sakaiproject.nakamura.grouper;
+package org.sakaiproject.nakamura.grouper.name;
 
 import java.util.HashMap;
 
@@ -6,6 +6,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.osgi.service.cm.ConfigurationException;
+import org.sakaiproject.nakamura.grouper.GrouperConfigurationImpl;
 
 public class BaseGrouperNameProviderImplTest extends TestCase {
 	

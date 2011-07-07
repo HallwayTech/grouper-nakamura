@@ -82,7 +82,8 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	private static final String DEFAULT_BASESTEM = "edu:apps:sakaioae";
 	@Property(value = DEFAULT_BASESTEM)
-	protected static final String PROP_BASESTEM = "grouper.basestem";
+	public
+	static final String PROP_BASESTEM = "grouper.basestem";
 
 	private static final String[] DEFAULT_GROUPER_GROUP_TYPES = {"addIncludeExclude"};
 	@Property(value = {"addIncludeExclude"}, cardinality = 9999)
