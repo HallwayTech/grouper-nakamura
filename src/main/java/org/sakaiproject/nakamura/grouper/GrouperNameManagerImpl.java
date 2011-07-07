@@ -70,7 +70,8 @@ public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNamePr
 
 	/*
 	 * below here is just boilerplate for the ordered list of providers.
-	 * Providers are sorted by their service.ranking property in ascending order. 
+	 * Providers are sorted by their service.ranking property in ascending order.
+	 * MAKE SURE THE PROPERTY VALUE IS AN INTEGER! use intValue
 	 */
 
 	protected void bindGrouperNameProvider(GrouperNameProvider gnp, Map<String, Object> properties) {
