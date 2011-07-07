@@ -150,19 +150,26 @@ public class GrouperManagerImpl implements GrouperManager {
 			wsGroupToSave.setCreateParentStemsIfNotExist("T");
 			groupSave.setWsGroupToSaves(new WsGroupToSave[]{ wsGroupToSave });
 
+			// POST and parse the response
 			JSONObject response = post("/groups", groupSave);
-
 			WsGroupSaveResults results = (WsGroupSaveResults)JSONObject.toBean(
 					response.getJSONObject("WsGroupSaveResults"), WsGroupSaveResults.class);
+
+			// Error handling is a bit awkward. If the group already exists its not a problem 
 			if (!"T".equals(results.getResultMetadata().getSuccess())) {
-				throw new GrouperWSException(results);
+				if (results.getResults()[0].getResultMetadata().getResultMessage().contains("already exists")){
+					log.debug("Group already existed in grouper at {}", grouperName);
+				}
+				else {
+					throw new GrouperWSException(results);
+				}
 			}
 
 			authorizable.setProperty(GROUPER_NAME_PROP, grouperName);
 			authorizableManager.updateAuthorizable(authorizable);
 			session.logout();
 
-			log.debug("Success! Created a new Grouper Group = {} for sakai authorizableId = {}",
+			log.debug("Success: Created a new Grouper Group = {} for sakai authorizableId = {}",
 					grouperName, groupId);
 		}
 		catch (StorageClientException sce) {
