@@ -20,6 +20,12 @@ public interface BatchOperationsManager {
 	 */
 	public abstract void doContacts() throws SolrServerException, JMSException;
 	
+	/**
+	 * Cause one group to be sync'd to Grouper.
+	 * Useful for debugging/testing.
+	 * @param groupId the id of the group to sync.
+	 * @throws JMSException
+	 */
 	public abstract void doOneGroup(String groupId) throws JMSException;
 
 }
