@@ -99,4 +99,10 @@ public interface GrouperConfiguration {
 	 * @return a map of extension names to use to override the poseudogroup extensions
 	 */
 	public abstract Map<String,String> getExtensionOverrides();
+
+	/**
+	 * @return if true groups will be deleted in Grouper when deleted in Sakai OAE
+	 * @return
+	 */
+	public abstract boolean getDeletesEnabled();
 }

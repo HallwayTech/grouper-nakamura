@@ -122,7 +122,7 @@ public class SyncJMSMessageConsumer implements MessageListener {
 			String operation = "UNKNOWN";
 
 			// A group was DELETED
-			if ("org/sakaiproject/nakamura/lite/authorizables/DELETE".equals(topic)){
+			if ("org/sakaiproject/nakamura/lite/authorizables/DELETE".equals(topic) && config.getDeletesEnabled()){
 				Map<String, Object> attributes = (Map<String,Object>)message.getObjectProperty(StoreListener.BEFORE_EVENT_PROPERTY);
 				grouperManager.deleteGroup(groupId, attributes);
 				operation = "DELETED";

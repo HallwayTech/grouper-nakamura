@@ -94,6 +94,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Property(value = {}, cardinality = 9999)
 	public static final String PROP_EXTENSION_OVERRIDES = "grouper.extension.overrides";
 
+	private static final boolean DEFAULT_DELETES_ENABLED = true;
+	@Property(boolValue = DEFAULT_DELETES_ENABLED)
+	public static final String PROP_DELETES_ENABLED = "grouper.enable.deletes";
+
 	// Grouper configuration.
 	private URL url;
 	private String username;
@@ -116,6 +120,8 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	private Set<String> groupTypes;
 
 	private Map<String, String> extensionOverrides;
+
+	private boolean deletesEnabled;
 
 
 	// -------------------------- Configuration Admin --------------------------
@@ -149,6 +155,8 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		ignoredUser = OsgiUtil.toString(props.get(PROP_IGNORED_USER),DEFAULT_IGNORED_USER);
 		ignoredGroupPatterns = OsgiUtil.toStringArray(props.get(PROP_IGNORED_GROUP_PATTERN), DEFAULT_IGNORED_GROUP_PATTERN);
 		pseudoGroupSuffixes = OsgiUtil.toStringArray(props.get(PROP_PSEUDO_GROUP_SUFFIXES), DEFAULT_PSEUDO_GROUP_SUFFIXES);
+
+		deletesEnabled = OsgiUtil.toBoolean(props.get(PROP_DELETES_ENABLED), DEFAULT_DELETES_ENABLED);
 
 		groupTypes = new HashSet<String>();
 		for (String gt: OsgiUtil.toStringArray(props.get(PROP_GROUPER_GROUP_TYPES), DEFAULT_GROUPER_GROUP_TYPES)){
@@ -218,8 +226,11 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		return groupTypes;
 	}
 
-	@Override
 	public Map<String, String> getExtensionOverrides() {
 		return extensionOverrides;
+	}
+
+	public boolean getDeletesEnabled(){
+		return deletesEnabled;
 	}
 }
