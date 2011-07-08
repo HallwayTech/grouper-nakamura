@@ -34,7 +34,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.osgi.service.event.Event;
 import org.sakaiproject.nakamura.api.lite.Repository;
 import org.sakaiproject.nakamura.api.lite.Session;
 import org.sakaiproject.nakamura.api.lite.StorageClientException;
@@ -277,6 +276,7 @@ public class GrouperManagerImpl implements GrouperManager {
 				return;
 			}
 
+			// Resolve the grouper name
 			String grouperName = grouperNameManager.getGrouperName(groupId);
 			String membersString = StringUtils.join(membersToAdd, ',');
 			log.debug("Adding members: Group = {} members = {}", grouperName, membersString);
@@ -286,6 +286,7 @@ public class GrouperManagerImpl implements GrouperManager {
 				addMembershipsSimple(groupId, grouperName, membersToAdd);
 			}
 			else {
+				// Add the members to the includes group, then remove them from the excludes.
 				addMembershipsSimple(groupId, grouperName + INCLUDE_SUFFIX, membersToAdd);
 				removeMembershipsSimple(groupId, grouperName + EXCLUDE_SUFFIX, membersToAdd);
 			}
@@ -315,9 +316,9 @@ public class GrouperManagerImpl implements GrouperManager {
 					log.error("Adding groups as members is not supported yet.");
 					continue;
 				}
-				// Don't bother adding the admin user as a member.
-				// It probably doesn't exist in grouper.
 				if (subjectId.equals("admin")){
+					// Don't bother adding the admin user as a member.
+					// It probably doesn't exist in grouper.
 					continue;
 				}
 				cleanedMembersToAdd.add(subjectId);
@@ -441,13 +442,6 @@ public class GrouperManagerImpl implements GrouperManager {
 		catch (AccessDeniedException ade) {
 			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
 		}
-	}
-
-	/**
-	 * @{inheritDoc}
-	 */
-	public void updateGroup(String groupId, Event event) throws GrouperException {
-		// TODO Auto-generated method stub
 	}
 
 	/**

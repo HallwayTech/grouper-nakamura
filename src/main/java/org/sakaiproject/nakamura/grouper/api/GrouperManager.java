@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.osgi.service.event.Event;
 import org.sakaiproject.nakamura.api.lite.authorizable.Authorizable;
 import org.sakaiproject.nakamura.grouper.exception.GrouperException;
 
@@ -66,12 +65,5 @@ public interface GrouperManager {
 	 * @param membersToRemove the member id's to remove from this group.
 	 */
 	public void removeMemberships(String groupId, Collection<String> membersToRemove) throws GrouperException;
-
-	/**
-	 * Update properties in Grouper
-	 * @param groupId the id of the {@link Authorizable} for this group.
-	 * @param event an OSGi event. 
-	 */
-	public void updateGroup(String groupId, Event event) throws GrouperException;
 
 }
