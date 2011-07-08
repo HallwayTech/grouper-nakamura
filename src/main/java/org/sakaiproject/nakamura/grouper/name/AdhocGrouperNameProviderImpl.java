@@ -41,6 +41,8 @@ import org.slf4j.LoggerFactory;
 public class AdhocGrouperNameProviderImpl implements GrouperNameProvider {
 
 	private static final Logger log = LoggerFactory.getLogger(AdhocGrouperNameProviderImpl.class);
+	
+	private static final String ADHOC_STEM = "adhoc";
 
 	@Reference
 	protected GrouperConfiguration config;
@@ -54,6 +56,8 @@ public class AdhocGrouperNameProviderImpl implements GrouperNameProvider {
 
 		StringBuilder gn = new StringBuilder(config.getBaseStem("group"));
 		gn.append(":");
+		gn.append(ADHOC_STEM);
+		gn.append(":");
 		gn.append(groupId.charAt(0));
 		gn.append(":");
 		gn.append(groupId.substring(0,2));
@@ -62,8 +66,8 @@ public class AdhocGrouperNameProviderImpl implements GrouperNameProvider {
 		gn.append(":");
 		gn.append(BaseGrouperNameProvider.getGrouperExtension(groupId, config));
 
-		String grouperName = gn.toString(); 
-		log.info("groupId: {} => grouperName: {}", groupId, grouperName);
+		String grouperName = gn.toString();
+		log.debug("{} => {}", groupId, grouperName);
 		return grouperName;
 	}
 
