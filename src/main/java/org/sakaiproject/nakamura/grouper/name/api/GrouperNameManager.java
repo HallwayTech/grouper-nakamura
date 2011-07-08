@@ -22,5 +22,11 @@ package org.sakaiproject.nakamura.grouper.name.api;
  * The GrouperNameManager will hold an ordered list of GrouperNameProvider so
  * it can delegate the grouper name resolution.
  */
-public interface GrouperNameManager extends GrouperNameProvider {
+public interface GrouperNameManager {
+	/**
+	 * @param baseStem the folder in Grouper for sakai3
+	 * @param the authorizableId of the Group
+	 * @return the fully qualified name of this group in Grouper
+	 */
+	public String getGrouperName(String groupId);
 }
