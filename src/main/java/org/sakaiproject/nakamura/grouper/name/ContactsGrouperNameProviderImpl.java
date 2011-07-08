@@ -63,7 +63,7 @@ public class ContactsGrouperNameProviderImpl implements GrouperNameProvider {
 		gn.append(BaseGrouperNameProvider.getGrouperExtension(groupId, config));
 
 		String grouperName = gn.toString();
-		log.info("groupId: {} => grouperName: {}", groupId, grouperName);
+		log.debug("{} => {}", groupId, grouperName);
 		return grouperName;
 	}
 

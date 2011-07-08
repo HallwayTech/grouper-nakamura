@@ -35,6 +35,9 @@ import org.sakaiproject.nakamura.grouper.name.api.GrouperNameProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Resolve the grouper name for a OAE groupId by looking at the authorizable properties.
+ */
 @Service
 @Component(metatype = true)
 @Properties(value = {
@@ -52,7 +55,11 @@ public class PropertyGrouperNameProviderImpl implements GrouperNameProvider {
 
 	@Override
 	public String getGrouperName(String groupId) {
-		return getProperty(groupId, GrouperManager.GROUPER_NAME_PROP);
+		String grouperName = getProperty(groupId, GrouperManager.GROUPER_NAME_PROP);
+		if (grouperName != null){
+			log.debug("{} => {}", groupId, grouperName);
+		}
+		return grouperName;
 	}
 
 	/**

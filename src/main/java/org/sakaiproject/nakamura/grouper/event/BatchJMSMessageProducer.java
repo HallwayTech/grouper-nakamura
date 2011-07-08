@@ -130,7 +130,6 @@ public class BatchJMSMessageProducer implements BatchOperationsManager {
 	    List<String> groupIds = new ArrayList<String>();
 	    while (start < totalResults){
 	        query.setStart(start);
-
 	        groupIds.clear();
 	        List<SolrDocument> resultDocs = response.getResults();
 	        for (SolrDocument doc : resultDocs){
@@ -139,10 +138,10 @@ public class BatchJMSMessageProducer implements BatchOperationsManager {
 	            // This is a HACK since I haven't figured out how to ask solr for the pseudo groups yet.
 	            for (String suffix : grouperConfiguration.getPseudoGroupSuffixes()){
 		            groupIds.add(id + suffix);
+		            log.debug("Sending sync event for {}", id + suffix);
 		        }
 	        }
  	       	sendGroupMessages(groupIds);
-
 	        start += resultDocs.size();
 	        log.debug("Found {} groups.", resultDocs.size());
 	    }
@@ -172,6 +171,7 @@ public class BatchJMSMessageProducer implements BatchOperationsManager {
 	        List<SolrDocument> resultDocs = response.getResults();
 	        for (SolrDocument doc : resultDocs){
 	        	groupIds.add("g-contacts-" + (String)doc.get("id"));
+	        	log.debug("Syncing contacts for {}", (String)doc.get("id"));
 	        }
  	       	sendGroupMessages(groupIds);
 
@@ -202,7 +202,7 @@ public class BatchJMSMessageProducer implements BatchOperationsManager {
 			msg.setStringProperty(Authorizable.ID_FIELD, groupId);
 			producer.send(msg);
 			log.info("Sent: {} {} : messageId {}", new Object[] { QUEUE_NAME, groupId, msg.getJMSMessageID()});
-			log.debug("{} : {}", msg.getJMSMessageID(), msg);
+			log.trace("{} : {}", msg.getJMSMessageID(), msg);
 		}
 
 		try {

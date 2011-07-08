@@ -133,8 +133,7 @@ public class TemplateGrouperNameProviderImpl implements GrouperNameProvider {
 		StringWriter sw = new StringWriter();
 		template.merge(context, sw);
 
-		// If this is a pseudogroup lop off the -rolename and make it the grouper
-		// group name.
+		// If this is a pseudogroup lop off the -rolename and make it the grouper group name.
 		String grouperName = sw.toString();
 		String[] split = StringUtils.split(grouperName, ':');
 		for (String suffix: config.getPseudoGroupSuffixes()){
@@ -142,7 +141,9 @@ public class TemplateGrouperNameProviderImpl implements GrouperNameProvider {
 				split[split.length - 2] = split[split.length - 2].substring(0, split[split.length - 2].indexOf(suffix)); 
 			}
 		}
-		return StringUtils.join(split, ':');
+		grouperName = StringUtils.join(split, ':');
+		log.debug("{} => {}", groupId, grouperName);
+		return grouperName;
 	}
 
 	public void bindGrouperConfiguration(GrouperConfiguration gconfig) {
