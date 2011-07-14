@@ -44,6 +44,7 @@ import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.sakaiproject.nakamura.grouper.api.GrouperManager;
 import org.sakaiproject.nakamura.grouper.exception.GrouperException;
 import org.sakaiproject.nakamura.grouper.exception.GrouperWSException;
+import org.sakaiproject.nakamura.grouper.exception.InvalidGroupIdException;
 import org.sakaiproject.nakamura.grouper.name.BaseGrouperNameProvider;
 import org.sakaiproject.nakamura.grouper.name.ContactsGrouperNameProviderImpl;
 import org.sakaiproject.nakamura.grouper.name.api.GrouperNameManager;
@@ -154,7 +155,7 @@ public class GrouperManagerImpl implements GrouperManager {
 			WsGroupSaveResults results = (WsGroupSaveResults)JSONObject.toBean(
 					response.getJSONObject("WsGroupSaveResults"), WsGroupSaveResults.class);
 
-			// Error handling is a bit awkward. If the group already exists its not a problem 
+			// Error handling is a bit awkward. If the group already exists its not a problem
 			if (!"T".equals(results.getResultMetadata().getSuccess())) {
 				if (results.getResults()[0].getResultMetadata().getResultMessage().contains("already exists")){
 					log.debug("Group already existed in grouper at {}", grouperName);
@@ -191,7 +192,6 @@ public class GrouperManagerImpl implements GrouperManager {
 		if (attributes != null ){
 			grouperName = (String)attributes.get(GROUPER_NAME_PROP);
 		}
-
 		if (grouperName != null){
 			deleteFromGrouper(grouperName);
 		}
@@ -204,30 +204,9 @@ public class GrouperManagerImpl implements GrouperManager {
 	 * @{inheritDoc}
 	 */
 	public void deleteGroup(String nakamuraGroupId) throws GrouperException {
-
-		try {
-			Session session = repository.loginAdministrative(grouperConfiguration.getIgnoredUserId());
-			AuthorizableManager authorizableManager = session.getAuthorizableManager();
-			String grouperName = null;
-			Authorizable authorizable = authorizableManager.findAuthorizable(nakamuraGroupId);
-
-			if (authorizable != null && !authorizable.isGroup()){
-				if (grouperName == null){
-					grouperName = grouperNameManager.getGrouperName(nakamuraGroupId);
-				}
-				deleteFromGrouper(grouperName);
-				log.debug("Deleted Grouper Group = {} for sakai authorizableId = {}", grouperName, nakamuraGroupId);
-				session.logout();
-			} else {
-				log.error("{} is not a group", nakamuraGroupId);
-			}
-		}
-		catch (StorageClientException sce){
-			throw new GrouperException("Unable to fetch authorizable for " + nakamuraGroupId);
-		}
-		catch (AccessDeniedException e) {
-			throw new GrouperException("Unable to fetch authorizable for " + nakamuraGroupId + ". Access Denied.");
-		}
+		String grouperName = grouperNameManager.getGrouperName(nakamuraGroupId);
+		deleteFromGrouper(grouperName);
+		log.debug("Deleted Grouper Group = {} for sakai authorizableId = {}", grouperName, nakamuraGroupId);
 	}
 
 	/**
@@ -265,99 +244,55 @@ public class GrouperManagerImpl implements GrouperManager {
 	 * @{inheritDoc}
 	 */
 	public void addMemberships(String groupId, Collection<String> membersToAdd) throws GrouperException{
-		try{
-			Session session = repository.loginAdministrative(grouperConfiguration.getIgnoredUserId());
-			AuthorizableManager authorizableManager = session.getAuthorizableManager();
-			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
-			session.logout();
+		checkGroupId(groupId);
 
-			if (!authorizable.isGroup()){
-				log.error("{} is not a group", authorizable.getId());
-				return;
-			}
+		// Resolve the grouper name
+		String grouperName = grouperNameManager.getGrouperName(groupId);
+		String membersString = StringUtils.join(membersToAdd, ',');
+		log.debug("Adding members: Group = {} members = {}", grouperName, membersString);
 
-			// Resolve the grouper name
-			String grouperName = grouperNameManager.getGrouperName(groupId);
-			String membersString = StringUtils.join(membersToAdd, ',');
-			log.debug("Adding members: Group = {} members = {}", grouperName, membersString);
-
-			if ( groupId.startsWith(ContactsGrouperNameProviderImpl.CONTACTS_GROUPID_PREFIX) ||
-					!grouperConfiguration.getGroupTypes().contains(INCLUDE_EXCLUDE_GROUP_TYPE)){
-				addMembershipsSimple(groupId, grouperName, membersToAdd);
-			}
-			else {
-				// Add the members to the includes group, then remove them from the excludes.
-				addMembershipsSimple(groupId, grouperName + INCLUDE_SUFFIX, membersToAdd);
-				removeMembershipsSimple(groupId, grouperName + EXCLUDE_SUFFIX, membersToAdd);
-			}
+		if ( groupId.startsWith(ContactsGrouperNameProviderImpl.CONTACTS_GROUPID_PREFIX) ||
+				!grouperConfiguration.getGroupTypes().contains(INCLUDE_EXCLUDE_GROUP_TYPE)){
+			addMembershipsSimple(groupId, grouperName, membersToAdd);
 		}
-		catch (StorageClientException sce) {
-			throw new GrouperException("Unable to fetch authorizable for " + groupId);
-		}
-		catch (AccessDeniedException ade) {
-			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
+		else {
+			// Add the members to the includes group, then remove them from the excludes.
+			addMembershipsSimple(groupId, grouperName + INCLUDE_SUFFIX, membersToAdd);
+			removeMembershipsSimple(groupId, grouperName + EXCLUDE_SUFFIX, membersToAdd);
 		}
 	}
 
 	private void addMembershipsSimple(String groupId, String grouperName, Collection<String> membersToAdd) throws GrouperException{
-		try {
-			Session session = repository.loginAdministrative(grouperConfiguration.getIgnoredUserId());
-			AuthorizableManager authorizableManager = session.getAuthorizableManager();
 
-			// Clean the list of principles/subjects to be added.
-			Collection<String> cleanedMembersToAdd = new ArrayList<String>();
+		// Clean the list of principles/subjects to be added.
+		Collection<String> cleanedMembersToAdd = cleanMemberNames(membersToAdd);
+
+		if (!cleanedMembersToAdd.isEmpty()){
+			// Each subjectId must have a lookup
+			WsSubjectLookup[] subjectLookups = new WsSubjectLookup[membersToAdd.size()];
+			int  i = 0;
 			for (String subjectId: membersToAdd){
-				Authorizable authorizableToAdd = authorizableManager.findAuthorizable(subjectId);
-				if (authorizableToAdd == null){
-					log.error("Cannot find {}", subjectId);
-					continue;
-				}
-				if (authorizableToAdd.isGroup()){
-					log.error("Adding groups as members is not supported yet.");
-					continue;
-				}
-				if (subjectId.equals("admin")){
-					// Don't bother adding the admin user as a member.
-					// It probably doesn't exist in grouper.
-					continue;
-				}
-				cleanedMembersToAdd.add(subjectId);
+				// TODO - Specify the Grouper subject source in the lookup.
+				subjectLookups[i] = new WsSubjectLookup(subjectId, null, null);
+				i++;
 			}
 
-			if (!cleanedMembersToAdd.isEmpty()){
-				// Each subjectId must have a lookup
-				WsSubjectLookup[] subjectLookups = new WsSubjectLookup[membersToAdd.size()];
-				int  i = 0;
-				for (String subjectId: membersToAdd){
-					// TODO - Specify the Grouper subject source in the lookup.
-					subjectLookups[i] = new WsSubjectLookup(subjectId, null, null);
-					i++;
-				}
+			WsRestAddMemberRequest addMembers = new WsRestAddMemberRequest();
+			// Don't overwrite the entire group membership. just add to it.
+			addMembers.setReplaceAllExisting("F");
+			addMembers.setSubjectLookups(subjectLookups);
 
-				WsRestAddMemberRequest addMembers = new WsRestAddMemberRequest();
-				// Don't overwrite the entire group membership. just add to it.
-				addMembers.setReplaceAllExisting("F");
-				addMembers.setSubjectLookups(subjectLookups);
-
-				String urlPath = "/groups/" + grouperName + "/members";
-				urlPath = urlPath.replace(":", "%3A");
-				// Send the request and parse the result, throwing an exception on failure.
-				JSONObject response = post(urlPath, addMembers);
-				WsAddMemberResults results = (WsAddMemberResults)JSONObject.toBean(
-						response.getJSONObject("WsAddMemberResults"), WsAddMemberResults.class);
-				if (!"T".equals(results.getResultMetadata().getSuccess())) {
-						throw new GrouperWSException(results);
-				}
-				session.logout();
-				log.debug("Success! Added members: Group = {} members = {}",
-						grouperName, StringUtils.join(membersToAdd.toArray(), ","));
+			String urlPath = "/groups/" + grouperName + "/members";
+			urlPath = urlPath.replace(":", "%3A");
+			// Send the request and parse the result, throwing an exception on failure.
+			JSONObject response = post(urlPath, addMembers);
+			WsAddMemberResults results = (WsAddMemberResults)JSONObject.toBean(
+					response.getJSONObject("WsAddMemberResults"), WsAddMemberResults.class);
+			if (!"T".equals(results.getResultMetadata().getSuccess())) {
+					throw new GrouperWSException(results);
 			}
-		}
-		catch (StorageClientException sce) {
-			throw new GrouperException("Unable to fetch authorizable for " + groupId);
-		}
-		catch (AccessDeniedException ade) {
-			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
+			log.debug("Success! Added members: Group = {} members = {}",
+					grouperName, StringUtils.join(membersToAdd.toArray(), ","));
 		}
 	}
 
@@ -365,28 +300,64 @@ public class GrouperManagerImpl implements GrouperManager {
 	 * @{inheritDoc}
 	 */
 	public void removeMemberships(String groupId, Collection<String> membersToRemove) throws GrouperException {
-		try{
+		checkGroupId(groupId);
+
+		String grouperName = grouperNameManager.getGrouperName(groupId) + INCLUDE_SUFFIX;
+		String membersString = StringUtils.join(membersToRemove, ',');
+		log.debug("Removing members: Group = {} members = {}", grouperName, membersString);
+
+		if ( groupId.startsWith(ContactsGrouperNameProviderImpl.CONTACTS_GROUPID_PREFIX) ||
+				!grouperConfiguration.getGroupTypes().contains(INCLUDE_EXCLUDE_GROUP_TYPE)){
+			removeMembershipsSimple(groupId, grouperName, membersToRemove);
+		}
+		else {
+			removeMembershipsSimple(groupId, grouperName + INCLUDE_SUFFIX, membersToRemove);
+			addMembershipsSimple(groupId, grouperName + EXCLUDE_SUFFIX, membersToRemove);
+		}
+	}
+
+	private void removeMembershipsSimple(String groupId, String grouperName, Collection<String> membersToRemove) throws GrouperException {
+		checkGroupId(groupId);
+
+		String membersString = StringUtils.join(membersToRemove, ',');
+		log.debug("Removing members: Group = {} members = {}", grouperName, membersString);
+
+		membersToRemove = cleanMemberNames(membersToRemove);
+
+		WsRestDeleteMemberRequest deleteMembers = new WsRestDeleteMemberRequest();
+		// Each subjectId must have a lookup
+		WsSubjectLookup[] subjectLookups = new WsSubjectLookup[membersToRemove.size()];
+		int  i = 0;
+		for (String subjectId: membersToRemove){
+			subjectLookups[i] = new WsSubjectLookup(subjectId, null, null);
+			i++;
+		}
+
+		// Delete the members from the _include group
+		deleteMembers.setSubjectLookups(subjectLookups);
+		String urlPath = "/groups/" + grouperName + "/members";
+		urlPath = urlPath.replace(":", "%3A");
+		JSONObject response = post(urlPath, deleteMembers);
+
+		WsDeleteMemberResults results = (WsDeleteMemberResults)JSONObject.toBean(
+				response.getJSONObject("WsDeleteMemberResults"), WsDeleteMemberResults.class);
+		if (!"T".equals(results.getResultMetadata().getSuccess())) {
+				throw new GrouperWSException(results);
+		}
+
+		log.debug("Success! Removed members: Group = {} members = {}",
+				grouperName, membersString);
+	}
+
+	private void checkGroupId(String groupId) throws InvalidGroupIdException, GrouperException{
+		try {
 			Session session = repository.loginAdministrative(grouperConfiguration.getIgnoredUserId());
 			AuthorizableManager authorizableManager = session.getAuthorizableManager();
 			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
 			session.logout();
 
 			if (!authorizable.isGroup()){
-				log.error("{} is not a group", authorizable.getId());
-				return;
-			}
-
-			String grouperName = grouperNameManager.getGrouperName(groupId) + INCLUDE_SUFFIX;
-			String membersString = StringUtils.join(membersToRemove, ',');
-			log.debug("Removing members: Group = {} members = {}", grouperName, membersString);
-
-			if ( groupId.startsWith(ContactsGrouperNameProviderImpl.CONTACTS_GROUPID_PREFIX) || 
-					!grouperConfiguration.getGroupTypes().contains(INCLUDE_EXCLUDE_GROUP_TYPE)){
-				removeMembershipsSimple(groupId, grouperName, membersToRemove);
-			}
-			else {
-				removeMembershipsSimple(groupId, grouperName + INCLUDE_SUFFIX, membersToRemove);
-				addMembershipsSimple(groupId, grouperName + EXCLUDE_SUFFIX, membersToRemove);
+				throw new InvalidGroupIdException(groupId + " is not a group");
 			}
 		}
 		catch (StorageClientException sce) {
@@ -397,51 +368,44 @@ public class GrouperManagerImpl implements GrouperManager {
 		}
 	}
 
-	private void removeMembershipsSimple(String groupId, String grouperName, Collection<String> membersToRemove) throws GrouperException {
+	public Collection<String> cleanMemberNames(Collection<String> memberIds) throws GrouperException{
+		Collection<String> cleaned = new ArrayList<String>();
+
 		try {
 			Session session = repository.loginAdministrative(grouperConfiguration.getIgnoredUserId());
 			AuthorizableManager authorizableManager = session.getAuthorizableManager();
-			Authorizable authorizable = authorizableManager.findAuthorizable(groupId);
+			Authorizable authorizable = null;
+			for (String memberId: memberIds){
+				try {
+					authorizable = authorizableManager.findAuthorizable(memberId);
+				}
+				catch (StorageClientException sce) {
+					throw new GrouperException("Unable to fetch authorizable for " + memberId);
+				}
+				catch (AccessDeniedException ade) {
+					throw new GrouperException("Unable to fetch authorizable for " + memberId + ". Access Denied.");
+				}
+
+				if (authorizable == null || authorizable.isGroup()){
+					log.error("{} is not a valid User id.", memberId);
+					continue;
+				}
+				if (memberId.equals("admin")){
+					// Don't bother adding the admin user as a member.
+					// It probably doesn't exist in grouper.
+					continue;
+				}
+				cleaned.add(memberId);
+			}
 			session.logout();
-
-			if (!authorizable.isGroup()){
-				log.error("{} is not a group", authorizable.getId());
-				return;
-			}
-
-			String membersString = StringUtils.join(membersToRemove, ',');
-			log.debug("Removing members: Group = {} members = {}", grouperName, membersString);
-
-			WsRestDeleteMemberRequest deleteMembers = new WsRestDeleteMemberRequest();
-			// Each subjectId must have a lookup
-			WsSubjectLookup[] subjectLookups = new WsSubjectLookup[membersToRemove.size()];
-			int  i = 0;
-			for (String subjectId: membersToRemove){
-				subjectLookups[i] = new WsSubjectLookup(subjectId, null, null);
-				i++;
-			}
-
-			// Delete the members from the _include group
-			deleteMembers.setSubjectLookups(subjectLookups);
-			String urlPath = "/groups/" + grouperName + "/members";
-			urlPath = urlPath.replace(":", "%3A");
-			JSONObject response = post(urlPath, deleteMembers);
-
-			WsDeleteMemberResults results = (WsDeleteMemberResults)JSONObject.toBean(
-					response.getJSONObject("WsDeleteMemberResults"), WsDeleteMemberResults.class);
-			if (!"T".equals(results.getResultMetadata().getSuccess())) {
-					throw new GrouperWSException(results);
-			}
-
-			log.debug("Success! Removed members: Group = {} members = {}",
-					grouperName, membersString);
 		}
 		catch (StorageClientException sce) {
-			throw new GrouperException("Unable to fetch authorizable for " + groupId);
+			throw new GrouperException("Unable to fetch authorizable");
 		}
 		catch (AccessDeniedException ade) {
-			throw new GrouperException("Unable to fetch authorizable for " + groupId + ". Access Denied.");
+			throw new GrouperException("Unable to fetch authorizable. Access Denied.");
 		}
+		return cleaned;
 	}
 
 	/**
