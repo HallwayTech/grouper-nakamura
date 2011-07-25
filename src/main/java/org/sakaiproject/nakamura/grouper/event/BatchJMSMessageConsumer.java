@@ -121,7 +121,8 @@ public class BatchJMSMessageConsumer implements MessageListener {
 	}
 
 	public void onMessage(Message message){
-		log.debug("Receiving a message on {} : {}", BatchJMSMessageProducer.QUEUE_NAME, message);
+		log.info("Receiving a message on {} : {}", BatchJMSMessageProducer.QUEUE_NAME);
+		log.debug(message.toString());
 		try {
 			String groupId = message.getStringProperty(Authorizable.ID_FIELD);
 			org.sakaiproject.nakamura.api.lite.Session repositorySession = repository.loginAdministrative(config.getIgnoredUserId());
