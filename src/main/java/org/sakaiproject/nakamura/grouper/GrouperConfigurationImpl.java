@@ -92,7 +92,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	public static final String PROP_SIMPLEGROUPS_STEM = "grouper.nameprovider.simplegroups.stem";
 
 	private static final String DEFAULT_COURSES_STEM = "edu:apps:sakaioae:courses:adhoc";
-	@Property(value = DEFAULT_SIMPLEGROUPS_STEM)
+	@Property(value = DEFAULT_COURSES_STEM)
 	public static final String PROP_COURSES_STEM = "grouper.nameprovider.courses.stem";
 
 	private static final String[] DEFAULT_GROUPER_GROUP_TYPES = {"addIncludeExclude"};
