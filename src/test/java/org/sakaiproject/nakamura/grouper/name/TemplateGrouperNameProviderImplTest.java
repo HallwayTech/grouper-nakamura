@@ -34,7 +34,6 @@ public class TemplateGrouperNameProviderImplTest extends TestCase {
 
 		GrouperConfigurationImpl gconfig = new GrouperConfigurationImpl();
 		Map<String,String> m = new HashMap<String,String>();
-		m.put(GrouperConfigurationImpl.PROP_BASESTEM, "some:base:stem");
 		m.put(GrouperConfigurationImpl.PROP_EXTENSION_OVERRIDES, "meh:bleh");
 		gconfig.updated(m);
 		

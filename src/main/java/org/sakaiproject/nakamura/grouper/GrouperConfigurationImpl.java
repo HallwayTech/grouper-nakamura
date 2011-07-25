@@ -83,17 +83,17 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	@Property(value = {"-manager", "-ta", "-lecturer", "-student", "-member"}, cardinality = 9999)
 	public static final String PROP_PSEUDO_GROUP_SUFFIXES = "grouper.psuedoGroup.suffixes";
 
-	private static final String DEFAULT_BASESTEM = "edu:apps:sakaioae";
-	@Property(value = DEFAULT_BASESTEM)
-	public static final String PROP_BASESTEM = "grouper.basestem";
+	private static final String DEFAULT_CONTACTS_STEM = "edu:apps:sakaioae:users";
+	@Property(value = DEFAULT_CONTACTS_STEM)
+	public static final String PROP_CONTACTS_STEM = "grouper.nameprovider.contacts.stem";
 
 	private static final String DEFAULT_SIMPLEGROUPS_STEM = "edu:apps:sakaioae:groups:adhoc";
 	@Property(value = DEFAULT_SIMPLEGROUPS_STEM)
-	protected static final String PROP_SIMPLEGROUPS_STEM = "grouper.nameprovider.simplegroups.stem";
+	public static final String PROP_SIMPLEGROUPS_STEM = "grouper.nameprovider.simplegroups.stem";
 
 	private static final String DEFAULT_COURSES_STEM = "edu:apps:sakaioae:courses:adhoc";
 	@Property(value = DEFAULT_SIMPLEGROUPS_STEM)
-	protected static final String PROP_COURSES_STEM = "grouper.nameprovider.courses.stem";
+	public static final String PROP_COURSES_STEM = "grouper.nameprovider.courses.stem";
 
 	private static final String[] DEFAULT_GROUPER_GROUP_TYPES = {"addIncludeExclude"};
 	@Property(value = {"addIncludeExclude"}, cardinality = 9999)
@@ -111,7 +111,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	private URL url;
 	private String username;
 	private String password;
-	private String baseStem;
+	private String contactsStem;
 
 	private String simpleGroupsStem;
 	private String coursesStem;
@@ -155,8 +155,8 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		}
 		username  = OsgiUtil.toString(props.get(PROP_USERNAME), DEFAULT_USERNAME);
 		password  = OsgiUtil.toString(props.get(PROP_PASSWORD), DEFAULT_PASSWORD);
-		baseStem = cleanStem(OsgiUtil.toString(props.get(PROP_BASESTEM),DEFAULT_BASESTEM));
 
+		contactsStem = cleanStem(OsgiUtil.toString(props.get(PROP_CONTACTS_STEM),DEFAULT_CONTACTS_STEM));
 		simpleGroupsStem = cleanStem(OsgiUtil.toString(props.get(PROP_SIMPLEGROUPS_STEM),DEFAULT_SIMPLEGROUPS_STEM));
 		coursesStem = cleanStem(OsgiUtil.toString(props.get(PROP_COURSES_STEM),DEFAULT_COURSES_STEM));
 
@@ -230,16 +230,8 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		return pseudoGroupSuffixes;
 	}
 
-	public String getBaseStem(String groupType) {
-		String stem = this.baseStem;
-
-		if ("group".equals(groupType)){
-			stem += ":groups";
-		}
-		else if ("contacts".equals(groupType)){
-			stem += ":users";
-		}
-		return stem;
+	public String getContactsStem(){
+		return contactsStem;
 	}
 
 	public String getSimpleGroupsStem() {

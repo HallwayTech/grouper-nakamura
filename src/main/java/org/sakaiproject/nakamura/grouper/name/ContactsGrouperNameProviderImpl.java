@@ -56,7 +56,7 @@ public class ContactsGrouperNameProviderImpl implements GrouperNameProvider {
 			return null;
 		}
 
-		StringBuilder gn = new StringBuilder(config.getBaseStem("contacts"));
+		StringBuilder gn = new StringBuilder(config.getContactsStem());
 		gn.append(":");
 		gn.append(BaseGrouperNameProvider.getGrouperLastStem(groupId, config));
 		gn.append(":");

@@ -85,10 +85,9 @@ public interface GrouperConfiguration {
 	public abstract String[] getPseudoGroupSuffixes();
 
 	/**
-	 * @param groupType
-	 * @return the base stem to write to for this type of group.
+	 * @return where in grouper the user contacts groups are stored.
 	 */
-	public abstract String getBaseStem(String groupType);
+	public abstract String getContactsStem();
 
 	/**
 	 * @return where in grouper the adhoc simple groups are stored.

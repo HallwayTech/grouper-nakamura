@@ -37,7 +37,7 @@ public class ContactsGrouperNameProviderImplTest {
 	public void testGetGrouperName() throws Exception {
 		
 		Map<String,String> m = new HashMap<String,String>();
-		m.put(GrouperConfigurationImpl.PROP_BASESTEM, "some:base:stem");
+		m.put(GrouperConfigurationImpl.PROP_CONTACTS_STEM, "some:base:stem:users");
 		GrouperConfigurationImpl gconfig = new GrouperConfigurationImpl();
 		gconfig.updated(m);
 			
