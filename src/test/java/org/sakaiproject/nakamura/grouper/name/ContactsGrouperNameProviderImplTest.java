@@ -37,7 +37,6 @@ public class ContactsGrouperNameProviderImplTest {
 	public void testGetGrouperName() throws Exception {
 		
 		Map<String,String> m = new HashMap<String,String>();
-		m.put(GrouperConfigurationImpl.PROP_CONTACTS_STEM, "some:base:stem:users");
 		GrouperConfigurationImpl gconfig = new GrouperConfigurationImpl();
 		gconfig.updated(m);
 			
@@ -46,6 +45,6 @@ public class ContactsGrouperNameProviderImplTest {
 		
 		assertEquals(null, provider.getGrouperName(null));
 		assertEquals(null, provider.getGrouperName("bleep"));
-		assertEquals("some:base:stem:users:user1:contacts", provider.getGrouperName("g-contacts-user1"));
+		assertEquals("user1:contacts", provider.getGrouperName("g-contacts-user1"));
 	}
 }

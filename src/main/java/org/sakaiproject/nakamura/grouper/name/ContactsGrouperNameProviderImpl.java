@@ -51,20 +51,15 @@ public class ContactsGrouperNameProviderImpl implements GrouperNameProvider {
 
 	@Override
 	public String getGrouperName(String groupId) {
-
 		if (groupId == null || !groupId.startsWith(CONTACTS_GROUPID_PREFIX)){
 			return null;
 		}
-
-		StringBuilder gn = new StringBuilder(config.getContactsStem());
-		gn.append(":");
-		gn.append(BaseGrouperNameProvider.getGrouperLastStem(groupId, config));
+		StringBuilder gn = new StringBuilder(groupId.substring(CONTACTS_GROUPID_PREFIX.length() + 1)); 
 		gn.append(":");
 		gn.append(BaseGrouperNameProvider.getGrouperExtension(groupId, config));
-
-		String grouperName = gn.toString();
-		log.debug("{} => {}", groupId, grouperName);
-		return grouperName;
+		String name = gn.toString();
+		log.debug("{} => {}", groupId, name);
+		return name;
 	}
 
 	public void bindGrouperConfiguration(GrouperConfiguration gconfig) {
