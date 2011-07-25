@@ -67,6 +67,7 @@
 						  com.werken.xpath;resolution:=optional,
 						  org.apache.log.*;resolution:=optional,
 						  org.jdom.*;resolution:=optional,
+						  edu.internet2.middleware.grouperClient,
 						  *</Import-Package>
 						  <Sling-Initial-Content>SLING-INF/content;overwriteProperties:=true;uninstall:=false</Sling-Initial-Content>
 					</instructions>
