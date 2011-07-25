@@ -73,7 +73,7 @@ public class TemplateGrouperNameProviderImpl implements GrouperNameProvider {
 
 	private static final String DEFAULT_GROUPERNAME_TEMPLATE = "";
 	@Property(value = DEFAULT_GROUPERNAME_TEMPLATE)
-	protected static final String PROP_GROUPERNAME_TEMPLATE = "grouper.nameprovider.template.template";
+	protected static final String PROP_GROUPERNAME_TEMPLATE = "grouper.nameprovider.template.grouperName";
 
 	// Pattern used to parse sakaiOAE group id's
 	private String groupIdPatternString;

@@ -29,35 +29,29 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provide grouper names based on the following structure:
- * 
- * my-group-name => base:stem:groups:m:my:my-group-name:members
- * my-group-name-managers => base:stem:groups:m:my:my-group-name:managers
+ *
+ * my-group-name => m:my:my-group-name:members
+ * my-group-name-managers => m:my:my-group-name:managers
  */
 @Service
 @Component
-@Properties(value = { 
+@Properties(value = {
 		@Property(name = "service.ranking", intValue = 10)
 })
 public class AdhocGrouperNameProviderImpl implements GrouperNameProvider {
 
 	private static final Logger log = LoggerFactory.getLogger(AdhocGrouperNameProviderImpl.class);
-	
-	private static final String ADHOC_STEM = "adhoc";
 
 	@Reference
 	protected GrouperConfiguration config;
 
 	@Override
 	public String getGrouperName(String groupId) {
-		
+
 		if (groupId == null){
 			return null;
 		}
-
-		StringBuilder gn = new StringBuilder(config.getBaseStem("group"));
-		gn.append(":");
-		gn.append(ADHOC_STEM);
-		gn.append(":");
+		StringBuilder gn = new StringBuilder();
 		gn.append(groupId.charAt(0));
 		gn.append(":");
 		gn.append(groupId.substring(0,2));

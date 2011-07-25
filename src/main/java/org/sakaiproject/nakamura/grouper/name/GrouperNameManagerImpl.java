@@ -26,21 +26,32 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.commons.osgi.OsgiUtil;
+import org.sakaiproject.nakamura.api.lite.ClientPoolException;
+import org.sakaiproject.nakamura.api.lite.Repository;
+import org.sakaiproject.nakamura.api.lite.Session;
+import org.sakaiproject.nakamura.api.lite.StorageClientException;
+import org.sakaiproject.nakamura.api.lite.accesscontrol.AccessDeniedException;
+import org.sakaiproject.nakamura.api.lite.authorizable.Group;
 import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.sakaiproject.nakamura.grouper.name.api.GrouperNameManager;
 import org.sakaiproject.nakamura.grouper.name.api.GrouperNameProvider;
+import org.sakaiproject.nakamura.grouper.util.GroupUtil;
 import org.sakaiproject.nakamura.util.osgi.AbstractOrderedService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generate a grouper name based on a Sakai OAE groupId
  *
- * This class holds an ordered {@link List} of {@link GrouperNameProvider}s. 
+ * This class holds an ordered {@link List} of {@link GrouperNameProvider}s.
  * The first one to return an answer for the group will be used.
  *
  */
 @Service
 @Component
-public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNameProvider> implements GrouperNameManager { 
+public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNameProvider> implements GrouperNameManager {
+
+	private static Logger log = LoggerFactory.getLogger(GrouperNameManagerImpl.class);
 
 	@Reference(cardinality=ReferenceCardinality.MANDATORY_MULTIPLE)
 	protected GrouperNameProvider[] orderedServices = new GrouperNameProvider[0];
@@ -48,16 +59,42 @@ public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNamePr
 	@Reference
 	protected GrouperConfiguration config;
 
+	@Reference Repository repository;
+
 	@Override
 	public String getGrouperName(String groupId) {
 		String grouperName = null;
 		for (GrouperNameProvider gnp: orderedServices){
 			grouperName = gnp.getGrouperName(groupId);
 			if (grouperName != null){
-				return grouperName;
+				break;
 			}
 		}
-		return null;
+
+		try {
+			Session session = repository.loginAdministrative(config.getIgnoredUserId());
+			Group g = (Group)session.getAuthorizableManager().findAuthorizable(groupId);
+			if (GroupUtil.isSimpleGroup(g, session)){
+				grouperName = config.getSimpleGroupsStem() + ":" + grouperName;
+			}
+			else if (GroupUtil.isCourseGroup(g, session)){
+				grouperName = config.getCoursesStem() + ":" + grouperName;
+			}
+			session.logout();
+		} catch (ClientPoolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (StorageClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AccessDeniedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		log.info("Resolved groupId {} to grouperName {}", groupId, grouperName);
+
+		return grouperName;
 	}
 
 	/**
