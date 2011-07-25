@@ -1,4 +1,5 @@
 /*
+
  * Licensed to the Sakai Foundation (SF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -34,8 +35,8 @@ import org.sakaiproject.nakamura.grouper.api.GrouperConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 @Service
 @Component(metatype = true)
@@ -74,10 +75,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	private static final String[] DEFAULT_IGNORED_GROUP_PATTERN = {"administrators"};
 	@Property(value = { "administrators" }, cardinality = 9999)
-	public static final String PROP_IGNORED_GROUP_PATTERN = "grouper.ignoredGroupsPatterns"; 
+	public static final String PROP_IGNORED_GROUP_PATTERN = "grouper.ignoredGroupsPatterns";
 
 	// TODO: A better way to generate the default list.
-	private static final String[] DEFAULT_PSEUDO_GROUP_SUFFIXES = 
+	private static final String[] DEFAULT_PSEUDO_GROUP_SUFFIXES =
 		{"-manager", "-ta", "-lecturer", "-student", "-member"};
 	@Property(value = {"-manager", "-ta", "-lecturer", "-student", "-member"}, cardinality = 9999)
 	public static final String PROP_PSEUDO_GROUP_SUFFIXES = "grouper.psuedoGroup.suffixes";
@@ -85,6 +86,14 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	private static final String DEFAULT_BASESTEM = "edu:apps:sakaioae";
 	@Property(value = DEFAULT_BASESTEM)
 	public static final String PROP_BASESTEM = "grouper.basestem";
+
+	private static final String DEFAULT_SIMPLEGROUPS_STEM = "edu:apps:sakaioae:groups:adhoc";
+	@Property(value = DEFAULT_SIMPLEGROUPS_STEM)
+	protected static final String PROP_SIMPLEGROUPS_STEM = "grouper.nameprovider.simplegroups.stem";
+
+	private static final String DEFAULT_COURSES_STEM = "edu:apps:sakaioae:courses:adhoc";
+	@Property(value = DEFAULT_SIMPLEGROUPS_STEM)
+	protected static final String PROP_COURSES_STEM = "grouper.nameprovider.courses.stem";
 
 	private static final String[] DEFAULT_GROUPER_GROUP_TYPES = {"addIncludeExclude"};
 	@Property(value = {"addIncludeExclude"}, cardinality = 9999)
@@ -103,6 +112,9 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	private String username;
 	private String password;
 	private String baseStem;
+
+	private String simpleGroupsStem;
+	private String coursesStem;
 
 	// GrouperWS
 	private String wsVersion;
@@ -130,7 +142,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 	 *
 	 * Called by the Configuration Admin service when a new configuration is
 	 * detected in the web console or a config file.
-	 * 
+	 *
 	 * @see org.osgi.service.cm.ManagedService#updated
 	 */
 	@Activate
@@ -143,11 +155,10 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		}
 		username  = OsgiUtil.toString(props.get(PROP_USERNAME), DEFAULT_USERNAME);
 		password  = OsgiUtil.toString(props.get(PROP_PASSWORD), DEFAULT_PASSWORD);
-		baseStem = OsgiUtil.toString(props.get(PROP_BASESTEM),DEFAULT_BASESTEM);
+		baseStem = cleanStem(OsgiUtil.toString(props.get(PROP_BASESTEM),DEFAULT_BASESTEM));
 
-		if (baseStem.endsWith(":")){
-			baseStem = baseStem.substring(0, baseStem.length() - 1);
-		}
+		simpleGroupsStem = cleanStem(OsgiUtil.toString(props.get(PROP_SIMPLEGROUPS_STEM),DEFAULT_SIMPLEGROUPS_STEM));
+		coursesStem = cleanStem(OsgiUtil.toString(props.get(PROP_COURSES_STEM),DEFAULT_COURSES_STEM));
 
 		wsVersion = OsgiUtil.toString(props.get(PROP_WS_VERSION), DEFAULT_WS_VERSION);
 		httpTimeout = OsgiUtil.toInteger(props.get(PROP_TIMEOUT), Integer.parseInt(DEFAULT_TIMEOUT));
@@ -159,7 +170,8 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		deletesEnabled = OsgiUtil.toBoolean(props.get(PROP_DELETES_ENABLED), DEFAULT_DELETES_ENABLED);
 
 		groupTypes = new HashSet<String>();
-		for (String gt: OsgiUtil.toStringArray(props.get(PROP_GROUPER_GROUP_TYPES), DEFAULT_GROUPER_GROUP_TYPES)){
+		for (String gt: OsgiUtil.toStringArray(props.get(PROP_GROUPER_GROUP_TYPES),
+				DEFAULT_GROUPER_GROUP_TYPES)){
 			groupTypes.add(gt);
 		}
 
@@ -173,6 +185,13 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		extensionOverrides = extentionOverridesBuilder.build();
 
 		log.debug("Configured!");
+	}
+
+	private String cleanStem(String stem){
+		if (stem != null && stem.endsWith(":")){
+			stem = stem.substring(0, stem.length() - 1);
+		}
+		return stem;
 	}
 
 	public URL getUrl() {
@@ -213,6 +232,7 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 
 	public String getBaseStem(String groupType) {
 		String stem = this.baseStem;
+
 		if ("group".equals(groupType)){
 			stem += ":groups";
 		}
@@ -222,7 +242,15 @@ public class GrouperConfigurationImpl implements GrouperConfiguration {
 		return stem;
 	}
 
-	public Set<String> getGroupTypes(){
+	public String getSimpleGroupsStem() {
+		return simpleGroupsStem;
+	}
+
+	public String getCoursesStem() {
+		return coursesStem;
+	}
+
+	public Set<String> getGroupTypes() {
 		return groupTypes;
 	}
 

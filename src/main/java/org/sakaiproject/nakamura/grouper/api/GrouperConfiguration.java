@@ -71,7 +71,7 @@ public interface GrouperConfiguration {
 	 */
 	public abstract String getIgnoredUserId();
 
-	/** 
+	/**
 	 * Ignore groups that one match these patterns.
 	 * @return the {@link Pattern}s to ignore.
 	 */
@@ -89,6 +89,16 @@ public interface GrouperConfiguration {
 	 * @return the base stem to write to for this type of group.
 	 */
 	public abstract String getBaseStem(String groupType);
+
+	/**
+	 * @return where in grouper the adhoc simple groups are stored.
+	 */
+	public abstract String getSimpleGroupsStem();
+
+	/**
+	 * @return where in grouper the adhoc course groups are stored.
+	 */
+	public abstract String getCoursesStem();
 
 	/**
 	 * @return The group types for creating course groups in grouper.
