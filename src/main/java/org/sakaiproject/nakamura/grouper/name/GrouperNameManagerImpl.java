@@ -74,10 +74,13 @@ public class GrouperNameManagerImpl extends AbstractOrderedService<GrouperNamePr
 		try {
 			Session session = repository.loginAdministrative(config.getIgnoredUserId());
 			Group g = (Group)session.getAuthorizableManager().findAuthorizable(groupId);
-			if (GroupUtil.isSimpleGroup(g, session)){
+			if (GroupUtil.isContactsGroup(g.getId()) && !grouperName.startsWith(config.getContactsStem())){
+				grouperName = config.getContactsStem() + ":" + grouperName;
+			}
+			else if (GroupUtil.isSimpleGroup(g, session) && !grouperName.startsWith(config.getSimpleGroupsStem())){
 				grouperName = config.getSimpleGroupsStem() + ":" + grouperName;
 			}
-			else if (GroupUtil.isCourseGroup(g, session)){
+			else if (GroupUtil.isCourseGroup(g, session)&& !grouperName.startsWith(config.getCoursesStem())){
 				grouperName = config.getCoursesStem() + ":" + grouperName;
 			}
 			session.logout();

@@ -2,6 +2,7 @@ package org.sakaiproject.nakamura.grouper.util;
 
 import org.sakaiproject.nakamura.api.lite.Session;
 import org.sakaiproject.nakamura.api.lite.authorizable.Group;
+import org.sakaiproject.nakamura.grouper.name.ContactsGrouperNameProviderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,11 @@ public class GroupUtil {
 	 * @return if g is part of a course group
 	 */
 	public static boolean isCourseGroup(Group g, Session session){
-		return ! isSimpleGroup(g, session);
+		return (!isSimpleGroup(g, session)) && (!isContactsGroup(g.getId()));
+	}
+
+	public static boolean isContactsGroup(String groupId) {
+		return groupId.startsWith(ContactsGrouperNameProviderImpl.CONTACTS_GROUPID_PREFIX);
 	}
 
 }
