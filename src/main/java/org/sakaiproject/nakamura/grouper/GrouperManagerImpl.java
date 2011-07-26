@@ -324,29 +324,32 @@ public class GrouperManagerImpl implements GrouperManager {
 
 		membersToRemove = cleanMemberNames(membersToRemove);
 
-		WsRestDeleteMemberRequest deleteMembers = new WsRestDeleteMemberRequest();
-		// Each subjectId must have a lookup
-		WsSubjectLookup[] subjectLookups = new WsSubjectLookup[membersToRemove.size()];
-		int  i = 0;
-		for (String subjectId: membersToRemove){
-			subjectLookups[i] = new WsSubjectLookup(subjectId, null, null);
-			i++;
-		}
+		if (!membersToRemove.isEmpty()){
 
-		// Delete the members from the _include group
-		deleteMembers.setSubjectLookups(subjectLookups);
-		String urlPath = "/groups/" + grouperName + "/members";
-		urlPath = urlPath.replace(":", "%3A");
-		JSONObject response = post(urlPath, deleteMembers);
+			WsRestDeleteMemberRequest deleteMembers = new WsRestDeleteMemberRequest();
+			// Each subjectId must have a lookup
+			WsSubjectLookup[] subjectLookups = new WsSubjectLookup[membersToRemove.size()];
+			int  i = 0;
+			for (String subjectId: membersToRemove){
+				subjectLookups[i] = new WsSubjectLookup(subjectId, null, null);
+				i++;
+			}
 
-		WsDeleteMemberResults results = (WsDeleteMemberResults)JSONObject.toBean(
-				response.getJSONObject("WsDeleteMemberResults"), WsDeleteMemberResults.class);
-		if (!"T".equals(results.getResultMetadata().getSuccess())) {
+			// Delete the members from the _include group
+			deleteMembers.setSubjectLookups(subjectLookups);
+			String urlPath = "/groups/" + grouperName + "/members";
+			urlPath = urlPath.replace(":", "%3A");
+			JSONObject response = post(urlPath, deleteMembers);
+
+			WsDeleteMemberResults results = (WsDeleteMemberResults)JSONObject.toBean(
+					response.getJSONObject("WsDeleteMemberResults"), WsDeleteMemberResults.class);
+			if (!"T".equals(results.getResultMetadata().getSuccess())) {
 				throw new GrouperWSException(results);
-		}
+			}
 
-		log.debug("Success! Removed members: Group = {} members = {}",
-				grouperName, membersString);
+			log.debug("Success! Removed members: Group = {} members = {}",
+					grouperName, membersString);
+		}
 	}
 
 	private void checkGroupId(String groupId) throws InvalidGroupIdException, GrouperException{
@@ -387,7 +390,7 @@ public class GrouperManagerImpl implements GrouperManager {
 				}
 
 				if (authorizable == null || authorizable.isGroup()){
-					log.error("{} is not a valid User id.", memberId);
+					log.debug("cleanMemberNames: {} is not a valid User id.", memberId);
 					continue;
 				}
 				if (memberId.equals("admin")){
