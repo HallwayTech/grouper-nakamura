@@ -54,19 +54,21 @@
 				<configuration>
 					<instructions>
 						<Bundle-Category>sakai-nakamura</Bundle-Category>
-						<Embed-Dependency>json-lib,ezmorph,velocity</Embed-Dependency>
+						<Embed-Dependency>json-lib,ezmorph,velocity,commons-beanutils</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
 						<Export-Package>org.sakaiproject.nakamura.grouper.*</Export-Package>
 						<Import-Package>
 						  !org.apache.oro.text.*,
 						  javax.crypto,
 						  javax.mail,
+						  org.apache.commons.beanutils.*,
 						  junit.framework.*;resolution:=optional,
 						  org.apache.oro.text.regex;resolution:=optional,
 						  org.apache.tools.ant.*;resolution:=optional,
 						  com.werken.xpath;resolution:=optional,
 						  org.apache.log.*;resolution:=optional,
 						  org.jdom.*;resolution:=optional,
+						  nu.xom;resolution:=optional,
 						  edu.internet2.middleware.grouperClient,
 						  *</Import-Package>
 						  <Sling-Initial-Content>SLING-INF/content;overwriteProperties:=true;uninstall:=false</Sling-Initial-Content>
@@ -260,6 +262,12 @@
 			<artifactId>jcr</artifactId>
 			<type>jar</type>
 			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.8.3</version>
 		</dependency>
 	</dependencies>
 </project>
